@@ -5,7 +5,8 @@ import 'package:freetitle/views/home/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:freetitle/views/drawer/navi_drawer.dart';
+
 
 class IndexPage extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   int _pageIndex = 0;
   final List<Widget> _children = [
-    Home(),
+    NaviDrawer(),
     Profile(),
     Chat()
   ];
@@ -31,32 +32,44 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: BlocBuilder(
-            bloc: BlocProvider.of<AuthenticationBloc>(context),
-            builder: (BuildContext context, AuthenticationState state) {
-              print("Index Page: ${BlocProvider.of<AuthenticationBloc>(context).state}, Page_index: $_pageIndex");
-              if (state is Uninitialized || state is Unauthenticated) {
-                if (_pageIndex == 0) {
-                  return Home();
-                } else {
-                  return LoginScreen();
-                }
-              } else if (state is Authenticated) return _children[_pageIndex];
-            }),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('主页'),
-//              activeColor: Colors.grey,
+    return Container(
+      child: Scaffold(
+          body: BlocBuilder(
+              bloc: BlocProvider.of<AuthenticationBloc>(context),
+              builder: (BuildContext context, AuthenticationState state) {
+                print("Index Page: ${BlocProvider.of<AuthenticationBloc>(context).state}, Page_index: $_pageIndex");
+                if (state is Uninitialized || state is Unauthenticated) {
+                  if (_pageIndex == 0) {
+                    return NaviDrawer();
+                  } else {
+                    return LoginScreen();
+                  }
+                } else if (state is Authenticated) return _children[_pageIndex];
+              }),
+          bottomNavigationBar: new Theme(
+            data: Theme.of(context).copyWith(
+                // sets the background color of the `BottomNavigationBar`
+                canvasColor: Colors.white,
+                // sets the active color of the `BottomNavigationBar` if `Brightness` is light
+                primaryColor: Colors.black,
+//                textTheme: Theme
+//                    .of(context)
+//                    .textTheme
+//                    .copyWith(caption: new TextStyle(color: Colors.yellow))
             ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today),
-                title: Text('日历'),
-//                activeColor: Colors.grey
-            ),
+              child: new BottomNavigationBar(
+                currentIndex: _pageIndex,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    title: Text('主页'),
+//                    backgroundColor: Colors.grey,
+                  ),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.calendar_today),
+                      title: Text('日历'),
+//                      backgroundColor: Colors.grey
+                  ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.chat),
 //              title: Text('消息'),
@@ -67,13 +80,17 @@ class _IndexPageState extends State<IndexPage> {
 //              title: Text('社区'),
 //              activeColor: Colors.blue,
 //            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              title: Text('我的'),
-//              activeColor: Colors.grey,
-            ),
-          ],
-          onTap: onTabTapped,
-        ));
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.school),
+                    title: Text('我的'),
+//                    backgroundColor: Colors.grey,
+                  ),
+                ],
+                onTap: onTabTapped,
+              ),
+          ),
+      ),
+    );
+
   }
 }
