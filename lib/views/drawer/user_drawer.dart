@@ -176,7 +176,7 @@ class _DrawerUserControllerState extends State<DrawerUserController>
                             : SizedBox(),
                         Padding(
                           padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top,
+                              top: MediaQuery.of(context).padding.top+4,
                               left: 8),
                           child: SizedBox(
                             width: AppBar().preferredSize.height - 8,

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:freetitle/views/home/model/home_list_data.dart';
+import 'package:freetitle/views/home/model/sharing_list_data.dart';
 import 'package:freetitle/views/home/home_app_theme.dart';
 
-class HomeListView extends StatelessWidget {
-  const HomeListView(
+class SharingListView extends StatelessWidget {
+  const SharingListView(
       {Key key,
-        this.homeData,
+        this.sharingData,
         this.animationController,
         this.animation,
         this.callback})
       : super(key: key);
 
   final VoidCallback callback;
-  final HomeListData homeData;
+  final SharingListData sharingData;
   final AnimationController animationController;
   final Animation<dynamic> animation;
 
@@ -56,9 +56,8 @@ class HomeListView extends StatelessWidget {
                           children: <Widget>[
                             AspectRatio(
                               aspectRatio: 2,
-                              // TODO Modify here for querying images from server
-                              child: Image.asset(
-                                homeData.imagePath,
+                              child: Image.network(
+                                sharingData.imagePath,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -77,7 +76,7 @@ class HomeListView extends StatelessWidget {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
-                                              homeData.titleTxt,
+                                              sharingData.titleTxt,
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w600,
@@ -89,7 +88,7 @@ class HomeListView extends StatelessWidget {
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  homeData.subTxt,
+                                                  sharingData.subTxt,
                                                   style: TextStyle(
                                                       fontSize: 14,
                                                       color: Colors.grey.withOpacity(0.8)
@@ -129,7 +128,7 @@ class HomeListView extends StatelessWidget {
 //                                                        .primaryColor,
 //                                                  ),
                                                   Text(
-                                                    '${homeData.reviews} Reviews',
+                                                    '${sharingData.reviews} Reviews',
                                                     style: TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.grey
