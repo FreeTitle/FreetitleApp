@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/views/home/sharing_list_view.dart';
-import 'package:freetitle/views/home/model/sharing_list_data.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:freetitle/model/sharing_list_data.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:freetitle/views/home/mission_list_view.dart';
 import 'home_app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freetitle/views/detail/mission/mission_detail_view.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -243,7 +243,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
         ),
         CategoryMissionListView(
           callBack: () {
-
+            getMission();
           },
         ),
       ],
@@ -270,7 +270,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
           Flexible(
             child: PopularMissionListView(
               callBack: (){
-
+                getMission();
               },
             ),
           )
@@ -327,6 +327,15 @@ class _Home extends State<Home> with TickerProviderStateMixin {
           ),
         ),
       ),
+    );
+  }
+
+  void getMission() {
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute<dynamic>(
+        builder: (BuildContext context) => MissionDetailPage(),
+      )
     );
   }
 

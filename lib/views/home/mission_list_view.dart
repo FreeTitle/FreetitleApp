@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/main.dart';
-import 'package:freetitle/views/home/model/category_mission_list_data.dart';
+import 'package:freetitle/model/mission_list_data.dart';
 import 'package:freetitle/views/home/home_app_theme.dart';
 
 class CategoryMissionListView extends StatefulWidget {

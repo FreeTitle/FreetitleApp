@@ -1,5 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:freetitle/model/authentication_bloc/bloc.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer(
@@ -167,7 +169,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Icons.power_settings_new,
                   color: Colors.red,
                 ),
-                onTap: () {},
+                onTap: () {
+                  BlocProvider.of<AuthenticationBloc>(context).dispatch(
+                    LoggedOut(),
+                  );
+                },
               ),
               SizedBox(
                 height: MediaQuery.of(context).padding.bottom,
