@@ -71,3 +71,10 @@
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+.flutter-plugins-dependencies
+flutter/
+ios/Flutter/Flutter.podspec
+ios/Podfile
+ios/Podfile.lock
+pubspec.lock
+pubspec.lock
