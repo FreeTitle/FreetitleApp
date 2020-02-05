@@ -8,42 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:813260600443:android:d07cc7ee6beccbd9",
-        "android_client_info": {
-          "package_name": "com.freetitle.freetitle"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "813260600443-coucrfgdnmuvfsmhrf2j2ejp608mcqpj.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD1s_towNKZEKYHrWO5_mW1B2AUuWuRbz0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "813260600443-coucrfgdnmuvfsmhrf2j2ejp608mcqpj.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "813260600443-d9b7iam2a782ppuf8o0ls2ac5bjjnj1v.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.mobile.freetitle"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:813260600443:android:5115a582a7a3a459465ede",
         "android_client_info": {
           "package_name": "com.mobile.freetitle"

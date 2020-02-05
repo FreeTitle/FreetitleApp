@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
+import 'package:freetitle/views/login/login_screen.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer(
@@ -154,27 +155,61 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Column(
             children: <Widget>[
-              ListTile(
-                title: Text(
-                  'Sign Out',
-                  style: TextStyle(
-                    fontFamily: AppTheme.fontName,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: AppTheme.darkText,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                trailing: Icon(
-                  Icons.power_settings_new,
-                  color: Colors.red,
-                ),
-                onTap: () {
-                  BlocProvider.of<AuthenticationBloc>(context).dispatch(
-                    LoggedOut(),
-                  );
+              BlocBuilder(
+                bloc: BlocProvider.of<AuthenticationBloc>(context),
+                builder: (BuildContext context, AuthenticationState state){
+                  if (state is Uninitialized || state is Unauthenticated){
+                    return ListTile(
+                      title: Text(
+                        'Sign in',
+                        style: TextStyle(
+                          fontFamily: AppTheme.fontName,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: AppTheme.darkText,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      trailing: Icon(
+                        Icons.room,
+                        color: Colors.red,
+                      ),
+                      onTap: () {
+                        Navigator.push<dynamic>(
+                            context,
+                            MaterialPageRoute<dynamic>(
+                              builder: (BuildContext context) => LoginScreen(),
+                            )
+                        );
+                      },
+                    );
+                  }
+                  else{
+                    return ListTile(
+                      title: Text(
+                        'Sign Out',
+                        style: TextStyle(
+                          fontFamily: AppTheme.fontName,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: AppTheme.darkText,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      trailing: Icon(
+                        Icons.power_settings_new,
+                        color: Colors.red,
+                      ),
+                      onTap: () {
+                        BlocProvider.of<AuthenticationBloc>(context).dispatch(
+                          LoggedOut(),
+                        );
+                      },
+                    );
+                  }
                 },
               ),
+
               SizedBox(
                 height: MediaQuery.of(context).padding.bottom,
               )
