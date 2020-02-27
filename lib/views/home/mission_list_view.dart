@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/main.dart';
 import 'package:freetitle/model/mission_list_data.dart';
-import 'package:freetitle/views/home/home_app_theme.dart';
+import 'package:freetitle/app_theme.dart';
 
 class CategoryMissionListView extends StatefulWidget {
   const CategoryMissionListView({Key key, this.callBack}) : super(key: key);
@@ -34,7 +34,7 @@ with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 16),
+      padding: const EdgeInsets.only(top: 0, bottom: 16),
       child: Container(
         height: 134,
         width: double.infinity,
@@ -144,7 +144,7 @@ class CategoryMissionView extends StatelessWidget {
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16,
                                                 letterSpacing: 0.27,
-                                                color: HomeAppTheme.darkerText,
+                                                color: AppTheme.darkerText,
                                               ),
                                             ),
                                           ),
@@ -168,7 +168,7 @@ class CategoryMissionView extends StatelessWidget {
                                                     fontWeight: FontWeight.w200,
                                                     fontSize: 12,
                                                     letterSpacing: 0.27,
-                                                    color: HomeAppTheme.grey,
+                                                    color: AppTheme.grey,
                                                   ),
                                                 ),
                                                 Container(
@@ -183,12 +183,12 @@ class CategoryMissionView extends StatelessWidget {
                                                           FontWeight.w200,
                                                           fontSize: 18,
                                                           letterSpacing: 0.27,
-                                                          color: HomeAppTheme.grey,
+                                                          color: AppTheme.grey,
                                                         ),
                                                       ),
                                                       Icon(
                                                         Icons.star,
-                                                        color: HomeAppTheme.nearlyBlue,
+                                                        color: AppTheme.nearlyBlue,
                                                         size: 20,
                                                       ),
                                                     ],
@@ -213,13 +213,13 @@ class CategoryMissionView extends StatelessWidget {
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 18,
                                                     letterSpacing: 0.27,
-                                                    color: HomeAppTheme
+                                                    color: AppTheme
                                                         .nearlyBlue,
                                                   ),
                                                 ),
                                                 Container(
                                                   decoration: BoxDecoration(
-                                                    color: HomeAppTheme.nearlyBlue,
+                                                    color: AppTheme.nearlyBlue,
                                                     borderRadius:
                                                     const BorderRadius.all(
                                                         Radius.circular(
@@ -232,7 +232,7 @@ class CategoryMissionView extends StatelessWidget {
                                                     child: Icon(
                                                       Icons.add,
                                                       color:
-                                                      HomeAppTheme.nearlyWhite,
+                                                      AppTheme.nearlyWhite,
                                                     ),
                                                   ),
                                                 )
@@ -422,7 +422,7 @@ class PopularMissionView extends StatelessWidget {
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16,
                                                 letterSpacing: 0.27,
-                                                color: HomeAppTheme.darkerText,
+                                                color: AppTheme.darkerText,
                                               ),
                                             ),
                                           ),
@@ -446,7 +446,7 @@ class PopularMissionView extends StatelessWidget {
                                                     fontWeight: FontWeight.w200,
                                                     fontSize: 12,
                                                     letterSpacing: 0.27,
-                                                    color: HomeAppTheme.grey,
+                                                    color: AppTheme.grey,
                                                   ),
                                                 ),
                                                 Container(
@@ -461,12 +461,12 @@ class PopularMissionView extends StatelessWidget {
                                                           FontWeight.w200,
                                                           fontSize: 18,
                                                           letterSpacing: 0.27,
-                                                          color: HomeAppTheme.grey,
+                                                          color: AppTheme.grey,
                                                         ),
                                                       ),
                                                       Icon(
                                                         Icons.star,
-                                                        color: HomeAppTheme.nearlyBlue,
+                                                        color: AppTheme.nearlyBlue,
                                                         size: 20,
                                                       )
                                                     ],
@@ -502,7 +502,7 @@ class PopularMissionView extends StatelessWidget {
                             const BorderRadius.all(Radius.circular(16.0)),
                             boxShadow: <BoxShadow>[
                               BoxShadow(
-                                  color: HomeAppTheme.grey
+                                  color: AppTheme.grey
                                       .withOpacity(0.2),
                                   offset: const Offset(0.0, 0.0),
                                   blurRadius: 6.0),

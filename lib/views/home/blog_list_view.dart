@@ -1,22 +1,41 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:freetitle/model/sharing_list_data.dart';
-import 'package:freetitle/views/home/home_app_theme.dart';
+import 'package:freetitle/app_theme.dart';
 
-class SharingListView extends StatelessWidget {
-  const SharingListView(
+class BlogListView extends StatelessWidget {
+  const BlogListView(
       {Key key,
-        this.sharingData,
+        this.blogData,
         this.animationController,
         this.animation,
         this.callback})
       : super(key: key);
 
   final VoidCallback callback;
-  final SharingListData sharingData;
+  final Map blogData;
   final AnimationController animationController;
   final Animation<dynamic> animation;
+
+  Image getBlogImage(){
+    Image img;
+    if(blogData['article'] != null){
+      for(var block in blogData['article']['blocks']){
+        if(block['type'] == "image"){
+          if(block['data']['file']['url'] != null){
+            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
+            break;
+          }
+        }
+      }
+    }
+    else{
+      img = Image.network(blogData['cover'], fit: BoxFit.cover,);
+    }
+    if(img == null){
+      img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
+    }
+    return img;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +75,10 @@ class SharingListView extends StatelessWidget {
                           children: <Widget>[
                             AspectRatio(
                               aspectRatio: 2,
-                              child: Image.network(
-                                sharingData.imagePath,
-                                fit: BoxFit.cover,
-                              ),
+                              child: getBlogImage(),
                             ),
                             Container(
-                              color: HomeAppTheme.buildLightTheme().backgroundColor,
+                              color: AppTheme.buildLightTheme().backgroundColor,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +92,7 @@ class SharingListView extends StatelessWidget {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
-                                              sharingData.titleTxt,
+                                              blogData['title'],
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w600,
@@ -88,7 +104,7 @@ class SharingListView extends StatelessWidget {
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  sharingData.subTxt,
+                                                  blogData['username'],
                                                   style: TextStyle(
                                                       fontSize: 14,
                                                       color: Colors.grey.withOpacity(0.8)
@@ -97,38 +113,14 @@ class SharingListView extends StatelessWidget {
                                                 const SizedBox(
                                                   width: 4,
                                                 ),
-//                                                Icon(
-//                                                  FontAwesomeIcons.mapMarkerAlt,
-//                                                  size: 12,
-//                                                  color: HomeAppTheme.buildLightTheme().primaryColor,
-//                                                ),
-//                                                Expanded(
-//                                                  child: Text(
-//                                                    '${homeData.viewed.toString()} people viewed',
-//                                                    overflow: TextOverflow.ellipsis,
-//                                                    style: TextStyle(fontSize: 14, color: Colors.grey.withOpacity(0.8)),
-//                                                  ),
-//                                                )
                                               ],
                                             ),
                                             Padding(
                                               padding: const EdgeInsets.only(top: 4),
                                               child: Row(
                                                 children: <Widget>[
-//                                                  SmoothStarRating(
-//                                                    allowHalfRating: true,
-//                                                    starCount: 5,
-//                                                    rating: 4.5,
-//                                                    size: 20,
-//                                                    color: HomeAppTheme
-//                                                        .buildLightTheme()
-//                                                        .primaryColor,
-//                                                    borderColor: HomeAppTheme
-//                                                        .buildLightTheme()
-//                                                        .primaryColor,
-//                                                  ),
                                                   Text(
-                                                    '${sharingData.reviews} Reviews',
+                                                    '99 Reviews',
                                                     style: TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.grey
@@ -147,26 +139,26 @@ class SharingListView extends StatelessWidget {
                             ),
                           ],
                         ),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(32.0),
-                              ),
-                              onTap: (){},
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.favorite_border,
-                                  color: HomeAppTheme.buildLightTheme().primaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+//                        Positioned(
+//                          top: 8,
+//                          right: 8,
+//                          child: Material(
+//                            color: Colors.transparent,
+//                            child: InkWell(
+//                              borderRadius: const BorderRadius.all(
+//                                Radius.circular(32.0),
+//                              ),
+//                              onTap: (){},
+//                              child: Padding(
+//                                padding: const EdgeInsets.all(8.0),
+//                                child: Icon(
+//                                  Icons.favorite_border,
+//                                  color: AppTheme.buildLightTheme().primaryColor,
+//                                ),
+//                              ),
+//                            ),
+//                          ),
+//                        ),
                       ],
                     ),
                   ),

@@ -4,7 +4,7 @@ import 'package:freetitle/views/drawer/home_drawer.dart';
 import 'package:freetitle/views/drawer/help.dart';
 import 'package:freetitle/views/drawer/feedback.dart';
 import 'package:freetitle/views/drawer/invite_friends.dart';
-import 'package:freetitle/views/home/home.dart';
+import 'package:freetitle/views/home/home_screen.dart';
 import 'package:freetitle/app_theme.dart';
 
 class NaviDrawer extends StatefulWidget {

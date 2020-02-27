@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:freetitle/views/chat/chat.dart';
-import 'package:freetitle/views/home/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
@@ -20,8 +19,8 @@ class _IndexPageState extends State<IndexPage> {
   int _pageIndex = 0;
   final List<Widget> _children = [
     NaviDrawer(),
+    Chat(),
     Profile(),
-    Chat()
   ];
 
   onTabTapped(int index) {
@@ -51,7 +50,7 @@ class _IndexPageState extends State<IndexPage> {
                 // sets the background color of the `BottomNavigationBar`
                 canvasColor: Colors.white,
                 // sets the active color of the `BottomNavigationBar` if `Brightness` is light
-                primaryColor: Colors.black,
+                primaryColor: Colors.blue,
 //                textTheme: Theme
 //                    .of(context)
 //                    .textTheme
@@ -63,12 +62,10 @@ class _IndexPageState extends State<IndexPage> {
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
                     title: Text('主页'),
-//                    backgroundColor: Colors.grey,
                   ),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.calendar_today),
-                      title: Text('日历'),
-//                      backgroundColor: Colors.grey
+                      icon: Icon(Icons.chat),
+                      title: Text('消息'),
                   ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.chat),
@@ -83,7 +80,6 @@ class _IndexPageState extends State<IndexPage> {
                   BottomNavigationBarItem(
                     icon: Icon(Icons.school),
                     title: Text('我的'),
-//                    backgroundColor: Colors.grey,
                   ),
                 ],
                 onTap: onTabTapped,
