@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/register/register.dart';
 import 'package:freetitle/model/validators.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;
-  final reference = FirebaseDatabase.instance.reference().child('users');
+  final reference = Firestore.instance.collection('users');
 
   RegisterBloc({@required UserRepository userRepository})
       : assert(userRepository != null),
@@ -78,8 +79,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   ) async* {
     yield RegisterState.loading();
     bool isUsernameUsed = false;
-    await reference.child(username).once().then((DataSnapshot onValue) {
-      if (onValue.value == null) {
+    await reference.where('displayName', isEqualTo: username).getDocuments().then((user) {
+      if (user.documents.isEmpty) {
         isUsernameUsed = false;
       } else {
         isUsernameUsed = true;
@@ -91,13 +92,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       } else{
         await _userRepository.signUp(
           email: email,
+          username: username,
           password: password,
         );
-        await reference.child(username).set({
-          'username': username,
-          'password': password,
-          'email': email,
-        });
         yield RegisterState.success();
       }
 

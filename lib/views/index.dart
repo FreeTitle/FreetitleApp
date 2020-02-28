@@ -4,7 +4,9 @@ import 'package:freetitle/views/chat/chat.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
+import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/drawer/navi_drawer.dart';
+import 'package:freetitle/views/home/home_screen.dart';
 
 
 class IndexPage extends StatefulWidget {
@@ -50,11 +52,7 @@ class _IndexPageState extends State<IndexPage> {
                 // sets the background color of the `BottomNavigationBar`
                 canvasColor: Colors.white,
                 // sets the active color of the `BottomNavigationBar` if `Brightness` is light
-                primaryColor: Colors.blue,
-//                textTheme: Theme
-//                    .of(context)
-//                    .textTheme
-//                    .copyWith(caption: new TextStyle(color: Colors.yellow))
+                primaryColor: AppTheme.primary,
             ),
               child: new BottomNavigationBar(
                 currentIndex: _pageIndex,

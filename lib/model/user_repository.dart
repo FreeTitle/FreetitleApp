@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -22,6 +23,12 @@ class UserRepository {
       idToken: googleAuth.idToken,
     );
     await _firebaseAuth.signInWithCredential(credential);
+    FirebaseUser user = await _firebaseAuth.currentUser();
+    Firestore.instance.collection('users').document(user.uid).setData({
+      'displayName': user.displayName,
+      'email': user.email,
+      'avatarUrl': user.photoUrl,
+    });
     return _firebaseAuth.currentUser();
   }
 
@@ -32,11 +39,18 @@ class UserRepository {
     );
   }
 
-  Future<void> signUp({String email, String password}) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
+  Future<void> signUp({String email, String username, String password}) async {
+    await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+    FirebaseUser user = await _firebaseAuth.currentUser();
+    Firestore.instance.collection('users').document(user.uid).setData({
+      'displayName': username,
+      'email': email,
+      'avatarUrl': 'https://firebasestorage.googleapis.com/v0/b/freetitle.appspot.com/o/default-user.jpg?alt=media&token=63dfd982-e9ca-4a3e-a432-d8c193de459a',
+    });
+    return;
   }
 
   Future<void> signOut() async {

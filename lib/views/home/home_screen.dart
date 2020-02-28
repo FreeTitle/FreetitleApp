@@ -70,12 +70,12 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                             ],
                             backgroundColor: Colors.white,
                             bottom: TabBar(
-                              labelColor: Colors.black,
+                              labelColor: AppTheme.primary,
                               unselectedLabelColor: Colors.grey,
-                              indicatorColor: Colors.black,
+                              indicatorColor: AppTheme.primary,
                               tabs: <Widget>[
-                                Tab(text: 'Blogs'),
-                                Tab(text: 'Mission'),
+                                Tab(child: Text('Blogs')),
+                                Tab(child: Text('Mission')),
                               ],
                             ),
                           ),
@@ -83,11 +83,11 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                           TabBarView(
                             children: <Widget>[
                               StreamBuilder<QuerySnapshot>(
+                                key: PageStorageKey('Blogs'),
                                 stream: Firestore.instance.collection('blogs').snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                   if (snapshot.hasError)
-                                    return new Text('Error: ${snapshot
-                                        .error}');
+                                    return new Text('Error: ${snapshot.error}');
                                   switch (snapshot.connectionState) {
                                     case ConnectionState.waiting:
                                       return new Text('Loading');
@@ -99,35 +99,34 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                           blogList.add(blog.data)
                                         });
                                         return LiquidPullToRefresh(
+                                          color: AppTheme.primary,
                                           showChildOpacityTransition: false,
                                           onRefresh: () async {
                                             await Future.delayed(
                                                 Duration(milliseconds: 500));
+                                            Firestore.instance.collection('blogs').getDocuments().then((snap)=>{
+                                              snap.documents.forEach((blog) => {
+                                                blogList.add(blog.data)
+                                              }),
+                                            });
                                             //TODO Refresh
                                           },
                                           child: ListView.builder(
                                             itemCount: blogList.length,
-                                            padding: const EdgeInsets
-                                                .only(
-                                                top: 8),
-                                            scrollDirection: Axis
-                                                .vertical,
+                                            padding: const EdgeInsets.only(top: 8),
+                                            scrollDirection: Axis.vertical,
                                             itemBuilder: (
                                                 BuildContext context,
                                                 int index) {
                                               final int count = blogList.length;
-                                              final Animation<
-                                                  double> animation = Tween<
-                                                  double>(
+                                              final Animation<double> animation = Tween<double>(
                                                   begin: 0.0, end: 1.0)
                                                   .animate(
                                                   CurvedAnimation(
                                                       parent: animationController,
                                                       curve: Interval(
-                                                          (1 / count) *
-                                                              index, 1.0,
-                                                          curve: Curves
-                                                              .fastOutSlowIn
+                                                          (1 / count) * index, 1.0,
+                                                          curve: Curves.fastOutSlowIn
                                                       )
                                                   )
                                               );

@@ -5,6 +5,7 @@ import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/scheduler.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer(
@@ -72,31 +73,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
     ];
   }
 
-  StreamBuilder<DocumentSnapshot> userSnapshotBuilder(){
+  Widget userSnapshotBuilder(){
     String userName = "FreeUser";
     String avatarURL = "";
-    return StreamBuilder<DocumentSnapshot>(
-      stream: Firestore.instance.collection('users').document(uid).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-        if (snapshot.hasError)
-          return new Text('Error: ${snapshot
-              .error}');
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return new Text('Loading');
-          default:
-            if (snapshot.hasData) {
-              final userData = snapshot.data;
-              userName = userData['displayName'];
-              avatarURL = userData['avatarUrl'];
-              return userWidget(userName, avatarURL);
-            }
-            else{
-              return userWidget("FreeUser", "");
-            }
-        }
-      }
-    );
+    return userWidget("FreeUser", "");
   }
 
   Widget userWidget(userName, avatarURL){

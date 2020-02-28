@@ -37,6 +37,16 @@ class BlogDetail extends StatefulWidget{
 
 class _BlogDetail extends State<BlogDetail> {
 
+  @override
+  void initState(){
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   // TODO 插入link的处理
   List<Widget> processBlogContent(){
     Map blog = widget.blogData;
@@ -213,7 +223,7 @@ class _BlogDetail extends State<BlogDetail> {
             child: Icon(Icons.comment),
           )
         ],
-        backgroundColor: AppTheme.dark_grey,
+        backgroundColor: AppTheme.primary,
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
