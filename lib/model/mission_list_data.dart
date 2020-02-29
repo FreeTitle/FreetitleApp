@@ -17,7 +17,7 @@ class Mission {
   String description;
   List<String> photoURLs;
 
-  static List<Mission> categoryMissionList = <Mission>[
+  static List<Mission> popularMissionList = <Mission>[
     Mission(
       imagePath: 'assets/mission/interFace1.png',
       title: 'Film Project',
@@ -52,7 +52,7 @@ class Mission {
     ),
   ];
 
-  static List<Mission> popularMissionList = <Mission>[
+  static List<Mission> latestMissionList = <Mission>[
     Mission(
       imagePath: 'assets/mission/interFace3.png',
       title: 'A Project',

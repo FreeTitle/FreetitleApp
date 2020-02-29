@@ -4,8 +4,8 @@ import 'package:freetitle/main.dart';
 class AppTheme {
   AppTheme._();
 
-  static const Color primary = Color(0xFF303F9F);
-  static const Color secondary = Color(0xFFEC407A);
+  static const Color primary = Color(0xFF00BCD4);
+  static const Color secondary = Color(0xFFFF8F00);
   static const Color notWhite = Color(0xFFEDF0F2);
   static const Color nearlyWhite = Color(0xFFFEFEFE);
   static const Color white = Color(0xFFFFFFFF);
@@ -88,6 +88,14 @@ class AppTheme {
     fontSize: 12,
     letterSpacing: 0.2,
     color: lightText, // was lightText
+  );
+
+  static const TextStyle link = TextStyle(
+    fontFamily: fontName,
+    fontWeight: FontWeight.w400,
+    fontSize: 16,
+    letterSpacing: 0.2,
+    color: nearlyBlue
   );
 
   static TextTheme _buildTextTheme(TextTheme base) {

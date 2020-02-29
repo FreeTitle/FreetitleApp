@@ -84,7 +84,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                             children: <Widget>[
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Blogs'),
-                                stream: Firestore.instance.collection('blogs').snapshots(),
+                                stream: Firestore.instance.collection('blogs').orderBy('time', descending: true).snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                   if (snapshot.hasError)
                                     return new Text('Error: ${snapshot.error}');

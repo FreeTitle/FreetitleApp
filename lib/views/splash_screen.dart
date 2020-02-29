@@ -21,6 +21,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     return IndexPage();
   }
 
+  // TODO 修改加载页面
   @override
   Widget build(BuildContext context) {
     return SplashScreen(
@@ -30,7 +31,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
           '浮樂态度 FreeTitle\n艺术留学生的App',
           style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
         ),
-        image: Image.asset('assets/icons/icon.png'),
+        image: Image.asset('assets/logo.png'),
         loadingText: Text(
           "加载中...",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -39,7 +40,6 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
         styleTextUnderTheLoader: new TextStyle(),
         photoSize: 100.0,
         onClick: () {
-          //TODO
           //广告区
         },
         loaderColor: Colors.red);

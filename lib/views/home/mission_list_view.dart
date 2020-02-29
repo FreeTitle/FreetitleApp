@@ -260,7 +260,7 @@ class PopularMissionView extends StatelessWidget {
                               borderRadius:
                               const BorderRadius.all(Radius.circular(16.0)),
                               child: AspectRatio(
-                                  aspectRatio: 1.0,
+                                  aspectRatio: 2.0,
                                   child: Image.asset(mission.imagePath)),
                             )
                           ],
