@@ -21,7 +21,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
   AnimationController animationController;
   List<Map> blogList;
   final ScrollController _scrollController = ScrollController();
-  CategoryType categoryType = CategoryType.film;
+//  CategoryType categoryType = CategoryType.film;
 
   @override
   void initState(){
@@ -109,7 +109,6 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                                 blogList.add(blog.data)
                                               }),
                                             });
-                                            //TODO Refresh
                                           },
                                           child: ListView.builder(
                                             itemCount: blogList.length,
@@ -162,9 +161,56 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                             height: MediaQuery.of(context).size.height,
                                             child: Column(
                                               children: <Widget>[
-                                                getCategoryMissionUI(),
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
+                                                      child: Text(
+                                                        'Popular Mission',
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: 22,
+                                                          letterSpacing: 0.27,
+                                                          color: AppTheme.darkerText,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    PopularMissionListView(
+                                                      callBack: () {
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
                                                 Flexible(
-                                                  child: getPopularMissionUI(),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          'Latest Mission',
+                                                          textAlign: TextAlign.left,
+                                                          style: TextStyle(
+                                                            fontWeight: FontWeight.w600,
+                                                            fontSize: 22,
+                                                            letterSpacing: 0.27,
+                                                            color: AppTheme.darkerText,
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: LatestMissionListView(
+                                                            callBack: (){
+
+                                                            },
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
                                                 )
                                               ],
                                             ),
@@ -181,137 +227,6 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                   ),
                 )
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  Widget getCategoryMissionUI(){
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
-          child: Text(
-            'Category',
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 22,
-              letterSpacing: 0.27,
-              color: AppTheme.darkerText,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: Row(
-            children: <Widget>[
-              getButtonUI(CategoryType.film, categoryType == CategoryType.film),
-              const SizedBox(
-                width: 16,
-              ),
-              getButtonUI(
-                  CategoryType.theater, categoryType == CategoryType.theater),
-              const SizedBox(
-                width: 16,
-              ),
-              getButtonUI(
-                  CategoryType.photography, categoryType == CategoryType.photography),
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        CategoryMissionListView(
-          callBack: () {
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget getPopularMissionUI(){
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Popular Mission',
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 22,
-              letterSpacing: 0.27,
-              color: AppTheme.darkerText,
-            ),
-          ),
-          Flexible(
-            child: PopularMissionListView(
-              callBack: (){
-
-              },
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget getButtonUI(CategoryType categoryTypeData, bool isSelected){
-    String txt = '';
-    if (CategoryType.film == categoryTypeData) {
-      txt = '电影';
-    } else if (CategoryType.theater == categoryTypeData) {
-      txt = '戏剧';
-    } else if (CategoryType.photography == categoryTypeData) {
-      txt = '视觉艺术';
-    }
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-            color: isSelected
-                ? AppTheme.nearlyBlue
-                : AppTheme.nearlyWhite,
-            borderRadius: const BorderRadius.all(Radius.circular(24.0)),
-            border: Border.all(color: AppTheme.nearlyBlue)),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            splashColor: Colors.white24,
-            borderRadius: const BorderRadius.all(Radius.circular(24.0)),
-            onTap: () {
-              setState(() {
-                categoryType = categoryTypeData;
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  top: 12, bottom: 12, left: 18, right: 18),
-              child: Center(
-                child: Text(
-                  txt,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                    letterSpacing: 0.27,
-                    color: isSelected
-                        ? AppTheme.nearlyWhite
-                        : AppTheme.nearlyBlue,
-                  ),
-                ),
-              ),
-            ),
           ),
         ),
       ),
@@ -336,12 +251,4 @@ class _Home extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-}
-
-
-
-enum CategoryType {
-  film,
-  theater,
-  photography,
 }

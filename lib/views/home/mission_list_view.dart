@@ -3,14 +3,14 @@ import 'package:freetitle/main.dart';
 import 'package:freetitle/model/mission_list_data.dart';
 import 'package:freetitle/app_theme.dart';
 
-class CategoryMissionListView extends StatefulWidget {
-  const CategoryMissionListView({Key key, this.callBack}) : super(key: key);
+class PopularMissionListView extends StatefulWidget {
+  const PopularMissionListView({Key key, this.callBack}) : super(key: key);
   final Function callBack;
   @override
-  _CategoryMissionListViewState createState() => _CategoryMissionListViewState();
+  _PopularMissionListViewState createState() => _PopularMissionListViewState();
 }
 
-class _CategoryMissionListViewState extends State<CategoryMissionListView>
+class _PopularMissionListViewState extends State<PopularMissionListView>
 with TickerProviderStateMixin {
   AnimationController animationController;
   @override
@@ -48,12 +48,12 @@ with TickerProviderStateMixin {
               return ListView.builder(
                 padding: const EdgeInsets.only(
                     top: 0, bottom: 0, right: 16, left: 16),
-                itemCount: Mission.categoryMissionList.length,
+                itemCount: Mission.popularMissionList.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (BuildContext context, int index){
-                  final int count = Mission.categoryMissionList.length > 10
+                  final int count = Mission.popularMissionList.length > 10
                       ? 10
-                      : Mission.categoryMissionList.length;
+                      : Mission.popularMissionList.length;
                   final Animation<double> animation =
                   Tween<double>(begin: 0.0, end: 1.0).animate(
                       CurvedAnimation(
@@ -62,8 +62,8 @@ with TickerProviderStateMixin {
                               curve: Curves.fastOutSlowIn)));
                   animationController.forward();
 
-                  return CategoryMissionView(
-                      mission: Mission.categoryMissionList[index],
+                  return PopularMissionView(
+                      mission: Mission.popularMissionList[index],
                       animation: animation,
                       animationController: animationController,
                       callback: () {
@@ -80,8 +80,8 @@ with TickerProviderStateMixin {
   }
 }
 
-class CategoryMissionView extends StatelessWidget {
-  const CategoryMissionView(
+class PopularMissionView extends StatelessWidget {
+  const PopularMissionView(
       {Key key,
         this.mission,
         this.animationController,
@@ -278,17 +278,17 @@ class CategoryMissionView extends StatelessWidget {
   }
 }
 
-// List View showing popular missions
-class PopularMissionListView extends StatefulWidget {
-  const PopularMissionListView({Key key, this.callBack}) : super(key: key);
+// List View showing latest missions
+class LatestMissionListView extends StatefulWidget {
+  const LatestMissionListView({Key key, this.callBack}) : super(key: key);
 
   // callback passed downwards for handling tapping
   final Function callBack;
   @override
-  _PopularMissionListViewState createState() => _PopularMissionListViewState();
+  _LatestMissionListViewState createState() => _LatestMissionListViewState();
 }
 
-class _PopularMissionListViewState extends State<PopularMissionListView>
+class _LatestMissionListViewState extends State<LatestMissionListView>
     with TickerProviderStateMixin {
   AnimationController animationController;
   @override
@@ -325,9 +325,9 @@ class _PopularMissionListViewState extends State<PopularMissionListView>
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               children: List<Widget>.generate(
-                  Mission.popularMissionList.length,
+                  Mission.latestMissionList.length,
                   (int index) {
-                    final int count = Mission.popularMissionList.length;
+                    final int count = Mission.latestMissionList.length;
                     final Animation<double> animation =
                         Tween<double>(begin: 0.0, end: 1.0).animate(
                         CurvedAnimation(
@@ -337,11 +337,11 @@ class _PopularMissionListViewState extends State<PopularMissionListView>
                         ),
                     );
                     animationController.forward();
-                    return PopularMissionView(
+                    return LatestMissionView(
                       callback: () {
                         widget.callBack();
                       },
-                      mission: Mission.popularMissionList[index],
+                      mission: Mission.latestMissionList[index],
                       animation: animation,
                       animationController: animationController,
                     );
@@ -362,8 +362,8 @@ class _PopularMissionListViewState extends State<PopularMissionListView>
 }
 
 
-class PopularMissionView extends StatelessWidget {
-  const PopularMissionView(
+class LatestMissionView extends StatelessWidget {
+  const LatestMissionView(
       {Key key,
         this.mission,
         this.animationController,
