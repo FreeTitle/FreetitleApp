@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/material.dart';
+import 'package:freetitle/app_theme.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
@@ -67,7 +69,64 @@ class UserRepository {
 
   Future<FirebaseUser> getUser() async {
     return (await _firebaseAuth.currentUser());
+  }
 
-    //TODO return a user Model here
+  Widget getUserWidget(uid) {
+    return StreamBuilder<DocumentSnapshot> (
+      stream: Firestore.instance.collection('users').document(uid).snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+        if (snapshot.hasError)
+          return new Text('Error: ${snapshot
+              .error}');
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return new Text('Loading');
+          default:
+            if (snapshot.hasData) {
+              final userData = snapshot.data;
+              String userName = userData['displayName'];
+              String avatarURL = userData['avatarUrl'];
+              Image avatar = Image.network(avatarURL);
+              return Padding(
+                padding: EdgeInsets.only(top: 8.0, left: 24.0, right: 24.0),
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                              color: AppTheme.grey.withOpacity(0.6),
+                              offset: const Offset(2.0, 4.0),
+                              blurRadius: 2),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(60.0)),
+                        child: avatar,
+                      ),
+                    ),
+                    SizedBox(width: 20,),
+                    Text(
+                      userName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.grey,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            else{
+              return Text('Author');
+            }
+        }
+      },
+    );
   }
 }
