@@ -7,7 +7,8 @@ import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:flutter/material.dart';
-
+import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/views/comment/comment.dart';
 
 class _LinkTextSpan extends TextSpan {
 
@@ -37,8 +38,10 @@ class BlogDetail extends StatefulWidget{
 
 class _BlogDetail extends State<BlogDetail> {
 
+  UserRepository _userRepository;
   @override
   void initState(){
+    _userRepository = new UserRepository();
     super.initState();
   }
 
@@ -47,7 +50,16 @@ class _BlogDetail extends State<BlogDetail> {
     super.dispose();
   }
 
-  // TODO 插入link的处理
+  List<String> getCommentIDs(){
+    List<String> commentIDs = new List();
+    if (widget.blogData['comments'] != null){
+      for(String commentID in widget.blogData['comments']){
+        commentIDs.add(commentID);
+      }
+    }
+    return commentIDs;
+  }
+
   List<Widget> processBlogContent(){
     Map blog = widget.blogData;
     List<Widget> blogWidget = new List<Widget>();
@@ -58,62 +70,7 @@ class _BlogDetail extends State<BlogDetail> {
     // Add title
     blogWidget.add(title);
     // Add author
-    Widget author = StreamBuilder<DocumentSnapshot> (
-      stream: Firestore.instance.collection('users').document(blog['user']).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-        if (snapshot.hasError)
-          return new Text('Error: ${snapshot
-              .error}');
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return new Text('Loading');
-          default:
-            if (snapshot.hasData) {
-              final userData = snapshot.data;
-              String userName = userData['displayName'];
-              String avatarURL = userData['avatarUrl'];
-              Image avatar = Image.network(avatarURL);
-              return Padding(
-                padding: EdgeInsets.only(top: 8.0, left: 24.0, right: 24.0),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                              color: AppTheme.grey.withOpacity(0.6),
-                              offset: const Offset(2.0, 4.0),
-                              blurRadius: 2),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius:
-                        const BorderRadius.all(Radius.circular(60.0)),
-                        child: avatar,
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-                    Text(
-                      userName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.grey,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            else{
-              return Text('Author');
-            }
-        }
-      },
-    );
+    Widget author = _userRepository.getUserWidget(blog['user']);
     blogWidget.add(author);
     // Add time
     var date = blog['time'].toDate();
@@ -208,6 +165,43 @@ class _BlogDetail extends State<BlogDetail> {
         }
       }
     }
+
+    blogWidget.add(
+        Row(
+            children: <Widget>[
+              Expanded(
+                  child: Divider(color: AppTheme.dark_grey,)
+              ),
+
+              Text("Comments", style: AppTheme.title,),
+
+              Expanded(
+                  child: Divider(color: AppTheme.dark_grey,)
+              ),
+            ]
+        )
+    );
+
+//    if (blog['comments'] != null){
+//      List<String> commentIDs = new List();
+//      for(String commentID in blog['comments']){
+//        commentIDs.add(commentID);
+//      }
+//      if (commentIDs.isNotEmpty){
+//        blogWidget.add(CommentBottom(commentIDs: commentIDs,));
+//      }
+//    }
+    List<String> commentIDs = getCommentIDs();
+    if (commentIDs.isNotEmpty){
+      blogWidget.add(CommentBottom(commentIDs: commentIDs,));
+    }
+
+    blogWidget.add(
+      SizedBox(
+        height: 36,
+      )
+    );
+
     return blogWidget;
   }
 
@@ -220,7 +214,17 @@ class _BlogDetail extends State<BlogDetail> {
         actions: <Widget>[
           Padding(
             padding: EdgeInsets.only(right: 20),
-            child: Icon(Icons.comment),
+            child: IconButton(
+              icon: Icon(Icons.comment),
+              onPressed: (){
+                Navigator.push<dynamic>(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => CommentPage(commentIDs: getCommentIDs(),),
+                  )
+                );
+              },
+            ),
           )
         ],
         backgroundColor: AppTheme.primary,
