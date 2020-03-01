@@ -9,6 +9,8 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/comment/comment.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:freetitle/views/comment/commentInput.dart';
 
 class _LinkTextSpan extends TextSpan {
 
@@ -24,10 +26,12 @@ class _LinkTextSpan extends TextSpan {
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
       {Key key,
-        this.blogData,
+        this.blogID,
+//        this.blogData,
       })
       : super(key: key);
-  final Map blogData;
+  final String blogID;
+//  final Map blogData;
 
   @override
   State<StatefulWidget> createState() {
@@ -50,19 +54,22 @@ class _BlogDetail extends State<BlogDetail> {
     super.dispose();
   }
 
-  List<String> getCommentIDs(){
+  List<String> getCommentIDs(blogData){
     List<String> commentIDs = new List();
-    if (widget.blogData['comments'] != null){
-      for(String commentID in widget.blogData['comments']){
+    if (blogData['comments'] != null){
+      for(String commentID in blogData['comments']){
         commentIDs.add(commentID);
       }
     }
     return commentIDs;
   }
 
-  List<Widget> processBlogContent(){
-    Map blog = widget.blogData;
+  List<Widget> processBlogContent(blog){
     List<Widget> blogWidget = new List<Widget>();
+    if(blog == null){
+      blogWidget.add(Text('Loading blog'));
+      return blogWidget;
+    }
     Padding title = new Padding(
       padding: EdgeInsets.only(top: 8.0, left: 24.0, right: 24.0),
       child: Text(blog['title'], style: AppTheme.headline,),
@@ -191,9 +198,9 @@ class _BlogDetail extends State<BlogDetail> {
 //        blogWidget.add(CommentBottom(commentIDs: commentIDs,));
 //      }
 //    }
-    List<String> commentIDs = getCommentIDs();
+    List<String> commentIDs = getCommentIDs(blog);
     if (commentIDs.isNotEmpty){
-      blogWidget.add(CommentBottom(commentIDs: commentIDs,));
+      blogWidget.add(CommentBottom(commentIDs: commentIDs, blogID: widget.blogID,));
     }
 
     blogWidget.add(
@@ -207,35 +214,101 @@ class _BlogDetail extends State<BlogDetail> {
 
   @override
   Widget build(BuildContext context) {
-    Map blog = widget.blogData;
+    Map blog;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-    return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: IconButton(
-              icon: Icon(Icons.comment),
-              onPressed: (){
-                Navigator.push<dynamic>(
-                  context,
-                  MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) => CommentPage(commentIDs: getCommentIDs(),),
-                  )
-                );
-              },
-            ),
-          )
-        ],
-        backgroundColor: AppTheme.primary,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children:
-              processBlogContent(),
-        ),
-      ),
+    return StreamBuilder<DocumentSnapshot>(
+      stream: Firestore.instance.collection('blogs').document(widget.blogID).snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+        if (snapshot.hasError)
+          return new Text('Error: ${snapshot.error}');
+        switch(snapshot.connectionState){
+          case ConnectionState.waiting:
+            return new Text('Loading');
+          default:
+            if(snapshot.data.data != null){
+              blog = snapshot.data.data;
+              return Scaffold(
+                  appBar: AppBar(
+                    actions: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: IconButton(
+                          icon: Icon(Icons.comment),
+                          onPressed: (){
+                            Navigator.push<dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) => CommentPage(commentIDs: getCommentIDs(blog), blogID: widget.blogID,),
+                              )
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                    backgroundColor: AppTheme.primary,
+                    iconTheme: IconThemeData(color: Colors.white),
+                  ),
+                  floatingActionButton: SpeedDial(
+                    marginRight: 18,
+                    marginBottom: 20,
+                    animatedIcon: AnimatedIcons.menu_close,
+                    animatedIconTheme: IconThemeData(size: 22.0),
+                    closeManually: false,
+                    curve: Curves.bounceIn,
+                    overlayColor: Colors.black,
+                    overlayOpacity: 0.5,
+                    tooltip: 'Speed Dial',
+                    heroTag: 'speed-dial-hero-tag',
+                    backgroundColor: AppTheme.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 8.0,
+                    shape: CircleBorder(),
+                    children: [
+                      SpeedDialChild(
+                        //TODO 点赞 to be implemented
+                        child: Icon(Icons.favorite),
+                        backgroundColor: AppTheme.secondary,
+                        label: "点赞",
+                        labelStyle: AppTheme.body1,
+                        onTap: () => print('点赞'),
+                      ),
+                      SpeedDialChild(
+                        child: Icon(Icons.comment),
+                        backgroundColor: AppTheme.secondary,
+                        label: "评论",
+                        labelStyle: AppTheme.body1,
+                        onTap: () {
+                          Navigator.push<dynamic>(
+                            context,
+                            MaterialPageRoute<dynamic>(
+                              builder: (BuildContext context) => CommentInputPage(blogID: widget.blogID, parentLevel: 0, parentID: widget.blogID, parentType: 'blog',)
+                            )
+                          );
+                        },
+                      ),
+                      SpeedDialChild(
+                      //TODO 分享 to be implemented
+                        child: Icon(Icons.share),
+                        backgroundColor: AppTheme.secondary,
+                        label: "分享",
+                        labelStyle: AppTheme.body1,
+                        onTap: () => print('分享'),
+                      )
+                    ],
+                  ),
+                body: SingleChildScrollView(
+                  child: Column(
+                    children:
+                      processBlogContent(blog),
+                  ),
+                )
+              );
+            }
+            else{
+              return Text("Loading blog");
+            }
+        }
+      },
     );
   }
 }

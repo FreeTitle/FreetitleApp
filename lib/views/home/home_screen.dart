@@ -6,6 +6,7 @@ import 'package:freetitle/views/home/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freetitle/views/detail/blogDetail.dart';
+import 'package:tuple/tuple.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -19,7 +20,7 @@ class Home extends StatefulWidget {
 class _Home extends State<Home> with TickerProviderStateMixin {
 
   AnimationController animationController;
-  List<Map> blogList;
+  List blogList;
   final ScrollController _scrollController = ScrollController();
 //  CategoryType categoryType = CategoryType.film;
 
@@ -93,10 +94,10 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                       return new Text('Loading');
                                     default:
                                       if (snapshot.hasData) {
-                                        blogList = new List<Map>();
+                                        blogList = new List();
                                         blogList.clear();
                                         snapshot.data.documents.forEach((blog) => {
-                                          blogList.add(blog.data)
+                                          blogList.add(Tuple2(blog.documentID, blog.data))
                                         });
                                         return LiquidPullToRefresh(
                                           color: AppTheme.primary,
@@ -104,10 +105,14 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                           onRefresh: () async {
                                             await Future.delayed(
                                                 Duration(milliseconds: 500));
-                                            Firestore.instance.collection('blogs').getDocuments().then((snap)=>{
+                                            List newList = List();
+                                            await Firestore.instance.collection('blogs').getDocuments().then((snap)=>{
                                               snap.documents.forEach((blog) => {
-                                                blogList.add(blog.data)
+                                                newList.add(Tuple2(blog.documentID, blog.data))
                                               }),
+                                            });
+                                            setState(() {
+                                              blogList = newList;
                                             });
                                           },
                                           child: ListView.builder(
@@ -135,7 +140,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                                   callback: () {
                                                     getBlog(blogList[index]);
                                                   },
-                                                  blogData: blogList[index],
+                                                  blogData: blogList[index].item2,
                                                   animation: animation,
                                                   animationController: animationController
                                               );
@@ -242,11 +247,11 @@ class _Home extends State<Home> with TickerProviderStateMixin {
 //    );
 //  }
 
-  void getBlog(blogData){
+  void getBlog(blog){
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) => BlogDetail(blogData: blogData,),
+        builder: (BuildContext context) => BlogDetail(blogID: blog.item1,),
       )
     );
   }
