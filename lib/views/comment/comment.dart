@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/views/comment/commentInput.dart';
 
 class CommentBottom extends StatefulWidget {
 
   const CommentBottom(
       {Key key,
         this.commentIDs,
+        this.blogID,
       }): super(key: key);
 
+  final String blogID;
   final List<String> commentIDs;
 
   @override
@@ -25,7 +28,7 @@ class _CommentBottom extends State<CommentBottom>{
     // TODO: implement build
     List commentIDs = widget.commentIDs.reversed.toList();
     return Container(
-      height: commentIDs.length*150.0,
+      height: commentIDs.length*200.0,
       child: ListView.builder(
           itemCount: commentIDs.length,
           padding: const EdgeInsets.only(top: 8),
@@ -40,13 +43,15 @@ class _CommentBottom extends State<CommentBottom>{
                   case ConnectionState.waiting:
                     return new Text('Loading');
                   default:
-                    if(snapshot.hasData){
+                    if(snapshot.data.data != null){
                       final comment = snapshot.data.data;
                       if(comment['level'] == 1)
-                        return CommentBox(commentData: comment, isSubCommentPage: false,);
+                        return CommentBox(commentData: comment, isSubCommentPage: false, blogID: widget.blogID, commentID: commentIDs[index],);
                     }
                     else{
-                      return new Text("Something is wrong with firebase");
+                      return SizedBox(
+
+                      );
                     }
                 }
               },
@@ -62,13 +67,22 @@ class CommentBox extends StatelessWidget {
   {Key key,
     this.commentData,
     this.isSubCommentPage,
+    this.blogID,
+    this.commentID,
   }) : super(key: key);
 
   final Map commentData;
   final bool isSubCommentPage;
+  final String blogID;
+  final String commentID;
 
   Widget getContent(){
     final Map content = commentData['content'];
+    if (content == null){
+      return SizedBox(
+
+      );
+    }
     Image img;
     if (content['image'] != null){
       print(content['image']);
@@ -93,6 +107,7 @@ class CommentBox extends StatelessWidget {
   }
 
   Widget getSubComment(BuildContext context){
+    // Subcomment button only appears when it's not in subcomment page
     if(commentData['replies'].length != 0 && commentData['level'] == 1 && !isSubCommentPage){
       return InkWell(
         child: Text("共${commentData['replies'].length}条回复>>", style: AppTheme.link,),
@@ -101,7 +116,7 @@ class CommentBox extends StatelessWidget {
           Navigator.push<dynamic>(
               context,
               MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => SubCommentPage(commentData: commentData,),
+                builder: (BuildContext context) => SubCommentPage(commentData: commentData, blogID: blogID, commentID: commentID,),
               )
           );
         },
@@ -178,7 +193,17 @@ class CommentBox extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.comment),
                       onPressed: () {
-
+                        Navigator.push<dynamic>(
+                          context,
+                          MaterialPageRoute<dynamic>(
+                            builder: (BuildContext context) {
+                              if (commentData['level']  == 1)
+                                return CommentInputPage(blogID: blogID, parentLevel: commentData['level'], parentID: commentID, parentType: 'comment', targetID: commentID,);
+                              else
+                                return CommentInputPage(blogID: blogID, parentLevel: commentData['level'], parentID: commentData['parentID'], parentType: 'comment', targetID: commentID,);
+                            }
+                          )
+                        );
                       },
                     ),
                   ],
@@ -212,9 +237,11 @@ class CommentPage extends StatefulWidget{
   const CommentPage(
       {Key key,
         this.commentIDs,
+        this.blogID,
       }): super(key: key);
 
   final List<String> commentIDs;
+  final String blogID;
 
   @override
   _CommentPage createState() => _CommentPage();
@@ -232,7 +259,7 @@ class _CommentPage extends State<CommentPage>{
           backgroundColor: AppTheme.primary,
         ),
         body: Container(
-          height: commentIDs.length*150.0,
+          height: commentIDs.length*200.0,
           color: AppTheme.nearlyWhite,
           child: ListView.builder(
               itemCount: commentIDs.length,
@@ -248,13 +275,15 @@ class _CommentPage extends State<CommentPage>{
                       case ConnectionState.waiting:
                         return new Text('Loading');
                       default:
-                        if(snapshot.hasData){
+                        if(snapshot.data.data != null){
                           final comment = snapshot.data.data;
                           if(comment['level'] == 1)
-                            return CommentBox(commentData: comment, isSubCommentPage: false,);
+                            return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], blogID: widget.blogID);
                         }
                         else{
-                          return new Text("Something is wrong with firebase");
+                          return SizedBox(
+
+                          );
                         }
                     }
                   },
@@ -268,9 +297,13 @@ class _CommentPage extends State<CommentPage>{
 class SubCommentPage extends StatefulWidget {
   const SubCommentPage(
   {Key key,
-    this.commentData
+    this.commentData,
+    this.commentID,
+    this.blogID,
   }) : super(key: key);
 
+  final String commentID;
+  final String blogID;
   final commentData;
 
   @override
@@ -292,7 +325,8 @@ class _SubCommentPage extends State<SubCommentPage>{
       body: Container(
         child: Column(
           children: <Widget>[
-            CommentBox(commentData: widget.commentData, isSubCommentPage: true,),
+            // Level 1 comment
+            CommentBox(commentData: widget.commentData, isSubCommentPage: true, commentID: widget.commentID, blogID: widget.blogID,),
             Container(
               height: subCommentIDs.length*150.0,
               color: AppTheme.nearlyWhite,
@@ -313,7 +347,7 @@ class _SubCommentPage extends State<SubCommentPage>{
                               final subcomment = snapshot.data.data;
                               return Padding(
                                   padding: EdgeInsets.only(left: 16, right: 16),
-                                  child: CommentBox(commentData: subcomment, isSubCommentPage: true,)
+                                  child: CommentBox(commentData: subcomment, isSubCommentPage: true, commentID: subCommentIDs[index], blogID: widget.blogID,)
                               );
                             }
                             else{
