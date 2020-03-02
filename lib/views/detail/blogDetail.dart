@@ -296,6 +296,7 @@ class _BlogDetail extends State<BlogDetail> {
                       )
                     ],
                   ),
+                  resizeToAvoidBottomPadding: false,
                 body: SingleChildScrollView(
                   child: Column(
                     children:

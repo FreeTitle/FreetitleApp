@@ -23,13 +23,34 @@ class CommentBottom extends StatefulWidget {
 
 class _CommentBottom extends State<CommentBottom>{
 
+  ScrollController _scrollController;
+  UserRepository _userRepository;
+  String userID;
+
+  @override
+  void initState(){
+    _scrollController =  new ScrollController();
+    _userRepository = UserRepository();
+    _userRepository.getUser().then((snap)=>{
+      userID = snap.uid,
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     List commentIDs = widget.commentIDs.reversed.toList();
     return Container(
-      height: commentIDs.length*200.0,
+      height: commentIDs.length*170.0,
       child: ListView.builder(
+          controller: _scrollController,
           itemCount: commentIDs.length,
           padding: const EdgeInsets.only(top: 8),
           scrollDirection: Axis.vertical,
@@ -45,8 +66,12 @@ class _CommentBottom extends State<CommentBottom>{
                   default:
                     if(snapshot.data.data != null){
                       final comment = snapshot.data.data;
+                      bool isCurrentUserComment = false;
+                      if(userID == comment['userID']){
+                        isCurrentUserComment = true;
+                      }
                       if(comment['level'] == 1)
-                        return CommentBox(commentData: comment, isSubCommentPage: false, blogID: widget.blogID, commentID: commentIDs[index],);
+                        return CommentBox(commentData: comment, isSubCommentPage: false, blogID: widget.blogID, commentID: commentIDs[index],isCurrentUserComment: isCurrentUserComment,);
                     }
                     else{
                       return SizedBox(
@@ -69,12 +94,14 @@ class CommentBox extends StatelessWidget {
     this.isSubCommentPage,
     this.blogID,
     this.commentID,
+    this.isCurrentUserComment,
   }) : super(key: key);
 
   final Map commentData;
   final bool isSubCommentPage;
   final String blogID;
   final String commentID;
+  final bool isCurrentUserComment;
 
   Widget getContent(){
     final Map content = commentData['content'];
@@ -116,7 +143,7 @@ class CommentBox extends StatelessWidget {
           Navigator.push<dynamic>(
               context,
               MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => SubCommentPage(commentData: commentData, blogID: blogID, commentID: commentID,),
+                builder: (BuildContext context) => SubCommentPage(blogID: blogID, commentID: commentID,),
               )
           );
         },
@@ -177,8 +204,36 @@ class CommentBox extends StatelessWidget {
     }
   }
 
+  Widget getDeleteButton(){
+    if (isCurrentUserComment == null){
+      return SizedBox(
+
+      );
+    }
+    if(isCurrentUserComment){
+      return IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          Firestore.instance.collection('comments').document(commentID).delete().catchError((e) => {
+            print("Comment deletion error ${e}"),
+          });
+        },
+      );
+    }
+    else{
+      return SizedBox(
+
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if(commentData == null){
+      return SizedBox(
+
+      );
+    }
     return Center(
       child: Card(
         child: Column(
@@ -190,6 +245,7 @@ class CommentBox extends StatelessWidget {
                 getUser(),
                 ButtonBar(
                   children: <Widget>[
+                    getDeleteButton(),
                     IconButton(
                       icon: Icon(Icons.comment),
                       onPressed: () {
@@ -249,6 +305,26 @@ class CommentPage extends StatefulWidget{
 
 class _CommentPage extends State<CommentPage>{
 
+  ScrollController _scrollController;
+  UserRepository _userRepository;
+  String userID;
+
+  @override
+  void initState(){
+    _scrollController =  new ScrollController();
+    _userRepository = UserRepository();
+    _userRepository.getUser().then((snap) => {
+      userID = snap.uid,
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -258,38 +334,47 @@ class _CommentPage extends State<CommentPage>{
           title: Text("评论"),
           backgroundColor: AppTheme.primary,
         ),
-        body: Container(
-          height: commentIDs.length*200.0,
-          color: AppTheme.nearlyWhite,
-          child: ListView.builder(
-              itemCount: commentIDs.length,
-              padding: const EdgeInsets.only(top: 8),
-              scrollDirection: Axis.vertical,
-              itemBuilder: (BuildContext context, int index){
-                return StreamBuilder<DocumentSnapshot>(
-                  stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
-                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                    if (snapshot.hasError)
-                      return new Text('Error: ${snapshot.error}');
-                    switch(snapshot.connectionState){
-                      case ConnectionState.waiting:
-                        return new Text('Loading');
-                      default:
-                        if(snapshot.data.data != null){
-                          final comment = snapshot.data.data;
-                          if(comment['level'] == 1)
-                            return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], blogID: widget.blogID);
-                        }
-                        else{
-                          return SizedBox(
+        body: ListView(
+          children: <Widget>[
+            Container(
+              height: commentIDs.length*170.0,
+              color: AppTheme.nearlyWhite,
+              child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: commentIDs.length,
+                  padding: const EdgeInsets.only(top: 8),
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (BuildContext context, int index){
+                    return StreamBuilder<DocumentSnapshot>(
+                      stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
+                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+                        if (snapshot.hasError)
+                          return new Text('Error: ${snapshot.error}');
+                        switch(snapshot.connectionState){
+                          case ConnectionState.waiting:
+                            return new Text('Loading');
+                          default:
+                            if(snapshot.data.data != null){
+                              final comment = snapshot.data.data;
+                              bool isCurrentUserComment = false;
+                              if(userID == comment['userID']){
+                                isCurrentUserComment = true;
+                              }
+                              if(comment['level'] == 1)
+                                return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], blogID: widget.blogID, isCurrentUserComment: isCurrentUserComment,);
+                            }
+                            else{
+                              return SizedBox(
 
-                          );
+                              );
+                            }
                         }
-                    }
-                  },
-                );
-              }),
-        ),
+                      },
+                    );
+                  }),
+            ),
+          ],
+        )
     );
   }
 }
@@ -297,14 +382,14 @@ class _CommentPage extends State<CommentPage>{
 class SubCommentPage extends StatefulWidget {
   const SubCommentPage(
   {Key key,
-    this.commentData,
+//    this.commentData,
     this.commentID,
     this.blogID,
   }) : super(key: key);
 
   final String commentID;
   final String blogID;
-  final commentData;
+//  final commentData;
 
   @override
   _SubCommentPage createState() => _SubCommentPage();
@@ -312,78 +397,115 @@ class SubCommentPage extends StatefulWidget {
 
 class _SubCommentPage extends State<SubCommentPage>{
 
+  ScrollController _scrollController;
+  UserRepository _userRepository;
+  String userID;
+  Map commentData;
+  List subCommentIDs;
+
+  @override
+  void initState(){
+    _scrollController =  new ScrollController();
+    _userRepository = UserRepository();
+    _userRepository.getUser().then((snap) => {
+      userID = snap.uid,
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+//  void getSubCommentIDs() async {
+//    subCommentIDs = List();
+//    await Firestore.instance.collection('comments').document(widget.commentID).get().then((snap) => {
+//      subCommentIDs = snap.data['replies'],
+//      subCommentIDs = subCommentIDs.reversed.toList(),
+//    });
+//  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    List subCommentIDs = widget.commentData['replies'];
-    subCommentIDs = subCommentIDs.reversed.toList();
     return Scaffold(
       appBar: AppBar(
         title: Text('回复'),
         backgroundColor: AppTheme.primary,
       ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            // Level 1 comment
-            CommentBox(commentData: widget.commentData, isSubCommentPage: true, commentID: widget.commentID, blogID: widget.blogID,),
-            Container(
-              height: subCommentIDs.length*150.0,
-              color: AppTheme.nearlyWhite,
-              child: ListView.builder(
-                  itemCount: subCommentIDs.length,
-                  padding: const EdgeInsets.only(top: 8),
-                  itemBuilder: (BuildContext context, int index){
-                    return StreamBuilder<DocumentSnapshot>(
-                      stream: Firestore.instance.collection('comments').document(subCommentIDs[index]).snapshots(),
-                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                        if (snapshot.hasError)
-                          return new Text('Error: ${snapshot.error}');
-                        switch(snapshot.connectionState) {
-                          case ConnectionState.waiting:
-                            return new Text('Loading');
-                          default:
-                            if(snapshot.hasData){
-                              final subcomment = snapshot.data.data;
-                              return Padding(
-                                  padding: EdgeInsets.only(left: 16, right: 16),
-                                  child: CommentBox(commentData: subcomment, isSubCommentPage: true, commentID: subCommentIDs[index], blogID: widget.blogID,)
+      resizeToAvoidBottomPadding: false,
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: Firestore.instance.collection('comments').document(widget.commentID).snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+          if (snapshot.hasError)
+            return new Text('Error: ${snapshot.error}');
+          switch(snapshot.connectionState){
+            case ConnectionState.waiting:
+              return new Text('Loading');
+            default:
+              if(snapshot.data.data != null){
+                commentData = snapshot.data.data;
+                subCommentIDs = commentData['replies'];
+                return SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      // Level 1 comment
+                      CommentBox(commentData: commentData, isSubCommentPage: true, commentID: widget.commentID, blogID: widget.blogID,),
+                      Container(
+                        height: subCommentIDs.length*170.0,
+                        color: AppTheme.nearlyWhite,
+                        child: ListView.builder(
+                            controller: _scrollController,
+                            itemCount: subCommentIDs.length,
+                            padding: const EdgeInsets.only(top: 8),
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (BuildContext context, int index){
+                              return StreamBuilder<DocumentSnapshot>(
+                                stream: Firestore.instance.collection('comments').document(subCommentIDs[index]).snapshots(),
+                                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+                                  if (snapshot.hasError)
+                                    return new Text('Error: ${snapshot.error}');
+                                  switch(snapshot.connectionState) {
+                                    case ConnectionState.waiting:
+                                      return new Text('Loading');
+                                    default:
+                                      if(snapshot.hasData){
+                                        final subcomment = snapshot.data.data;
+                                        bool isCurrentUserComment = false;
+                                        if(userID == subcomment['userID']){
+                                          isCurrentUserComment = true;
+                                        }
+                                        return Padding(
+                                            padding: EdgeInsets.only(left: 16, right: 16),
+                                            child: CommentBox(commentData: subcomment, isSubCommentPage: true, commentID: subCommentIDs[index], blogID: widget.blogID, isCurrentUserComment: isCurrentUserComment)
+                                        );
+                                      }
+                                      else{
+                                        return new Text("Something is wrong with firebase");
+                                      }
+                                  }
+                                },
                               );
                             }
-                            else{
-                              return new Text("Something is wrong with firebase");
-                            }
-                        }
-                      },
-                    );
-                  }
-              ),
-            ),
-          ],
-        ),
+                        ),
+
+                      ),
+                    ],
+                  ),
+                );
+              }
+              else{
+                return SizedBox(
+
+                );
+              }
+          }
+        },
       ),
     );
   }
 }
 
-
-//  String blogID;
-//  Map content;
-//  int level;
-//  String parentID;
-//  String parentType;
-//  List replies;
-//  String targetID;
-//  DateTime time;
-//  String userID;
-
-
-//      blogID = comment['blogID'],
-//      content = comment['content'],
-//      level = comment['level'],
-//      parentID = comment['parentID'],
-//      parentType = comment['parentType'],
-//      replies = comment['replies'],
-//      targetID = comment['targetID'],
-//      time = comment['time'],
-//      userID = comment['userID'],
