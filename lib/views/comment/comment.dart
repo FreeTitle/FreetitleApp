@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -204,7 +206,7 @@ class CommentBox extends StatelessWidget {
     }
   }
 
-  Widget getDeleteButton(){
+  Widget getDeleteButton(BuildContext context){
     if (isCurrentUserComment == null){
       return SizedBox(
 
@@ -213,11 +215,90 @@ class CommentBox extends StatelessWidget {
     if(isCurrentUserComment){
       return IconButton(
         icon: Icon(Icons.delete),
-        onPressed: () {
-          Firestore.instance.collection('comments').document(commentID).delete().catchError((e) => {
-            print("Comment deletion error ${e}"),
-          });
-        },
+        onPressed: (){
+          showDialog(
+              context: context,
+              builder: (BuildContext context){
+                return AlertDialog(
+                  title: Text('是否删除评论？'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('不'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('是'),
+                      onPressed: () async {
+                        if(commentData['level'] == 1){
+                          await Firestore.instance.collection('comments').document(commentID).delete().whenComplete(() async {
+                            print("Level 1 Comment deleted");
+                            // Level 1 comment
+                            List subCommentIDs = List();
+                            for(var id in commentData['replies']){
+                              await Firestore.instance.collection('comments').document(id).get().then((snap) => {
+                                subCommentIDs.add(snap.documentID),
+                              });
+                              await Firestore.instance.collection('comments').document(id).delete();
+                            }
+
+                            List comments;
+                            List subcomments;
+                            await Firestore.instance.collection('blogs').document(blogID).get().then((snap) => {
+                              comments = snap.data['comments'],
+                              subcomments = snap.data['subcomments'],
+                            });
+                            comments.remove(commentID);
+                            for(var id in subCommentIDs){
+                              subcomments.remove(id);
+                            }
+                            await Firestore.instance.collection('blogs').document(blogID).updateData({
+                              'comments': comments,
+                              'subcomments': subcomments
+                            });
+
+                          }).catchError((e) => {
+                            print("Level 1 Comment deletion error ${e}"),
+                          });
+                        }
+                        else if(commentData['level'] == 2){
+                          // Level 2 comment
+                          await Firestore.instance.collection('comments').document(commentID).updateData({
+                            'content': {
+                              'image': null,
+                              'text': "(deleted)"
+                            },
+                          }).whenComplete(() {
+                            print("Level 2 Comment deleted");
+                          }).catchError((e) => {
+                            print("Level 2 Comment deletion error ${e}"),
+                          });
+                        }
+                        else if (commentData['level'] == 3){
+                          // Level 3 comment
+                          await Firestore.instance.collection('comments').document(commentID).updateData({
+                            'content': {
+                              'image': null,
+                              'text': "(deleted)"
+                            },
+                          }).whenComplete(() {
+                            print("Level 3 Comment deleted");
+                          }).catchError((e) => {
+                            print("Level 3 Comment deletion error ${e}"),
+                          });
+                        }
+                        else{
+                          print('This comment has some error');
+                        }
+                        Navigator.of(context).pop();
+                      }
+                    )
+                  ],
+                );
+              }
+          );
+        }
       );
     }
     else{
@@ -245,7 +326,7 @@ class CommentBox extends StatelessWidget {
                 getUser(),
                 ButtonBar(
                   children: <Widget>[
-                    getDeleteButton(),
+                    getDeleteButton(context),
                     IconButton(
                       icon: Icon(Icons.comment),
                       onPressed: () {
@@ -327,7 +408,7 @@ class _CommentPage extends State<CommentPage>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    // TODO: implement liquid pull to refresh
     List commentIDs = widget.commentIDs.reversed.toList();
     return Scaffold(
         appBar: AppBar(
@@ -430,7 +511,7 @@ class _SubCommentPage extends State<SubCommentPage>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    // TODO: implement liquid pull to refresh
     return Scaffold(
       appBar: AppBar(
         title: Text('回复'),
@@ -449,6 +530,7 @@ class _SubCommentPage extends State<SubCommentPage>{
               if(snapshot.data.data != null){
                 commentData = snapshot.data.data;
                 subCommentIDs = commentData['replies'];
+                subCommentIDs = subCommentIDs.reversed.toList();
                 return SingleChildScrollView(
                   child: Column(
                     children: <Widget>[

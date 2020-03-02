@@ -306,7 +306,16 @@ class _BlogDetail extends State<BlogDetail> {
               );
             }
             else{
-              return Text("Loading blog");
+              return Scaffold(
+                appBar: AppBar(
+                  backgroundColor: AppTheme.primary,
+                ),
+                body: Center(
+                  child: Container(
+                    child: Text("Loading blog"),
+                  ),
+                ),
+              );
             }
         }
       },
