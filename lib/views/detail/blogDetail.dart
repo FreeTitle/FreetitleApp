@@ -11,6 +11,7 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/comment/comment.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _LinkTextSpan extends TextSpan {
 
@@ -43,14 +44,18 @@ class BlogDetail extends StatefulWidget{
 class _BlogDetail extends State<BlogDetail> {
 
   UserRepository _userRepository;
+  ScrollController _scrollController;
   @override
   void initState(){
     _userRepository = new UserRepository();
+    _scrollController = new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     super.initState();
   }
 
+
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -234,13 +239,16 @@ class _BlogDetail extends State<BlogDetail> {
                         padding: EdgeInsets.only(right: 20),
                         child: IconButton(
                           icon: Icon(Icons.comment),
-                          onPressed: (){
-                            Navigator.push<dynamic>(
+                          onPressed: () async {
+                            await Navigator.push<dynamic>(
                               context,
                               MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => CommentPage(commentIDs: getCommentIDs(blog), blogID: widget.blogID,),
+                                builder: (BuildContext context) => CommentPage(commentIDs: getCommentIDs(blog), blogID: widget.blogID),
                               )
                             );
+                            if(_scrollController.hasClients){
+                              _scrollController.jumpTo(500.0);
+                            }
                           },
                         ),
                       ),
@@ -298,7 +306,9 @@ class _BlogDetail extends State<BlogDetail> {
                   ),
                   resizeToAvoidBottomPadding: false,
                 body: SingleChildScrollView(
+                  controller: _scrollController,
                   child: Column(
+                    key: PageStorageKey('blog'),
                     children:
                       processBlogContent(blog),
                   ),

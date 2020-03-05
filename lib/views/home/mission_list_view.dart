@@ -1,11 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/main.dart';
-import 'package:freetitle/model/mission_list_data.dart';
+//import 'package:freetitle/model/mission_list_data.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/detail/missionDetail.dart';
 
 class PopularMissionListView extends StatefulWidget {
-  const PopularMissionListView({Key key, this.callBack}) : super(key: key);
-  final Function callBack;
+  const PopularMissionListView(
+      {Key key, 
+        this.missionList,
+        this.missionID,
+      }) : super(key: key);
+  final List missionList;
+  final String missionID;
   @override
   _PopularMissionListViewState createState() => _PopularMissionListViewState();
 }
@@ -31,12 +38,23 @@ with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void getMission(missionData, missionID){
+    Navigator.push<dynamic>(
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => MissionDetail(missionData: missionData, missionID: missionID,),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    List missionList = widget.missionList;
+    String missionID = widget.missionID;
     return Padding(
       padding: const EdgeInsets.only(top: 0, bottom: 16),
       child: Container(
-        height: 134,
+        height: 200,
         width: double.infinity,
         child: FutureBuilder<bool>(
           future: getData(),
@@ -48,12 +66,12 @@ with TickerProviderStateMixin {
               return ListView.builder(
                 padding: const EdgeInsets.only(
                     top: 0, bottom: 0, right: 16, left: 16),
-                itemCount: Mission.popularMissionList.length,
+                itemCount: missionList.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (BuildContext context, int index){
-                  final int count = Mission.popularMissionList.length > 10
-                      ? 10
-                      : Mission.popularMissionList.length;
+                  final int count = missionList.length > 5
+                      ? 5
+                      : missionList.length;
                   final Animation<double> animation =
                   Tween<double>(begin: 0.0, end: 1.0).animate(
                       CurvedAnimation(
@@ -63,11 +81,11 @@ with TickerProviderStateMixin {
                   animationController.forward();
 
                   return PopularMissionView(
-                      mission: Mission.popularMissionList[index],
+                      mission: missionList[index],
                       animation: animation,
                       animationController: animationController,
                       callback: () {
-                    widget.callBack();
+                        getMission(missionList[index], missionID);
                     },
                   );
                 },
@@ -90,7 +108,7 @@ class PopularMissionView extends StatelessWidget {
       : super(key: key);
 
   final VoidCallback callback;
-  final Mission mission;
+  final Map mission;
   final AnimationController animationController;
   final Animation<dynamic> animation;
 
@@ -128,9 +146,9 @@ class PopularMissionView extends StatelessWidget {
                               ),
                               child: Row(
                                 children: <Widget>[
-                                  const SizedBox(
-                                  width: 48 + 24.0,
-                                  ),
+//                                  const SizedBox(
+//                                  width: 72.0,
+//                                  ),
                                   Expanded(
                                     child: Container(
                                       child: Column(
@@ -138,18 +156,37 @@ class PopularMissionView extends StatelessWidget {
                                           Padding(
                                             padding: const EdgeInsets.only(top: 16),
                                             child: Text(
-                                              mission.title,
+                                              mission['name'],
                                               textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16,
-                                                letterSpacing: 0.27,
-                                                color: AppTheme.darkerText,
-                                              ),
+                                              style: AppTheme.headline
                                             ),
                                           ),
-                                          const Expanded(
-                                            child: SizedBox(),
+                                          SizedBox(height: 20,),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 16, bottom: 8),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                const SizedBox(
+                                                  width: 72.0,
+                                                ),
+                                                Text(
+                                                  'Username',
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12,
+                                                    letterSpacing: 0.27,
+                                                    color: AppTheme.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(
@@ -161,9 +198,13 @@ class PopularMissionView extends StatelessWidget {
                                               crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                               children: <Widget>[
+                                                const SizedBox(
+                                                  width: 48.0,
+                                                ),
                                                 Text(
-                                                  '${mission.lessonCount} Days',
-                                                  textAlign: TextAlign.left,
+                                                  '30 Joined',
+                                                  textAlign:
+                                                  TextAlign.left,
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w200,
                                                     fontSize: 12,
@@ -171,74 +212,9 @@ class PopularMissionView extends StatelessWidget {
                                                     color: AppTheme.grey,
                                                   ),
                                                 ),
-                                                Container(
-                                                  child: Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        '${mission.rating}',
-                                                        textAlign:
-                                                        TextAlign.left,
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                          FontWeight.w200,
-                                                          fontSize: 18,
-                                                          letterSpacing: 0.27,
-                                                          color: AppTheme.grey,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons.star,
-                                                        color: AppTheme.nearlyBlue,
-                                                        size: 20,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
                                               ],
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 16, right: 16),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment
-                                                  .spaceBetween,
-                                              crossAxisAlignment: CrossAxisAlignment
-                                                  .start,
-                                              children: <Widget>[
-                                                Text(
-                                                  '\$${mission.money}',
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 18,
-                                                    letterSpacing: 0.27,
-                                                    color: AppTheme
-                                                        .nearlyBlue,
-                                                  ),
-                                                ),
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    color: AppTheme.nearlyBlue,
-                                                    borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(
-                                                            8.0)),
-                                                  ),
-                                                  child: Padding(
-                                                    padding:
-                                                    const EdgeInsets.all(
-                                                        4.0),
-                                                    child: Icon(
-                                                      Icons.add,
-                                                      color:
-                                                      AppTheme.nearlyWhite,
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          )
                                         ],
                                       ),
                                     ),
@@ -253,15 +229,16 @@ class PopularMissionView extends StatelessWidget {
                     Container(
                       child: Padding(
                         padding: const EdgeInsets.only(
-                            top: 24, bottom: 24, left: 16),
+                            top: 48, bottom: 24, left: 12),
                         child: Row(
                           children: <Widget>[
                             ClipRRect(
                               borderRadius:
-                              const BorderRadius.all(Radius.circular(16.0)),
+                              const BorderRadius.all(Radius.circular(32.0)),
                               child: AspectRatio(
-                                  aspectRatio: 2.0,
-                                  child: Image.asset(mission.imagePath)),
+                                  aspectRatio: 1.25,
+                                  child: Image.network(mission['images'][0])
+                              ),
                             )
                           ],
                         ),
@@ -280,10 +257,15 @@ class PopularMissionView extends StatelessWidget {
 
 // List View showing latest missions
 class LatestMissionListView extends StatefulWidget {
-  const LatestMissionListView({Key key, this.callBack}) : super(key: key);
+  const LatestMissionListView(
+      {Key key,
+        this.callBack,
+        this.missionData
+      }) : super(key: key);
 
   // callback passed downwards for handling tapping
   final Function callBack;
+  final List missionData;
   @override
   _LatestMissionListViewState createState() => _LatestMissionListViewState();
 }
@@ -311,6 +293,7 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
 
   @override
   Widget build(BuildContext context) {
+    List missionData = widget.missionData;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: FutureBuilder<bool>(
@@ -325,9 +308,9 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               children: List<Widget>.generate(
-                  Mission.latestMissionList.length,
+                  missionData.length,
                   (int index) {
-                    final int count = Mission.latestMissionList.length;
+                    final int count = missionData.length;
                     final Animation<double> animation =
                         Tween<double>(begin: 0.0, end: 1.0).animate(
                         CurvedAnimation(
@@ -341,7 +324,7 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
                       callback: () {
                         widget.callBack();
                       },
-                      mission: Mission.latestMissionList[index],
+                      mission: missionData[index],
                       animation: animation,
                       animationController: animationController,
                     );
@@ -372,7 +355,7 @@ class LatestMissionView extends StatelessWidget {
       : super(key: key);
 
   final VoidCallback callback;
-  final Mission mission;
+  final Map mission;
   final AnimationController animationController;
   final Animation<dynamic> animation;
 
@@ -416,7 +399,7 @@ class LatestMissionView extends StatelessWidget {
                                             padding: const EdgeInsets.only(
                                                 top: 16, left: 16, right: 16),
                                             child: Text(
-                                              mission.title,
+                                              mission['name'],
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w600,
@@ -440,10 +423,10 @@ class LatestMissionView extends StatelessWidget {
                                               CrossAxisAlignment.center,
                                               children: <Widget>[
                                                 Text(
-                                                  '${mission.lessonCount} mission',
+                                                  'Username',
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(
-                                                    fontWeight: FontWeight.w200,
+                                                    fontWeight: FontWeight.w400,
                                                     fontSize: 12,
                                                     letterSpacing: 0.27,
                                                     color: AppTheme.grey,
@@ -453,22 +436,17 @@ class LatestMissionView extends StatelessWidget {
                                                   child: Row(
                                                     children: <Widget>[
                                                       Text(
-                                                        '${mission.rating}',
+                                                        '30 Joined',
                                                         textAlign:
                                                         TextAlign.left,
                                                         style: TextStyle(
                                                           fontWeight:
                                                           FontWeight.w200,
-                                                          fontSize: 18,
+                                                          fontSize: 12,
                                                           letterSpacing: 0.27,
                                                           color: AppTheme.grey,
                                                         ),
                                                       ),
-                                                      Icon(
-                                                        Icons.star,
-                                                        color: AppTheme.nearlyBlue,
-                                                        size: 20,
-                                                      )
                                                     ],
                                                   ),
                                                 ),
@@ -479,23 +457,17 @@ class LatestMissionView extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    width: 48,
-                                  )
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            width: 48,
-                          )
                         ],
                       ),
                     ),
                     Container(
                       child: Padding(
                         padding:
-                          const EdgeInsets.only(top: 24, right: 16, left: 16),
+                          const EdgeInsets.only(top: 0, right: 8, left: 8),
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius:
@@ -512,8 +484,9 @@ class LatestMissionView extends StatelessWidget {
                             borderRadius:
                             const BorderRadius.all(Radius.circular(16.0)),
                             child: AspectRatio(
-                                aspectRatio: 1.28,
-                                child: Image.asset(mission.imagePath)),
+                              aspectRatio: 1.28,
+                              child: Image.network(mission['images'][0])
+                            ),
                           ),
                         ),
                       ),

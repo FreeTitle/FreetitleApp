@@ -414,6 +414,12 @@ class _CommentPage extends State<CommentPage>{
         appBar: AppBar(
           title: Text("评论"),
           backgroundColor: AppTheme.primary,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: (){
+              Navigator.pop(context);
+            },
+          ),
         ),
         body: ListView(
           children: <Widget>[
@@ -500,14 +506,6 @@ class _SubCommentPage extends State<SubCommentPage>{
     _scrollController.dispose();
     super.dispose();
   }
-
-//  void getSubCommentIDs() async {
-//    subCommentIDs = List();
-//    await Firestore.instance.collection('comments').document(widget.commentID).get().then((snap) => {
-//      subCommentIDs = snap.data['replies'],
-//      subCommentIDs = subCommentIDs.reversed.toList(),
-//    });
-//  }
 
   @override
   Widget build(BuildContext context) {

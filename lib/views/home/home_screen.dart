@@ -7,6 +7,7 @@ import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freetitle/views/detail/blogDetail.dart';
 import 'package:tuple/tuple.dart';
+import 'package:freetitle/views/detail/missionDetail.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -21,6 +22,8 @@ class _Home extends State<Home> with TickerProviderStateMixin {
 
   AnimationController animationController;
   List blogList;
+  List missionList;
+  List missionIDs;
   final ScrollController _scrollController = ScrollController();
 //  CategoryType categoryType = CategoryType.film;
 
@@ -65,15 +68,15 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                       length: 2,
                       child: Scaffold(
                           appBar: AppBar(
-                            title: new Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
+                            title: new Center(child: Text('Freetitle', style: TextStyle(color: Colors.white),) ),
                             actions: <Widget>[
-                              Container(padding: EdgeInsets.only(right: 16),child: Icon(Icons.search, color: Colors.black,)),
+                              Container(padding: EdgeInsets.only(right: 16),child: Icon(Icons.search, color: Colors.white,)),
                             ],
-                            backgroundColor: Colors.white,
+                            backgroundColor: AppTheme.primary,
                             bottom: TabBar(
-                              labelColor: AppTheme.primary,
-                              unselectedLabelColor: Colors.grey,
-                              indicatorColor: AppTheme.primary,
+                              labelColor: AppTheme.white,
+                              unselectedLabelColor: Colors.white,
+                              indicatorColor: AppTheme.white,
                               tabs: <Widget>[
                                 Tab(child: Text('Blogs')),
                                 Tab(child: Text('Mission')),
@@ -154,77 +157,100 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                   }
                                 }
                               ),
-                              Container(
-                                color: AppTheme.nearlyWhite,
-                                child: Scaffold(
-                                  backgroundColor: Colors.transparent,
-                                  body: Column(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: SingleChildScrollView(
-                                          child: Container(
-                                            height: MediaQuery.of(context).size.height,
-                                            child: Column(
+                              StreamBuilder<QuerySnapshot>(
+                                key: PageStorageKey('Missions'),
+                                stream: Firestore.instance.collection('missions').orderBy('time', descending: true).snapshots(),
+                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                                  if (snapshot.hasError)
+                                    return new Text('Error: ${snapshot.error}');
+                                  switch (snapshot.connectionState) {
+                                    case ConnectionState.waiting:
+                                      return new Text('Loading');
+                                    default:
+                                      if(snapshot.hasData){
+                                        missionList = List();
+//                                        missionList.clear();
+                                        missionIDs = List();
+//                                        missionIDs.clear();
+                                        snapshot.data.documents.forEach((mission) => {
+                                          missionList.add(mission.data),
+                                          missionIDs.add(mission.documentID),
+                                        });
+                                        return Container(
+                                          color: AppTheme.nearlyWhite,
+                                          child: Scaffold(
+                                            backgroundColor: Colors.transparent,
+                                            body: Column(
                                               children: <Widget>[
-                                                Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
-                                                      child: Text(
-                                                        'Popular Mission',
-                                                        textAlign: TextAlign.left,
-                                                        style: TextStyle(
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: 22,
-                                                          letterSpacing: 0.27,
-                                                          color: AppTheme.darkerText,
-                                                        ),
+                                                Expanded(
+                                                  child: SingleChildScrollView(
+                                                    child: Container(
+                                                      height: MediaQuery.of(context).size.height,
+                                                      child: Column(
+                                                        children: <Widget>[
+                                                          Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: <Widget>[
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
+                                                                child: Text(
+                                                                  'Popular Mission',
+                                                                  textAlign: TextAlign.left,
+                                                                  style: TextStyle(
+                                                                    fontWeight: FontWeight.w600,
+                                                                    fontSize: 22,
+                                                                    letterSpacing: 0.27,
+                                                                    color: AppTheme.darkerText,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              PopularMissionListView(
+                                                                missionList: missionList,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Flexible(
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
+                                                              child: Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: <Widget>[
+                                                                  Text(
+                                                                    'Latest Mission',
+                                                                    textAlign: TextAlign.left,
+                                                                    style: TextStyle(
+                                                                      fontWeight: FontWeight.w600,
+                                                                      fontSize: 22,
+                                                                      letterSpacing: 0.27,
+                                                                      color: AppTheme.darkerText,
+                                                                    ),
+                                                                  ),
+                                                                  Flexible(
+                                                                    child: LatestMissionListView(
+                                                                      missionData: missionList,
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
                                                       ),
-                                                    ),
-                                                    PopularMissionListView(
-                                                      callBack: () {
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                                Flexible(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: <Widget>[
-                                                        Text(
-                                                          'Latest Mission',
-                                                          textAlign: TextAlign.left,
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w600,
-                                                            fontSize: 22,
-                                                            letterSpacing: 0.27,
-                                                            color: AppTheme.darkerText,
-                                                          ),
-                                                        ),
-                                                        Flexible(
-                                                          child: LatestMissionListView(
-                                                            callBack: (){
-
-                                                            },
-                                                          ),
-                                                        )
-                                                      ],
                                                     ),
                                                   ),
                                                 )
                                               ],
                                             ),
                                           ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                        );
+                                      }
+                                      else{
+                                        return new Text("Something is wrong with firebase");
+                                      }
+                                  }
+                                },
                               )
                             ],
                           )
@@ -237,15 +263,6 @@ class _Home extends State<Home> with TickerProviderStateMixin {
       ),
     );
   }
-
-//  void getMission() {
-//    Navigator.push<dynamic>(
-//      context,
-//      MaterialPageRoute<dynamic>(
-//        builder: (BuildContext context) => MissionDetailPage(),
-//      )
-//    );
-//  }
 
   void getBlog(blog){
     Navigator.push<dynamic>(
