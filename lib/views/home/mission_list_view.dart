@@ -20,10 +20,12 @@ class PopularMissionListView extends StatefulWidget {
 class _PopularMissionListViewState extends State<PopularMissionListView>
 with TickerProviderStateMixin {
   AnimationController animationController;
+  ScrollController _scrollController;
   @override
   void initState() {
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
+    _scrollController = ScrollController();
     super.initState();
   }
 
@@ -35,6 +37,7 @@ with TickerProviderStateMixin {
   @override
   void dispose(){
     animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -64,6 +67,7 @@ with TickerProviderStateMixin {
             }
             else{
               return ListView.builder(
+                controller: _scrollController,
                 padding: const EdgeInsets.only(
                     top: 0, bottom: 0, right: 16, left: 16),
                 itemCount: missionList.length,
@@ -129,7 +133,8 @@ class PopularMissionView extends StatelessWidget {
               },
               child: SizedBox(
                 width: 280,
-                child: Stack(
+                height: 200,
+                child: Column(
                   children: <Widget>[
                     Container(
                       child: Row(
@@ -146,9 +151,6 @@ class PopularMissionView extends StatelessWidget {
                               ),
                               child: Row(
                                 children: <Widget>[
-//                                  const SizedBox(
-//                                  width: 72.0,
-//                                  ),
                                   Expanded(
                                     child: Container(
                                       child: Column(
@@ -162,58 +164,79 @@ class PopularMissionView extends StatelessWidget {
                                             ),
                                           ),
                                           SizedBox(height: 20,),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 16, bottom: 8),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                              children: <Widget>[
-                                                const SizedBox(
-                                                  width: 72.0,
-                                                ),
-                                                Text(
-                                                  'Username',
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12,
-                                                    letterSpacing: 0.27,
-                                                    color: AppTheme.grey,
+                                          Row(
+                                            children: <Widget>[
+                                              Expanded(
+                                                child: Container(
+                                                  height: 100,
+                                                  width: 100,
+                                                  child: ClipRRect(
+                                                    borderRadius: const BorderRadius.all(Radius.circular(32.0)),
+                                                    child: AspectRatio(
+                                                        aspectRatio: 0.2,
+                                                        child: Image.network(mission['images'][0])
+                                                    ),
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 16, bottom: 8),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                              children: <Widget>[
-                                                const SizedBox(
-                                                  width: 48.0,
-                                                ),
-                                                Text(
-                                                  '30 Joined',
-                                                  textAlign:
-                                                  TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w200,
-                                                    fontSize: 12,
-                                                    letterSpacing: 0.27,
-                                                    color: AppTheme.grey,
+                                              ),
+                                              Column(
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(
+                                                        right: 16, bottom: 8),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                      crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                      children: <Widget>[
+//                                                        const SizedBox(
+//                                                          width: 72.0,
+//                                                        ),
+                                                        Text(
+                                                          'Username',
+                                                          textAlign: TextAlign.left,
+                                                          style: TextStyle(
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: 12,
+                                                            letterSpacing: 0.27,
+                                                            color: AppTheme.grey,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(
+                                                        right: 16, bottom: 8),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                      crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                      children: <Widget>[
+//                                                        const SizedBox(
+//                                                          width: 48.0,
+//                                                        ),
+                                                        Text(
+                                                          '30 Joined',
+                                                          textAlign:
+                                                          TextAlign.left,
+                                                          style: TextStyle(
+                                                            fontWeight: FontWeight.w200,
+                                                            fontSize: 12,
+                                                            letterSpacing: 0.27,
+                                                            color: AppTheme.grey,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -226,24 +249,6 @@ class PopularMissionView extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 48, bottom: 24, left: 12),
-                        child: Row(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius:
-                              const BorderRadius.all(Radius.circular(32.0)),
-                              child: AspectRatio(
-                                  aspectRatio: 1.25,
-                                  child: Image.network(mission['images'][0])
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -273,10 +278,12 @@ class LatestMissionListView extends StatefulWidget {
 class _LatestMissionListViewState extends State<LatestMissionListView>
     with TickerProviderStateMixin {
   AnimationController animationController;
+  ScrollController _scrollController;
   @override
   void initState() {
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
+    _scrollController = ScrollController();
     super.initState();
   }
 
@@ -288,57 +295,46 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
   @override
   void dispose(){
     animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     List missionData = widget.missionData;
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: FutureBuilder<bool>(
-        future: getData(),
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
-          if (!snapshot.hasData) {
-            return const SizedBox();
-          }
-          else{
-            return GridView(
-              padding: const EdgeInsets.all(8),
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              children: List<Widget>.generate(
-                  missionData.length,
-                  (int index) {
-                    final int count = missionData.length;
-                    final Animation<double> animation =
-                        Tween<double>(begin: 0.0, end: 1.0).animate(
-                        CurvedAnimation(
-                          parent: animationController,
-                          curve: Interval((1 / count) * index, 1.0,
-                              curve: Curves.fastOutSlowIn),
-                        ),
-                    );
-                    animationController.forward();
-                    return LatestMissionView(
-                      callback: () {
-                        widget.callBack();
-                      },
-                      mission: missionData[index],
-                      animation: animation,
-                      animationController: animationController,
-                    );
-                  },
-              ),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 32.0,
-                crossAxisSpacing: 32.0,
-                childAspectRatio: 0.8,
-              ),
-            );
-          }
+    return GridView(
+      padding: const EdgeInsets.all(8),
+//              physics: const NeverScrollableScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      controller: _scrollController,
+      children: List<Widget>.generate(
+        missionData.length,
+            (int index) {
+          final int count = missionData.length;
+          final Animation<double> animation =
+          Tween<double>(begin: 0.0, end: 1.0).animate(
+            CurvedAnimation(
+              parent: animationController,
+              curve: Interval((1 / count) * index, 1.0,
+                  curve: Curves.fastOutSlowIn),
+            ),
+          );
+          animationController.forward();
+          return LatestMissionView(
+            callback: () {
+              widget.callBack();
+            },
+            mission: missionData[index],
+            animation: animation,
+            animationController: animationController,
+          );
         },
+      ),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 32.0,
+        crossAxisSpacing: 32.0,
+        childAspectRatio: 0.8,
       ),
     );
   }
