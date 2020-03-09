@@ -63,20 +63,15 @@ class _IndexPageState extends State<IndexPage> {
                   ),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.chat),
-                      title: Text('消息'),
+                      title: Text('私信'),
                   ),
-//            BottomNavyBarItem(
-//              icon: Icon(Icons.chat),
-//              title: Text('消息'),
-//              activeColor: Colors.blue,
-//            ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.business),
 //              title: Text('社区'),
 //              activeColor: Colors.blue,
 //            ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.school),
+                    icon: Icon(Icons.person),
                     title: Text('我的'),
                   ),
                 ],

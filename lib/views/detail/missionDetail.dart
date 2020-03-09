@@ -156,14 +156,37 @@ class _MissionDetail extends State<MissionDetail>
         }
       }
     }
-
     missionWidget.add(
         SizedBox(
           height: 36,
         )
     );
-
     return missionWidget;
+  }
+
+  List<Widget> getLabels(){
+    List<Widget> labels = List();
+    for(var label in widget.missionData['labels']){
+      labels.add(
+        Card(
+          color: AppTheme.primary,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0)),
+          elevation: 10.0,
+          child: Container(
+            width: 100,
+            height: 40,
+            child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(color: Colors.white),
+                )
+            ),
+          ),
+        )
+      );
+    }
+    return labels;
   }
 
   @override
@@ -188,7 +211,7 @@ class _MissionDetail extends State<MissionDetail>
               ],
             ),
             Positioned(
-              top: (MediaQuery.of(context).size.width / 1.2) - 24.0,
+              top: (MediaQuery.of(context).size.width / 1.2) - 48.0,
               bottom: 0,
               left: 0,
               right: 0,
@@ -207,39 +230,42 @@ class _MissionDetail extends State<MissionDetail>
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8),
-                  child: SingleChildScrollView(
-                    child: Container(
-                      constraints: BoxConstraints(
-                          minHeight: infoHeight,
-                          maxHeight: tempHeight > infoHeight
-                              ? tempHeight
-                              : infoHeight),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 32.0, left: 18, right: 18),
-                            child: Text(
-                              missionData['name'],
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 22,
-                                letterSpacing: 0.27,
-                                color: AppTheme.darkerText,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 18, right: 18, bottom: 8, top: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                  child: Column(
+                    children: <Widget>[
+                      Flexible(
+                        child: SingleChildScrollView(
+                          child: Container(
+//                            constraints: BoxConstraints(
+//                                minHeight: infoHeight,
+//                                maxHeight: tempHeight > infoHeight
+//                                    ? tempHeight
+//                                    : infoHeight),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                _userRepository.getUserWidget(missionData['ownerID']),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 32.0, left: 18, right: 18),
+                                  child: Text(
+                                    missionData['name'],
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 22,
+                                      letterSpacing: 0.27,
+                                      color: AppTheme.darkerText,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 18, right: 18, bottom: 8, top: 16),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      _userRepository.getUserWidget(missionData['ownerID']),
 //                                NOTE 预留位
 //                                Container(
 //                                  child: Row(
@@ -257,135 +283,122 @@ class _MissionDetail extends State<MissionDetail>
 //                                    ],
 //                                  ),
 //                                )
-                              ],
-                            ),
-                          ),
-                          SingleChildScrollView(
-                            child: Container(
-                              height: 75,
-                              child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: ListView.builder(
-                                  itemCount: missionData['needs'].length,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (BuildContext context, int index){
-                                    return getRoleBoxUI('0', missionData['needs'][index]);
-                                  }
-                                )
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            child: SingleChildScrollView(
-                              child: Container(
-                                child: Padding(
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 8, bottom: 0, left: 16, right: 16),
+                                  child: Text(
+                                    'We are looking for: ',
+                                    style: AppTheme.body1,
+                                  ),
+                                ),
+                                SingleChildScrollView(
+                                  child: Container(
+                                    height: 75,
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: ListView.builder(
+                                            itemCount: missionData['needs'].length,
+                                            scrollDirection: Axis.horizontal,
+                                            itemBuilder: (BuildContext context, int index){
+                                              return getRoleBoxUI('0', missionData['needs'][index]);
+                                            }
+                                        )
+                                    ),
+                                  ),
+                                ),
+                                Padding(
                                   padding: const EdgeInsets.only(
                                       left: 8, right: 8, top: 0, bottom: 0),
                                   child: Column(
                                     children: processMissionContent(missionData),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
-                          Container(
-//                            duration: const Duration(milliseconds: 500),
-//                            opacity: opacity3,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 16,
-                                  left: 16, bottom: 16, right: 16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.nearlyWhite,
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(16.0),
-                                        ),
-                                        border: Border.all(
-                                            color: AppTheme.grey
-                                                .withOpacity(0.2)),
-                                      ),
-                                      child: Icon(
-                                        Icons.share,
-                                        color: AppTheme.primary,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 16,
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primary,
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(16.0),
-                                        ),
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              color: AppTheme
-                                                  .primary
-                                                  .withOpacity(0.5),
-                                              offset: const Offset(1.1, 1.1),
-                                              blurRadius: 10.0),
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Follow',
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 18,
-                                            letterSpacing: 0.0,
-                                            color: AppTheme
-                                                .nearlyWhite,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16,
+                              left: 16, bottom: 16, right: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: 48,
+                                height: 48,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.nearlyWhite,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(16.0),
+                                    ),
+                                    border: Border.all(
+                                        color: AppTheme.grey
+                                            .withOpacity(0.2)),
+                                  ),
+                                  child: Icon(
+                                    Icons.share,
+                                    color: AppTheme.primary,
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primary,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(16.0),
+                                    ),
+                                    boxShadow: <BoxShadow>[
+                                      BoxShadow(
+                                          color: AppTheme
+                                              .primary
+                                              .withOpacity(0.5),
+                                          offset: const Offset(1.1, 1.1),
+                                          blurRadius: 10.0),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Follow',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                        letterSpacing: 0.0,
+                                        color: AppTheme
+                                            .nearlyWhite,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                 ),
               ),
             ),
-//            Positioned(
-//              top: (MediaQuery.of(context).size.width / 1.2) - 24.0 - 35,
-//              right: 35,
-//              child:
-//                Card(
-//                  color: AppTheme.primary,
-//                  shape: RoundedRectangleBorder(
-//                      borderRadius: BorderRadius.circular(50.0)),
-//                  elevation: 10.0,
-//                  child: Container(
-//                    width: 55,
-//                    height: 55,
-//                    child: Center(
-//                      child: Icon(
-//                        Icons.bookmark,
-//                        color: AppTheme.nearlyWhite,
-//                        size: 30,
-//                      ),
-//                    ),
-//                  ),
-//                ),
-//            ),
+            Positioned(
+              top: (MediaQuery.of(context).size.width / 1.2) - 70,
+              right: 35,
+              child: Row(
+                children: getLabels()
+              )
+            ),
             Padding(
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, left: MediaQuery.of(context).padding.right+15),
               child: SizedBox(

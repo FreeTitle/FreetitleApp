@@ -171,126 +171,81 @@ class PopularMissionView extends StatelessWidget {
                                       blurRadius: 6.0),
                                 ],
                               ),
-                              child: Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Container(
-                                      child: Column(
+                              child: Container(
+                                child: Column(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 16, left: 24, bottom: 4),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 16, left: 16),
+                                          Text(
+                                            //TODO this truncate is ugly... needs to be fixed taking into account different languages
+                                            mission['name'].length > 15 ? mission['name'].substring(0,12)+'...' : mission['name'],
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                              letterSpacing: 0.27,
+                                              color: AppTheme.darkerText,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 24, bottom: 0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Container(
                                             child: Text(
-                                              mission['name'].length > 15 ? mission['name'].substring(0,13)+'...' : mission['name'],
+                                              mission['username'],
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12,
                                                 letterSpacing: 0.27,
-                                                color: AppTheme.darkerText,
+                                                color: AppTheme.grey,
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 20,),
-                                          Row(
-                                            children: <Widget>[
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(6),
-                                                  child: Container(
-                                                    height: 100,
-                                                    width: 100,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                      const BorderRadius.all(Radius.circular(16.0)),
-                                                      boxShadow: <BoxShadow>[
-                                                        BoxShadow(
-                                                            color: AppTheme.grey
-                                                                .withOpacity(0.2),
-                                                            offset: const Offset(0.0, 0.0),
-                                                            blurRadius: 6.0),
-                                                      ],
-                                                    ),
-                                                    child: ClipRRect(
-                                                      borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-                                                      child: AspectRatio(
-                                                        aspectRatio: 1.28,
-                                                        child: getImage(),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-
-                                              Column(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        right: 16, bottom: 8),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                      crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                      children: <Widget>[
-//                                                        const SizedBox(
-//                                                          width: 72.0,
-//                                                        ),
-                                                        Text(
-                                                          'Username',
-                                                          textAlign: TextAlign.left,
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w400,
-                                                            fontSize: 12,
-                                                            letterSpacing: 0.27,
-                                                            color: AppTheme.grey,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        right: 16, bottom: 8),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                      crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                      children: <Widget>[
-//                                                        const SizedBox(
-//                                                          width: 48.0,
-//                                                        ),
-                                                        Text(
-                                                          '30 Joined',
-                                                          textAlign:
-                                                          TextAlign.left,
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w200,
-                                                            fontSize: 12,
-                                                            letterSpacing: 0.27,
-                                                            color: AppTheme.grey,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 15,
-                                          )
                                         ],
                                       ),
                                     ),
-                                  )
-                                ]
+                                    Padding(
+                                      padding: EdgeInsets.all(6),
+                                      child: Container(
+                                        height: 120,
+                                        width: 180,
+//                                        decoration: BoxDecoration(
+//                                          borderRadius:
+//                                          const BorderRadius.all(Radius.circular(16.0)),
+//                                          boxShadow: <BoxShadow>[
+//                                            BoxShadow(
+//                                                color: AppTheme.grey
+//                                                    .withOpacity(0.2),
+//                                                offset: const Offset(0.0, 0.0),
+//                                                blurRadius: 6.0),
+//                                          ],
+//                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                                          child: AspectRatio(
+                                            aspectRatio: 1.5,
+                                            child: getImage(),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          )
+                            )
+                          ),
                         ],
                       ),
                     ),
@@ -524,6 +479,13 @@ class LatestMissionView extends StatelessWidget {
                                 color: HexColor('#F8FAFB'),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(16.0)),
+                                  boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                      color: AppTheme.grey
+                                          .withOpacity(0.2),
+                                      offset: const Offset(0.0, 0.0),
+                                      blurRadius: 6.0),
+                                ],
                               ),
                               child: Column(
                                 children: <Widget>[
@@ -533,60 +495,77 @@ class LatestMissionView extends StatelessWidget {
                                         children: <Widget>[
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                top: 16, left: 16, right: 16),
-                                            child: Text(
-                                              mission['name'],
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16,
-                                                letterSpacing: 0.27,
-                                                color: AppTheme.darkerText,
-                                              ),
+                                                top: 8, left: 16, right: 16),
+                                            child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                Expanded(
+                                                  child: Container(
+                                                    child: Text(
+                                                      mission['name'],
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 16,
+                                                        letterSpacing: 0.27,
+                                                        color: AppTheme.darkerText,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
                                             ),
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                top: 8,
-                                                left: 16,
-                                                right: 16,
-                                                bottom: 8),
+                                                top: 8, left: 16, right: 16, bottom: 8),
                                             child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
                                               children: <Widget>[
-                                                Text(
-                                                  'Username',
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12,
-                                                    letterSpacing: 0.27,
-                                                    color: AppTheme.grey,
-                                                  ),
-                                                ),
-                                                Container(
-                                                  child: Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        '30 Joined',
-                                                        textAlign:
-                                                        TextAlign.left,
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                          FontWeight.w200,
-                                                          fontSize: 12,
-                                                          letterSpacing: 0.27,
-                                                          color: AppTheme.grey,
-                                                        ),
+                                                Expanded(
+                                                  child: Container(
+                                                    child: Text(
+                                                      mission['username'],
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: 12,
+                                                        letterSpacing: 0.27,
+                                                        color: AppTheme.grey,
                                                       ),
-                                                    ],
+                                                    ),
                                                   ),
                                                 ),
                                               ],
+                                            ),
+                                          ),
+                                          Container(
+                                            child: Padding(
+                                              padding:
+                                              const EdgeInsets.only(top: 8, right: 16, left: 16, bottom: 8),
+                                              child: Container(
+                      //                          decoration: BoxDecoration(
+                      //                            borderRadius:
+                      //                            const BorderRadius.all(Radius.circular(16.0)),
+                      //                            boxShadow: <BoxShadow>[
+                      //                              BoxShadow(
+                      //                                  color: AppTheme.grey
+                      //                                      .withOpacity(0.2),
+                      //                                  offset: const Offset(0.0, 0.0),
+                      //                                  blurRadius: 6.0),
+                      //                            ],
+                      //                          ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                  const BorderRadius.all(Radius.circular(8.0)),
+                                                  child: AspectRatio(
+                                                    aspectRatio: 1.28,
+                                                    child: getImage(),
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -598,33 +577,6 @@ class LatestMissionView extends StatelessWidget {
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    Container(
-                      child: Padding(
-                        padding:
-                          const EdgeInsets.only(top: 0, right: 8, left: 8),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                            const BorderRadius.all(Radius.circular(16.0)),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                  color: AppTheme.grey
-                                      .withOpacity(0.2),
-                                  offset: const Offset(0.0, 0.0),
-                                  blurRadius: 6.0),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius:
-                            const BorderRadius.all(Radius.circular(16.0)),
-                            child: AspectRatio(
-                              aspectRatio: 1.28,
-                              child: getImage(),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                   ],
