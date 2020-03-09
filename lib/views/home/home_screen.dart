@@ -176,71 +176,38 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                           missionList.add(mission.data),
                                           missionIDs.add(mission.documentID),
                                         });
-                                        return Container(
-                                          color: AppTheme.nearlyWhite,
-                                          child: Scaffold(
-                                            backgroundColor: Colors.transparent,
-                                            body: Column(
+                                        return SingleChildScrollView(
+                                          child: Container(
+                                            color: AppTheme.nearlyWhite,
+                                            height: MediaQuery.of(context).size.height,
+                                            child: Column(
                                               children: <Widget>[
-                                                Expanded(
-                                                  child: SingleChildScrollView(
-                                                    child: Container(
-                                                      height: MediaQuery.of(context).size.height,
-                                                      child: Column(
-                                                        children: <Widget>[
-                                                          Column(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: <Widget>[
-                                                              Padding(
-                                                                padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
-                                                                child: Text(
-                                                                  'Popular Mission',
-                                                                  textAlign: TextAlign.left,
-                                                                  style: TextStyle(
-                                                                    fontWeight: FontWeight.w600,
-                                                                    fontSize: 22,
-                                                                    letterSpacing: 0.27,
-                                                                    color: AppTheme.darkerText,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              PopularMissionListView(
-                                                                missionList: missionList,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Flexible(
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
-                                                              child: Column(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: <Widget>[
-                                                                  Text(
-                                                                    'Latest Mission',
-                                                                    textAlign: TextAlign.left,
-                                                                    style: TextStyle(
-                                                                      fontWeight: FontWeight.w600,
-                                                                      fontSize: 22,
-                                                                      letterSpacing: 0.27,
-                                                                      color: AppTheme.darkerText,
-                                                                    ),
-                                                                  ),
-                                                                  Flexible(
-                                                                    child: LatestMissionListView(
-                                                                      missionData: missionList,
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          )
-                                                        ],
+                                                Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16, bottom: 4),
+                                                      child: Text(
+                                                        'Popular Mission',
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: 22,
+                                                          letterSpacing: 0.27,
+                                                          color: AppTheme.darkerText,
+                                                        ),
                                                       ),
                                                     ),
+                                                    PopularMissionListView(
+                                                      missionList: missionList,
+                                                    ),
+                                                  ],
+                                                ),
+                                                Padding(
+                                                    padding: const EdgeInsets.only(top: 0.0, left: 18, right: 16),
+                                                    child: LatestMissionListView(missionList: missionList,),
                                                   ),
-                                                )
                                               ],
                                             ),
                                           ),

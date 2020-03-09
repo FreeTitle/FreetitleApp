@@ -55,7 +55,7 @@ with TickerProviderStateMixin {
     List missionList = widget.missionList;
     String missionID = widget.missionID;
     return Padding(
-      padding: const EdgeInsets.only(top: 0, bottom: 16),
+      padding: const EdgeInsets.only(top: 0, bottom: 0),
       child: Container(
         height: 200,
         width: double.infinity,
@@ -116,6 +116,22 @@ class PopularMissionView extends StatelessWidget {
   final AnimationController animationController;
   final Animation<dynamic> animation;
 
+  Image getImage(){
+    Image img;
+    img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
+    if(mission['article'] != null){
+      for(var block in mission['article']['blocks']){
+        if(block['type'] == "image"){
+          if(block['data']['file']['url'] != null){
+            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
+            break;
+          }
+        }
+      }
+    }
+    return img;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -132,15 +148,14 @@ class PopularMissionView extends StatelessWidget {
                 callback();
               },
               child: SizedBox(
-                width: 280,
-                height: 200,
+                width: 240,
                 child: Column(
                   children: <Widget>[
                     Container(
                       child: Row(
                         children: <Widget>[
                           const SizedBox(
-                            width: 48,
+                            width: 16,
                           ),
                           Expanded(
                             child: Container(
@@ -148,6 +163,13 @@ class PopularMissionView extends StatelessWidget {
                                 color: HexColor('#F8FAFB'),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(16.0)),
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                      color: AppTheme.grey
+                                          .withOpacity(0.2),
+                                      offset: const Offset(0.0, 0.0),
+                                      blurRadius: 6.0),
+                                ],
                               ),
                               child: Row(
                                 children: <Widget>[
@@ -156,29 +178,49 @@ class PopularMissionView extends StatelessWidget {
                                       child: Column(
                                         children: <Widget>[
                                           Padding(
-                                            padding: const EdgeInsets.only(top: 16),
+                                            padding: const EdgeInsets.only(top: 16, left: 16),
                                             child: Text(
-                                              mission['name'],
+                                              mission['name'].length > 15 ? mission['name'].substring(0,13)+'...' : mission['name'],
                                               textAlign: TextAlign.left,
-                                              style: AppTheme.headline
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16,
+                                                letterSpacing: 0.27,
+                                                color: AppTheme.darkerText,
+                                              ),
                                             ),
                                           ),
                                           SizedBox(height: 20,),
                                           Row(
                                             children: <Widget>[
                                               Expanded(
-                                                child: Container(
-                                                  height: 100,
-                                                  width: 100,
-                                                  child: ClipRRect(
-                                                    borderRadius: const BorderRadius.all(Radius.circular(32.0)),
-                                                    child: AspectRatio(
-                                                        aspectRatio: 0.2,
-                                                        child: Image.network(mission['images'][0])
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(6),
+                                                  child: Container(
+                                                    height: 100,
+                                                    width: 100,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                      const BorderRadius.all(Radius.circular(16.0)),
+                                                      boxShadow: <BoxShadow>[
+                                                        BoxShadow(
+                                                            color: AppTheme.grey
+                                                                .withOpacity(0.2),
+                                                            offset: const Offset(0.0, 0.0),
+                                                            blurRadius: 6.0),
+                                                      ],
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                                                      child: AspectRatio(
+                                                        aspectRatio: 1.28,
+                                                        child: getImage(),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
+
                                               Column(
                                                 children: <Widget>[
                                                   Padding(
@@ -238,6 +280,9 @@ class PopularMissionView extends StatelessWidget {
                                               ),
                                             ],
                                           ),
+                                          SizedBox(
+                                            height: 15,
+                                          )
                                         ],
                                       ),
                                     ),
@@ -265,12 +310,12 @@ class LatestMissionListView extends StatefulWidget {
   const LatestMissionListView(
       {Key key,
         this.callBack,
-        this.missionData
+        this.missionList
       }) : super(key: key);
 
   // callback passed downwards for handling tapping
   final Function callBack;
-  final List missionData;
+  final List missionList;
   @override
   _LatestMissionListViewState createState() => _LatestMissionListViewState();
 }
@@ -278,12 +323,10 @@ class LatestMissionListView extends StatefulWidget {
 class _LatestMissionListViewState extends State<LatestMissionListView>
     with TickerProviderStateMixin {
   AnimationController animationController;
-  ScrollController _scrollController;
   @override
   void initState() {
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
-    _scrollController = ScrollController();
     super.initState();
   }
 
@@ -295,47 +338,128 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
   @override
   void dispose(){
     animationController.dispose();
-    _scrollController.dispose();
     super.dispose();
+  }
+
+  void getMission(missionData, missionID){
+    Navigator.push<dynamic>(
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => MissionDetail(missionData: missionData, missionID: missionID,),
+        )
+    );
+  }
+
+  List<Widget> buildMissionGrid(){
+    List missionList = widget.missionList;
+    List<Widget> missionGrid = List();
+    missionGrid.add(Padding(
+      padding: EdgeInsets.only(bottom: 4),
+      child: Text(
+        'Latest Mission',
+        textAlign: TextAlign.left,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 22,
+          letterSpacing: 0.27,
+          color: AppTheme.darkerText,
+        ),
+      ),
+    ));
+    for (var i = 0;i < missionList.length-1;i+=2){
+      final int count = missionList.length;
+      final Animation<double> animation =
+      Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: animationController,
+          curve: Interval((1 / count) * i, 1.0,
+              curve: Curves.fastOutSlowIn),
+        ),
+      );
+      animationController.forward();
+      missionGrid.add(Row(
+        children: <Widget>[
+          Container(
+            height: 220,
+            width: 180,
+            child: LatestMissionView(
+              mission: missionList[i],
+              animationController: animationController,
+              animation: animation,
+              callback: (){
+                getMission(missionList[i], '0');
+              },
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Container(
+            height: 220,
+            width: 180,
+            child: LatestMissionView(
+              mission: missionList[i+1],
+              animationController: animationController,
+              animation: animation,
+              callback: (){
+                getMission(missionList[i+1], '0');
+              },
+            ),
+          ),
+        ],
+      ));
+      missionGrid.add(SizedBox(
+          height: 20,
+      ));
+    }
+    if (missionList.length % 2 != 0){
+      final int count = missionList.length;
+      final Animation<double> animation =
+      Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: animationController,
+          curve: Interval((1 / count) * missionList.length-1, 1.0,
+              curve: Curves.fastOutSlowIn),
+        ),
+      );
+      animationController.forward();
+      missionGrid.add(Row(
+        children: <Widget>[
+          Container(
+            height: 220,
+            width: 180,
+            child: LatestMissionView(
+              mission: missionList[missionList.length-1],
+              animationController: animationController,
+              animation: animation,
+              callback: (){
+                getMission(missionList[missionList.length-1], '0');
+              },
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Container(
+            height: 220,
+            width: 220,
+            child: SizedBox(
+
+            ),
+          )
+        ],
+      ));
+    }
+    return missionGrid;
   }
 
   @override
   Widget build(BuildContext context) {
-    List missionData = widget.missionData;
-    return GridView(
-      padding: const EdgeInsets.all(8),
-//              physics: const NeverScrollableScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      controller: _scrollController,
-      children: List<Widget>.generate(
-        missionData.length,
-            (int index) {
-          final int count = missionData.length;
-          final Animation<double> animation =
-          Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-              parent: animationController,
-              curve: Interval((1 / count) * index, 1.0,
-                  curve: Curves.fastOutSlowIn),
-            ),
-          );
-          animationController.forward();
-          return LatestMissionView(
-            callback: () {
-              widget.callBack();
-            },
-            mission: missionData[index],
-            animation: animation,
-            animationController: animationController,
-          );
-        },
-      ),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 32.0,
-        crossAxisSpacing: 32.0,
-        childAspectRatio: 0.8,
-      ),
+//    List missionData = widget.missionList;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: buildMissionGrid(),
     );
   }
 }
@@ -354,6 +478,22 @@ class LatestMissionView extends StatelessWidget {
   final Map mission;
   final AnimationController animationController;
   final Animation<dynamic> animation;
+
+  Image getImage(){
+    Image img;
+    img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
+    if(mission['article'] != null){
+      for(var block in mission['article']['blocks']){
+        if(block['type'] == "image"){
+          if(block['data']['file']['url'] != null){
+            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
+            break;
+          }
+        }
+      }
+    }
+    return img;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -481,7 +621,7 @@ class LatestMissionView extends StatelessWidget {
                             const BorderRadius.all(Radius.circular(16.0)),
                             child: AspectRatio(
                               aspectRatio: 1.28,
-                              child: Image.network(mission['images'][0])
+                              child: getImage(),
                             ),
                           ),
                         ),
