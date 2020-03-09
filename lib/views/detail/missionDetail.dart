@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/model/util.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -20,6 +22,7 @@ class _MissionDetail extends State<MissionDetail>
   final double infoHeight = 364.0;
   AnimationController animationController;
   Animation<double> animation;
+  UserRepository _userRepository;
 
   @override
   void initState() {
@@ -28,6 +31,7 @@ class _MissionDetail extends State<MissionDetail>
     animation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
         parent: animationController,
         curve: Interval(0, 1.0, curve: Curves.fastOutSlowIn)));
+    _userRepository = UserRepository();
     super.initState();
   }
 
@@ -37,13 +41,138 @@ class _MissionDetail extends State<MissionDetail>
     super.dispose();
   }
 
+  Image getImage(){
+    Image img;
+    img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
+    if(widget.missionData['article'] != null){
+      for(var block in widget.missionData['article']['blocks']){
+        if(block['type'] == "image"){
+          if(block['data']['file']['url'] != null){
+            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
+            break;
+          }
+        }
+      }
+    }
+    return img;
+  }
+
+  List<Widget> processMissionContent(mission){
+    List<Widget> missionWidget = new List<Widget>();
+    if(mission == null){
+      missionWidget.add(Text('Loading mission'));
+      return missionWidget;
+    }
+    // Add time
+//    var date = mission['time'].toDate();
+
+    // Process contents
+    if(mission['article'] != null){
+      for(var block in mission['article']['blocks']){
+        if(block['type'] == 'paragraph'){
+          // handle link case
+          Widget curBlock = Text(block['data']['text']);
+          List<TextSpan> textLists = new List<TextSpan>();
+          if (block['data']['text'].contains('<a')){
+            List<String> blockTexts = block['data']['text'].split('<a ');
+            for(String blockText in blockTexts){
+              if(blockText.contains('href=')){
+                int startURL = blockText.indexOf('href=')+6;
+                int endUrl = blockText.indexOf('">');
+                String url = blockText.substring(startURL, endUrl);
+                int endLink = blockText.indexOf('</a>');
+                String link = blockText.substring(endUrl+2, endLink);
+                textLists.add( LinkTextSpan(
+                  style: AppTheme.caption,
+                  url: url,
+                  text: link,
+                ),);
+                textLists.add(TextSpan(
+                  style: AppTheme.body1,
+                  text: blockText.substring(endLink+4),
+                ));
+              }
+              else{
+                textLists.add(TextSpan(
+                  style: AppTheme.body1,
+                  text: blockText,
+                ),);
+              }
+            }
+
+            if(textLists.isNotEmpty){
+              curBlock = RichText(
+                text: TextSpan(
+                  children: textLists,
+                ),
+              );
+            }
+          }
+          missionWidget.add(
+              Padding(
+                padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 24.0, right: 24.0),
+                child: curBlock,
+              )
+          );
+        }
+        else if(block['type'] == 'header'){
+          missionWidget.add(
+              Padding(
+                padding: EdgeInsets.only(top: 8.0, bottom: 8.0, left: 24.0, right: 24.0),
+                child: Text(block['data']['text'], style: AppTheme.title,),
+              )
+          );
+        }
+        else if(block['type'] == 'image'){
+          if(block['data']['file']['url'] == null){
+            continue;
+          }
+          missionWidget.add(
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+              )
+          );
+        }
+      }
+    }
+    else{
+      for(var block in mission['blocks']){
+        if(block.contains('https')){
+          missionWidget.add(
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Image.network(block, fit: BoxFit.contain,),
+              )
+          );
+        }
+        else{
+          missionWidget.add(
+              Padding(
+                padding: EdgeInsets.only(top: 16.0, bottom: 16.0, left: 24.0, right: 24.0),
+                child: Text(block, style: TextStyle(height: 2, fontSize: 15),),
+              )
+          );
+        }
+      }
+    }
+
+    missionWidget.add(
+        SizedBox(
+          height: 36,
+        )
+    );
+
+    return missionWidget;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double tempHeight = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).size.width / 1.2) +
         24.0;
     Map missionData = widget.missionData;
-    String missionID = widget.missionID;
+//    String missionID = widget.missionID;
     return Container(
       color: AppTheme.nearlyWhite,
       child: Scaffold(
@@ -54,7 +183,7 @@ class _MissionDetail extends State<MissionDetail>
               children: <Widget>[
                 AspectRatio(
                   aspectRatio: 1.2,
-                  child: Image.network(missionData['images'][0]),
+                  child: getImage(),
                 ),
               ],
             ),
@@ -91,7 +220,7 @@ class _MissionDetail extends State<MissionDetail>
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(
-                                top: 32.0, left: 18, right: 16),
+                                top: 32.0, left: 18, right: 18),
                             child: Text(
                               missionData['name'],
                               textAlign: TextAlign.left,
@@ -105,68 +234,56 @@ class _MissionDetail extends State<MissionDetail>
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 16, right: 16, bottom: 8, top: 16),
+                                left: 18, right: 18, bottom: 8, top: 16),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                Text(
-                                  '\$28.99/hr',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w200,
-                                    fontSize: 22,
-                                    letterSpacing: 0.27,
-                                    color: AppTheme.nearlyBlue,
-                                  ),
-                                ),
-                                Container(
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text(
-                                        '4 Joined',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w200,
-                                          fontSize: 22,
-                                          letterSpacing: 0.27,
-                                          color: AppTheme.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
+                                _userRepository.getUserWidget(missionData['ownerID']),
+//                                NOTE 预留位
+//                                Container(
+//                                  child: Row(
+//                                    children: <Widget>[
+//                                      Text(
+//                                        '4 Joined',
+//                                        textAlign: TextAlign.left,
+//                                        style: TextStyle(
+//                                          fontWeight: FontWeight.w200,
+//                                          fontSize: 22,
+//                                          letterSpacing: 0.27,
+//                                          color: AppTheme.grey,
+//                                        ),
+//                                      ),
+//                                    ],
+//                                  ),
+//                                )
                               ],
                             ),
                           ),
-                          Container(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                children: <Widget>[
-                                  getTimeBoxUI('2/4', 'Photographers'),
-                                  getTimeBoxUI('1/5', 'Script Writer'),
-                                  getTimeBoxUI('1/5', 'Actors'),
-                                ],
+                          SingleChildScrollView(
+                            child: Container(
+                              height: 75,
+                              child: Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: ListView.builder(
+                                  itemCount: missionData['needs'].length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (BuildContext context, int index){
+                                    return getRoleBoxUI('0', missionData['needs'][index]);
+                                  }
+                                )
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: Container(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 16, right: 16, top: 8, bottom: 8),
-                                child: Text(
-                                  missionData['group_notice'],
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w200,
-                                    fontSize: 14,
-                                    letterSpacing: 0.27,
-                                    color: AppTheme.grey,
+                          Flexible(
+                            child: SingleChildScrollView(
+                              child: Container(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, right: 8, top: 0, bottom: 0),
+                                  child: Column(
+                                    children: processMissionContent(missionData),
                                   ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ),
@@ -175,7 +292,7 @@ class _MissionDetail extends State<MissionDetail>
 //                            duration: const Duration(milliseconds: 500),
 //                            opacity: opacity3,
                             child: Padding(
-                              padding: const EdgeInsets.only(
+                              padding: const EdgeInsets.only(top: 16,
                                   left: 16, bottom: 16, right: 16),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -196,7 +313,7 @@ class _MissionDetail extends State<MissionDetail>
                                       ),
                                       child: Icon(
                                         Icons.share,
-                                        color: AppTheme.nearlyBlue,
+                                        color: AppTheme.primary,
                                         size: 28,
                                       ),
                                     ),
@@ -208,14 +325,14 @@ class _MissionDetail extends State<MissionDetail>
                                     child: Container(
                                       height: 48,
                                       decoration: BoxDecoration(
-                                        color: AppTheme.nearlyBlue,
+                                        color: AppTheme.primary,
                                         borderRadius: const BorderRadius.all(
                                           Radius.circular(16.0),
                                         ),
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
                                               color: AppTheme
-                                                  .nearlyBlue
+                                                  .primary
                                                   .withOpacity(0.5),
                                               offset: const Offset(1.1, 1.1),
                                               blurRadius: 10.0),
@@ -223,7 +340,7 @@ class _MissionDetail extends State<MissionDetail>
                                       ),
                                       child: Center(
                                         child: Text(
-                                          'Join Mission',
+                                          'Follow',
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
@@ -240,9 +357,6 @@ class _MissionDetail extends State<MissionDetail>
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: MediaQuery.of(context).padding.bottom,
-                          )
                         ],
                       ),
                     ),
@@ -250,45 +364,47 @@ class _MissionDetail extends State<MissionDetail>
                 ),
               ),
             ),
-            Positioned(
-              top: (MediaQuery.of(context).size.width / 1.2) - 24.0 - 35,
-              right: 35,
-              child: ScaleTransition(
-                alignment: Alignment.center,
-                scale: CurvedAnimation(
-                    parent: animationController, curve: Curves.fastOutSlowIn),
-                child: Card(
-                  color: AppTheme.nearlyBlue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50.0)),
-                  elevation: 10.0,
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    child: Center(
-                      child: Icon(
-                        Icons.favorite,
-                        color: AppTheme.nearlyWhite,
-                        size: 30,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+//            Positioned(
+//              top: (MediaQuery.of(context).size.width / 1.2) - 24.0 - 35,
+//              right: 35,
+//              child:
+//                Card(
+//                  color: AppTheme.primary,
+//                  shape: RoundedRectangleBorder(
+//                      borderRadius: BorderRadius.circular(50.0)),
+//                  elevation: 10.0,
+//                  child: Container(
+//                    width: 55,
+//                    height: 55,
+//                    child: Center(
+//                      child: Icon(
+//                        Icons.bookmark,
+//                        color: AppTheme.nearlyWhite,
+//                        size: 30,
+//                      ),
+//                    ),
+//                  ),
+//                ),
+//            ),
             Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, left: MediaQuery.of(context).padding.right+15),
               child: SizedBox(
-                width: AppBar().preferredSize.height,
-                height: AppBar().preferredSize.height,
+                width: AppBar().preferredSize.height-8,
+                height: AppBar().preferredSize.height-8,
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    borderRadius:
-                    BorderRadius.circular(AppBar().preferredSize.height),
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: AppTheme.nearlyBlack,
+                    borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
+                    child: Container(
+                      decoration: new BoxDecoration(
+                        shape: BoxShape.circle,// You can use like this way or like the below line
+                        //borderRadius: new BorderRadius.circular(30.0),
+                        color: AppTheme.grey.withOpacity(0.5),
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: AppTheme.nearlyWhite,
+                      ),
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -303,7 +419,7 @@ class _MissionDetail extends State<MissionDetail>
     );
   }
 
-  Widget getTimeBoxUI(String text1, String txt2) {
+  Widget getRoleBoxUI(String text1, String text2) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -324,21 +440,22 @@ class _MissionDetail extends State<MissionDetail>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              // 预留位
+//              Text(
+//                text1,
+//                textAlign: TextAlign.center,
+//                style: TextStyle(
+//                  fontWeight: FontWeight.w600,
+//                  fontSize: 14,
+//                  letterSpacing: 0.27,
+//                  color: AppTheme.nearlyBlue,
+//                ),
+//              ),
               Text(
-                text1,
+                text2,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  letterSpacing: 0.27,
-                  color: AppTheme.nearlyBlue,
-                ),
-              ),
-              Text(
-                txt2,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w200,
+                  fontWeight: FontWeight.w400,
                   fontSize: 14,
                   letterSpacing: 0.27,
                   color: AppTheme.grey,
