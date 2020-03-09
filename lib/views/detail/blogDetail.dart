@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:flutter/gestures.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
@@ -12,17 +10,7 @@ import 'package:freetitle/views/comment/comment.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class _LinkTextSpan extends TextSpan {
-
-  _LinkTextSpan({ TextStyle style, String url, String text }) : super(
-      style: style,
-      text: text ?? url,
-      recognizer: TapGestureRecognizer()..onTap = () {
-        launch(url, forceSafariVC: false);
-      }
-  );
-}
+import 'package:freetitle/model/util.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -83,7 +71,10 @@ class _BlogDetail extends State<BlogDetail> {
     blogWidget.add(title);
     // Add author
     Widget author = _userRepository.getUserWidget(blog['user']);
-    blogWidget.add(author);
+    blogWidget.add(Padding(
+      padding: EdgeInsets.only(top: 8, left: 24, right: 24),
+      child: author,
+    ));
     // Add time
     var date = blog['time'].toDate();
 
@@ -103,7 +94,7 @@ class _BlogDetail extends State<BlogDetail> {
                 String url = blockText.substring(startURL, endUrl);
                 int endLink = blockText.indexOf('</a>');
                 String link = blockText.substring(endUrl+2, endLink);
-                textLists.add( _LinkTextSpan(
+                textLists.add( LinkTextSpan(
                   style: AppTheme.caption,
                   url: url,
                   text: link,
