@@ -87,39 +87,36 @@ class UserRepository {
               String userName = userData['displayName'];
               String avatarURL = userData['avatarUrl'];
               Image avatar = Image.network(avatarURL);
-              return Padding(
-                padding: EdgeInsets.only(top: 8.0, left: 24.0, right: 24.0),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                              color: AppTheme.grey.withOpacity(0.6),
-                              offset: const Offset(2.0, 4.0),
-                              blurRadius: 2),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius:
-                        const BorderRadius.all(Radius.circular(60.0)),
-                        child: avatar,
-                      ),
+              return Row(
+                children: <Widget>[
+                  Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                            color: AppTheme.grey.withOpacity(0.6),
+                            offset: const Offset(2.0, 4.0),
+                            blurRadius: 2),
+                      ],
                     ),
-                    SizedBox(width: 20,),
-                    Text(
-                      userName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.grey,
-                        fontSize: 18,
-                      ),
+                    child: ClipRRect(
+                      borderRadius:
+                      const BorderRadius.all(Radius.circular(60.0)),
+                      child: avatar,
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(width: 20,),
+                  Text(
+                    userName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.grey,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
               );
             }
             else{
