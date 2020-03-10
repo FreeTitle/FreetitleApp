@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 
 class UserCard extends StatelessWidget{
+  const UserCard(
+      {Key key,
+        this.userData,
+      }
+  ): super(key: key);
+
+  final userData;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +94,7 @@ class UserCard extends StatelessWidget{
                                           const EdgeInsets.only(
                                               left: 0, bottom: 3),
                                           child: Text(
-                                            '99',
+                                            userData['coins'].toString(),
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontFamily: AppTheme.fontName,
@@ -150,14 +157,14 @@ class UserCard extends StatelessWidget{
                               child: ClipRRect(
                                 borderRadius:
                                 const BorderRadius.all(Radius.circular(60.0)),
-                                child: Image.asset('assets/images/userImage.png'),
+                                child: Image.network(userData['avatarUrl']),
                               ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 8, right: 8, bottom: 8),
                             child: Text(
-                              'user name',
+                              userData['displayName'],
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
@@ -236,7 +243,7 @@ class UserCard extends StatelessWidget{
                         Padding(
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
-                            '20',
+                            userData['blogs'] != null ? userData['blogs'].length.toString() : '0',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: AppTheme.fontName,
@@ -301,7 +308,7 @@ class UserCard extends StatelessWidget{
                             Padding(
                               padding: const EdgeInsets.only(top: 6),
                               child: Text(
-                                '5',
+                                userData['missions'] != null ? userData['missions'].length.toString() : '0',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: AppTheme.fontName,
@@ -369,7 +376,7 @@ class UserCard extends StatelessWidget{
                             Padding(
                               padding: const EdgeInsets.only(top: 6),
                               child: Text(
-                                '10',
+                                userData['posts'] != null ? userData['posts'].length.toString() : '0',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: AppTheme.fontName,

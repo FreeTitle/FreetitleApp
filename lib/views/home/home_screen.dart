@@ -179,7 +179,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                         return SingleChildScrollView(
                                           child: Container(
                                             color: AppTheme.nearlyWhite,
-                                            height: MediaQuery.of(context).size.height,
+//                                            height: MediaQuery.of(context).size.height,
                                             child: Column(
                                               children: <Widget>[
                                                 Column(
@@ -207,7 +207,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                                 Padding(
                                                     padding: const EdgeInsets.only(top: 0.0, left: 18, right: 16),
                                                     child: LatestMissionListView(missionList: missionList,),
-                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),

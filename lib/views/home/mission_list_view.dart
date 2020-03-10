@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/main.dart';
-//import 'package:freetitle/model/mission_list_data.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/detail/missionDetail.dart';
 
@@ -397,7 +396,7 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
           ),
           Container(
             height: 220,
-            width: 220,
+            width: 180,
             child: SizedBox(
 
             ),
