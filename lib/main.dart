@@ -8,6 +8,7 @@ import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/simple_bloc_delegate.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 
 void main(){
@@ -37,6 +38,14 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarDividerColor: Colors.grey,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     return BlocProvider(
       bloc: _authenticationBloc,
       child: Provider<UserRepository>.value(

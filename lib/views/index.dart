@@ -7,7 +7,8 @@ import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/drawer/navi_drawer.dart';
 import 'package:freetitle/views/home/home_screen.dart';
-
+import 'dart:io';
+import 'package:flutter/services.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -33,6 +34,14 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarDividerColor: Colors.grey,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     return Container(
       child: Scaffold(
           body: BlocBuilder(

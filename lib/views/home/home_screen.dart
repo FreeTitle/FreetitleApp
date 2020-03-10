@@ -68,15 +68,15 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                       length: 2,
                       child: Scaffold(
                           appBar: AppBar(
-                            title: new Center(child: Text('Freetitle', style: TextStyle(color: Colors.white),) ),
+                            title: new Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
                             actions: <Widget>[
-                              Container(padding: EdgeInsets.only(right: 16),child: Icon(Icons.search, color: Colors.white,)),
+                              Container(padding: EdgeInsets.only(right: 16),child: Icon(Icons.search, color: Colors.black,)),
                             ],
-                            backgroundColor: AppTheme.primary,
+                            backgroundColor: AppTheme.white,
                             bottom: TabBar(
-                              labelColor: AppTheme.white,
-                              unselectedLabelColor: Colors.white,
-                              indicatorColor: AppTheme.white,
+                              labelColor: AppTheme.primary,
+                              unselectedLabelColor: Colors.black,
+                              indicatorColor: AppTheme.primary,
                               tabs: <Widget>[
                                 Tab(child: Text('Blogs')),
                                 Tab(child: Text('Mission')),
