@@ -335,7 +335,7 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
         children: <Widget>[
           Container(
             height: 220,
-            width: 180,
+            width: MediaQuery.of(context).size.width/2-25,
             child: LatestMissionView(
               mission: missionList[i],
               animationController: animationController,
@@ -346,11 +346,11 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
             ),
           ),
           SizedBox(
-            width: 20,
+            width: 15,
           ),
           Container(
             height: 220,
-            width: 180,
+            width: MediaQuery.of(context).size.width/2-25,
             child: LatestMissionView(
               mission: missionList[i+1],
               animationController: animationController,
@@ -377,11 +377,12 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
         ),
       );
       animationController.forward();
+      print(MediaQuery.of(context).size);
       missionGrid.add(Row(
         children: <Widget>[
           Container(
             height: 220,
-            width: 180,
+            width: MediaQuery.of(context).size.width/2-25,
             child: LatestMissionView(
               mission: missionList[missionList.length-1],
               animationController: animationController,
@@ -392,11 +393,11 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
             ),
           ),
           SizedBox(
-            width: 20,
+            width: 15,
           ),
           Container(
             height: 220,
-            width: 180,
+            width: MediaQuery.of(context).size.width/2-25,
             child: SizedBox(
 
             ),
