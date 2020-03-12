@@ -6,6 +6,7 @@ import 'package:freetitle/views/profile/user_card.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:freetitle/views/profile/my_mission_list_view.dart';
+import 'package:freetitle/app_theme.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -37,6 +38,10 @@ class _Profile extends State<Profile> {
       subTxt: 'More',
     ));
     profileWidget.add(MyMissionListView(ownerID: userID, missionIDs: userData['missions'],));
+    profileWidget.add(TitleView(
+      titleTxt: 'Blogs',
+      subTxt: 'More',
+    ));
     return ListView.builder(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
@@ -60,7 +65,27 @@ class _Profile extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarDividerColor: Colors.grey,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     return Scaffold(
+//      backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: AppTheme.primary,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Icon(
+                  Icons.settings
+              ),
+            )
+          ],
+        ),
         body: FutureBuilder<bool>(
           future: getData(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot){

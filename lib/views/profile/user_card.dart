@@ -94,7 +94,7 @@ class UserCard extends StatelessWidget{
                                           const EdgeInsets.only(
                                               left: 0, bottom: 3),
                                           child: Text(
-                                            userData['coins'].toString(),
+                                            userData['coins'] != null ? userData['coins'].toString() : '0',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontFamily: AppTheme.fontName,
