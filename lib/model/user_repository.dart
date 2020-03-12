@@ -26,10 +26,17 @@ class UserRepository {
     );
     await _firebaseAuth.signInWithCredential(credential);
     FirebaseUser user = await _firebaseAuth.currentUser();
-    Firestore.instance.collection('users').document(user.uid).setData({
+    print('In user repository ${user}');
+    await Firestore.instance.collection('users').document(user.uid).updateData({
       'displayName': user.displayName,
       'email': user.email,
       'avatarUrl': user.photoUrl,
+    }).catchError((e) => {
+      Firestore.instance.collection('users').document(user.uid).setData({
+        'displayName': user.displayName,
+        'email': user.email,
+        'avatarUrl': user.photoUrl,
+      })
     });
     return _firebaseAuth.currentUser();
   }
