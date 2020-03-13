@@ -225,11 +225,19 @@ class _BlogDetail extends State<BlogDetail> {
               blog = snapshot.data.data;
               return Scaffold(
                   appBar: AppBar(
+                    brightness: Brightness.light,
+                    leading: IconButton(
+                      icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
                     actions: <Widget>[
                       Padding(
                         padding: EdgeInsets.only(right: 20),
                         child: IconButton(
                           icon: Icon(Icons.comment),
+                          color: Colors.black,
                           onPressed: () async {
                             await Navigator.push<dynamic>(
                               context,
@@ -244,7 +252,7 @@ class _BlogDetail extends State<BlogDetail> {
                         ),
                       ),
                     ],
-                    backgroundColor: AppTheme.primary,
+                    backgroundColor: AppTheme.white,
                     iconTheme: IconThemeData(color: Colors.white),
                   ),
                   floatingActionButton: SpeedDial(
@@ -298,11 +306,14 @@ class _BlogDetail extends State<BlogDetail> {
                   resizeToAvoidBottomPadding: false,
                 body: SingleChildScrollView(
                   controller: _scrollController,
-                  child: Column(
-                    key: PageStorageKey('blog'),
-                    children:
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Column(
+                      key: PageStorageKey('blog'),
+                      children:
                       processBlogContent(blog),
-                  ),
+                    ),
+                  )
                 )
               );
             }
