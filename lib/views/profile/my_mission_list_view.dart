@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:freetitle/main.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/detail/missionDetail.dart';
 
@@ -56,6 +55,21 @@ class _MyMissionListViewState extends State<MyMissionListView>
     );
   }
 
+  Widget noMissionWidget() {
+    return Padding(
+      padding: EdgeInsets.only(left: 24, right: 24),
+      child: Card(
+        child: Center(
+          child: Container(
+            child: Text(
+                'No missions yet'
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List missionIDs = widget.missionIDs;
@@ -68,14 +82,14 @@ class _MyMissionListViewState extends State<MyMissionListView>
           future: getData(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
             if (!snapshot.hasData) {
-              return const SizedBox();
+              return noMissionWidget();
             }
             else{
               if(missionList.length != 0){
                 return ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.only(
-                      top: 0, bottom: 0, right: 16, left: 16),
+                      top: 0, bottom: 0, right: 24, left: 24),
                   itemCount: missionList.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context, int index){
@@ -102,18 +116,7 @@ class _MyMissionListViewState extends State<MyMissionListView>
                 );
               }
               else{
-                return Padding(
-                  padding: EdgeInsets.only(left: 24, right: 24),
-                  child: Card(
-                    child: Center(
-                      child: Container(
-                        child: Text(
-                            'No missions yet'
-                        ),
-                      ),
-                    ),
-                  ),
-                );
+                return noMissionWidget();
               }
             }
           },

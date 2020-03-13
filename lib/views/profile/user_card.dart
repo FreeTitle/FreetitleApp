@@ -147,16 +147,10 @@ class UserCard extends StatelessWidget{
                               width: 100,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                      color: AppTheme.grey.withOpacity(0.6),
-                                      offset: const Offset(2.0, 4.0),
-                                      blurRadius: 8),
-                                ],
                               ),
                               child: ClipRRect(
                                 borderRadius:
-                                const BorderRadius.all(Radius.circular(60.0)),
+                                const BorderRadius.all(Radius.circular(80.0)),
                                 child: Image.network(userData['avatarUrl']),
                               ),
                             ),
@@ -164,7 +158,7 @@ class UserCard extends StatelessWidget{
                           Padding(
                             padding: const EdgeInsets.only(top: 8, right: 8, bottom: 8),
                             child: Text(
-                              userData['displayName'],
+                              userData['displayName'].length > 15 ? userData['displayName'].substring(0,15)+'...' : userData['displayName'],
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
@@ -334,7 +328,7 @@ class UserCard extends StatelessWidget{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Posts',
+                              'Bookmarks',
                               style: TextStyle(
                                 fontFamily: AppTheme.fontName,
                                 fontWeight: FontWeight.w500,
@@ -376,7 +370,7 @@ class UserCard extends StatelessWidget{
                             Padding(
                               padding: const EdgeInsets.only(top: 6),
                               child: Text(
-                                userData['posts'] != null ? userData['posts'].length.toString() : '0',
+                                userData['bookmarks'] != null ? userData['bookmarks'].length.toString() : '0',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: AppTheme.fontName,

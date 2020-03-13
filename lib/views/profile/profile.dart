@@ -1,14 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/views/login/login.dart';
+import 'package:freetitle/views/profile/my_blog_list_view.dart';
 import 'package:freetitle/views/profile/title_view.dart';
 import 'package:freetitle/views/profile/user_card.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:freetitle/views/profile/my_mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/settings/settings.dart';
 
 class Profile extends StatefulWidget {
+  const Profile(
+  {Key key,
+    this.userID,
+    this.isMyProfile,
+    this.userName,
+  }) : super(key: key);
+
+  final String userID;
+  final bool isMyProfile;
+  final String userName;
+
   @override
   State<StatefulWidget> createState() {
     return _Profile();
@@ -17,20 +31,10 @@ class Profile extends StatefulWidget {
 
 class _Profile extends State<Profile> {
 
-  UserRepository _userRepository;
-  String userID;
-
-  @override
-  void initState(){
-    _userRepository = UserRepository();
-//    _userRepository.getUser().then((snap) => {
-//      userID = snap.uid,
-//      print(userID),
-//    });
-    super.initState();
-  }
-
   Widget buildProfileList(userData){
+
+    final userID = widget.userID;
+
     List<Widget> profileWidget = List();
     profileWidget.add(UserCard(userData: userData,));
     profileWidget.add(TitleView(
@@ -42,82 +46,101 @@ class _Profile extends State<Profile> {
       titleTxt: 'Blogs',
       subTxt: 'More',
     ));
-    return ListView.builder(
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top,
-        bottom: 62 + MediaQuery.of(context).padding.bottom,
-      ),
-      itemCount: profileWidget.length,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (BuildContext context, int index){
-        return profileWidget[index];
-      }
+    profileWidget.add(MyBlogListView(ownerID: userID,));
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.only(
+//          top: MediaQuery.of(context).padding.top,
+          bottom: 62 + MediaQuery.of(context).padding.bottom,
+        ),
+        child: Column(
+          children: profileWidget,
+        ),
+      )
     );
   }
 
-  Future<bool> getData() async {
-    await _userRepository.getUser().then((snap) => {
-      userID = snap.uid,
-    });
+  Widget BuildAppBarIconButton(){
+    if(widget.isMyProfile){
+      return Padding(
+        padding: EdgeInsets.only(right: 16),
+        child: IconButton(
+          icon: Icon(
+            Icons.settings,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.push<dynamic>(
+              context,
+              MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => SettingsPage(),
+              ),
+            );
+          },
+        ),
+      );
+    }
+    else{
+      return Padding(
+        padding: EdgeInsets.only(right: 16),
+        child: IconButton(
+          icon: Icon(
+            Icons.more_horiz,
+            color: Colors.black,
+          ),
+          onPressed: () {
 
-    return true;
+          },
+        )
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarDividerColor: Colors.grey,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
+    final userID = widget.userID;
     return Scaffold(
-//      backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: AppTheme.primary,
+          backgroundColor: AppTheme.white,
+          brightness: Brightness.light,
+          title: Text(
+            widget.isMyProfile ? '我' : widget.userName,
+            style: TextStyle(
+              fontFamily: AppTheme.fontName,
+              color: Colors.black
+            ),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
           actions: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(
-                  Icons.settings
-              ),
-            )
+            BuildAppBarIconButton(),
           ],
         ),
-        body: FutureBuilder<bool>(
-          future: getData(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
-            if(userID != null){
-              return StreamBuilder<DocumentSnapshot>(
-                stream: Firestore.instance.collection('users').document(userID).snapshots(),
-                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                  if (snapshot.hasError)
-                    return new Text('Error: ${snapshot.error}');
-                  switch(snapshot.connectionState){
-                    case ConnectionState.waiting:
-                      return new Text('Loading');
-                    default:
-                      if(snapshot.data.data != null){
-                        final userData = snapshot.data.data;
-                        return buildProfileList(userData);
-                      }
-                      else{
-                        return Center(
-                          child: Text('User file broken'),
-                        );
-                      }
-                  }
-                },
-              );
+        body: StreamBuilder<DocumentSnapshot>(
+          stream: Firestore.instance.collection('users').document(userID).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+            if (snapshot.hasError)
+              return new Text('Error: ${snapshot.error}');
+            switch(snapshot.connectionState){
+              case ConnectionState.waiting:
+                return new Text('Loading');
+              default:
+                if(snapshot.data.data != null){
+                  final userData = snapshot.data.data;
+                  return buildProfileList(userData);
+                }
+                else{
+                  return Center(
+                    child: Text('User file broken'),
+                  );
+                }
             }
-            else{
-              return Center(
-                child: Text('User file is broken'),
-              );
-            }
-          }
+          },
         ),
 //      body: buildProfileList(),
     );
