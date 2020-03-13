@@ -102,6 +102,7 @@ class _Profile extends State<Profile> {
     final userID = widget.userID;
     return Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: AppTheme.white,
           brightness: Brightness.light,
           title: Text(
@@ -111,7 +112,7 @@ class _Profile extends State<Profile> {
               color: Colors.black
             ),
           ),
-          leading: IconButton(
+          leading: widget.isMyProfile ? SizedBox() : IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
             onPressed: () {
               Navigator.of(context).pop();
