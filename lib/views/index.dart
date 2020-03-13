@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:freetitle/views/profile/get_my_profile.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:freetitle/views/chat/chat.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/drawer/navi_drawer.dart';
+//import 'package:freetitle/views/drawer/navi_drawer.dart';
 import 'package:freetitle/views/home/home_screen.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -21,9 +22,9 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   int _pageIndex = 0;
   final List<Widget> _children = [
-    NaviDrawer(),
+    Home(),
     Chat(),
-    Profile(),
+    GetMyProfile(),
   ];
 
   onTabTapped(int index) {
@@ -50,11 +51,13 @@ class _IndexPageState extends State<IndexPage> {
                 print("Index Page: ${BlocProvider.of<AuthenticationBloc>(context).state}, Page_index: $_pageIndex");
                 if (state is Uninitialized || state is Unauthenticated) {
                   if (_pageIndex == 0) {
-                    return NaviDrawer();
+                    return Home();
                   } else {
                     return LoginScreen();
                   }
-                } else if (state is Authenticated) return _children[_pageIndex];
+                } else if (state is Authenticated) {
+                  return _children[_pageIndex];
+                }
               }),
           bottomNavigationBar: new Theme(
             data: Theme.of(context).copyWith(

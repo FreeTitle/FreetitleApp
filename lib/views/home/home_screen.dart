@@ -24,8 +24,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
   List blogList;
   List missionList;
   List missionIDs;
-  final ScrollController _scrollController = ScrollController();
-//  CategoryType categoryType = CategoryType.film;
+//  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState(){
@@ -68,6 +67,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                       length: 2,
                       child: Scaffold(
                           appBar: AppBar(
+                            brightness: Brightness.light,
                             title: new Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
                             actions: <Widget>[
                               Container(padding: EdgeInsets.only(right: 16),child: Icon(Icons.search, color: Colors.black,)),
@@ -94,11 +94,13 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                     return new Text('Error: ${snapshot.error}');
                                   switch (snapshot.connectionState) {
                                     case ConnectionState.waiting:
-                                      return new Text('Loading');
+                                      return new Center(
+                                        child: Text('Loading'),
+                                      );
                                     default:
                                       if (snapshot.hasData) {
                                         blogList = new List();
-                                        blogList.clear();
+//                                        blogList.clear();
                                         snapshot.data.documents.forEach((blog) => {
                                           blogList.add(Tuple2(blog.documentID, blog.data))
                                         });
@@ -106,17 +108,18 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                           color: AppTheme.primary,
                                           showChildOpacityTransition: false,
                                           onRefresh: () async {
+                                            print('pull');
                                             await Future.delayed(
                                                 Duration(milliseconds: 500));
-                                            List newList = List();
-                                            await Firestore.instance.collection('blogs').getDocuments().then((snap)=>{
-                                              snap.documents.forEach((blog) => {
-                                                newList.add(Tuple2(blog.documentID, blog.data))
-                                              }),
-                                            });
-                                            setState(() {
-                                              blogList = newList;
-                                            });
+//                                            List newList = List();
+//                                            await Firestore.instance.collection('blogs').getDocuments().then((snap)=>{
+//                                              snap.documents.forEach((blog) => {
+//                                                newList.add(Tuple2(blog.documentID, blog.data))
+//                                              }),
+//                                            });
+//                                            setState(() {
+//                                              blogList = newList;
+//                                            });
                                           },
                                           child: ListView.builder(
                                             itemCount: blogList.length,
@@ -165,7 +168,9 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                     return new Text('Error: ${snapshot.error}');
                                   switch (snapshot.connectionState) {
                                     case ConnectionState.waiting:
-                                      return new Text('Loading');
+                                      return new Center(
+                                        child: Text('Loading'),
+                                      );
                                     default:
                                       if(snapshot.hasData){
                                         missionList = List();

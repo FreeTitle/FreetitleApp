@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freetitle/views/profile/profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
@@ -27,11 +28,8 @@ class UserRepository {
     await _firebaseAuth.signInWithCredential(credential);
     FirebaseUser user = await _firebaseAuth.currentUser();
     print('In user repository ${user}');
-    await Firestore.instance.collection('users').document(user.uid).updateData({
-      'displayName': user.displayName,
-      'email': user.email,
-      'avatarUrl': user.photoUrl,
-    }).catchError((e) => {
+    await Firestore.instance.collection('users').document(user.uid).get()
+        .catchError((e) => {
       Firestore.instance.collection('users').document(user.uid).setData({
         'displayName': user.displayName,
         'email': user.email,
@@ -94,36 +92,48 @@ class UserRepository {
               String userName = userData['displayName'];
               String avatarURL = userData['avatarUrl'];
               Image avatar = Image.network(avatarURL);
-              return Row(
-                children: <Widget>[
-                  Container(
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                            color: AppTheme.grey.withOpacity(0.6),
-                            offset: const Offset(2.0, 4.0),
-                            blurRadius: 2),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(60.0)),
-                      child: avatar,
-                    ),
+              return Material(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute<dynamic>(
+                        builder: (BuildContext context) => Profile(userID: uid, isMyProfile: false, userName: userData['displayName'],),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+//                          boxShadow: <BoxShadow>[
+//                            BoxShadow(
+//                                color: AppTheme.grey.withOpacity(0.6),
+//                                offset: const Offset(2.0, 4.0),
+//                                blurRadius: 2),
+//                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(60.0)),
+                          child: avatar,
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                      Text(
+                        userName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.grey,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 20,),
-                  Text(
-                    userName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.grey,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
+                ),
               );
             }
             else{
