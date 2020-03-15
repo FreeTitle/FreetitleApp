@@ -33,9 +33,15 @@ class _BlogDetail extends State<BlogDetail> {
 
   UserRepository _userRepository;
   ScrollController _scrollController;
+  bool liked = false;
+  bool marked = false;
+  String userID;
   @override
   void initState(){
     _userRepository = new UserRepository();
+    _userRepository.getUser().then((snap) => {
+      userID = snap.uid,
+    });
     _scrollController = new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     super.initState();
   }
@@ -197,6 +203,8 @@ class _BlogDetail extends State<BlogDetail> {
     List<String> commentIDs = getCommentIDs(blog);
     if (commentIDs.isNotEmpty){
       blogWidget.add(CommentBottom(commentIDs: commentIDs, blogID: widget.blogID,));
+    }else{
+      blogWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }
 
     blogWidget.add(
@@ -211,7 +219,7 @@ class _BlogDetail extends State<BlogDetail> {
   @override
   Widget build(BuildContext context) {
     Map blog;
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+
     return StreamBuilder<DocumentSnapshot>(
       stream: Firestore.instance.collection('blogs').document(widget.blogID).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
@@ -219,10 +227,21 @@ class _BlogDetail extends State<BlogDetail> {
           return new Text('Error: ${snapshot.error}');
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
-            return new Text('Loading');
+            return new PlaceHolderCard(
+              text: 'Loading Blog',
+              height: 200.0,
+            );
           default:
             if(snapshot.data.data != null){
               blog = snapshot.data.data;
+              if(blog['markedBy'] != null && blog['markedBy'].contains(userID)){
+                marked = true;
+              }
+              if(blog['upvotedBy'] != null && blog['upvotedBy'].contains(userID)){
+                liked = true;
+              }
+              print(userID);
+              print(liked);
               return Scaffold(
                   appBar: AppBar(
                     brightness: Brightness.light,
@@ -256,7 +275,7 @@ class _BlogDetail extends State<BlogDetail> {
                     iconTheme: IconThemeData(color: Colors.white),
                   ),
                   floatingActionButton: SpeedDial(
-                    marginRight: 18,
+                    marginRight: 20,
                     marginBottom: 20,
                     animatedIcon: AnimatedIcons.menu_close,
                     animatedIconTheme: IconThemeData(size: 22.0),
@@ -273,16 +292,27 @@ class _BlogDetail extends State<BlogDetail> {
                     children: [
                       SpeedDialChild(
                         //TODO 点赞 to be implemented
-                        child: Icon(Icons.favorite),
+                        child: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
                         backgroundColor: AppTheme.secondary,
-                        label: "点赞",
+                        label: "点赞 ${blog['likes'].toString()}",
                         labelStyle: AppTheme.body1,
-                        onTap: () => print('点赞'),
+                        onTap: () {
+                          setState(() {
+                            liked = !liked;
+                          });
+                          Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                            "likes": FieldValue.increment((liked ? (1) : (-1))),
+                          }).whenComplete(() => {
+                            print('succeeded'),
+                          }).catchError((e) => {
+                            print('get error ${e}'),
+                          });
+                        },
                       ),
                       SpeedDialChild(
                         child: Icon(Icons.comment),
                         backgroundColor: AppTheme.secondary,
-                        label: "评论",
+                        label: "评论 ${blog['comments'] != null ? blog['comments'].length.toString() : '0' }",
                         labelStyle: AppTheme.body1,
                         onTap: () {
                           Navigator.push<dynamic>(
@@ -294,13 +324,37 @@ class _BlogDetail extends State<BlogDetail> {
                         },
                       ),
                       SpeedDialChild(
-                      //TODO 分享 to be implemented
+                        child: marked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
+                        backgroundColor: AppTheme.secondary,
+                        label: "收藏 ${blog['markedBy'] != null ? blog['markedBy'].length.toString() : '0' }",
+                        labelStyle: AppTheme.body1,
+                        onTap: () {
+                          setState(() {
+                            marked = !marked;
+                          });
+                          Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
+                            if(snap.data.isNotEmpty){
+                              await _userRepository.getUser().then((snap) => {
+                                userID = snap.uid,
+                              });
+                              await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                                'markedBy': FieldValue.arrayUnion([userID])
+                              });
+                              await Firestore.instance.collection('users').document(userID).updateData({
+                                'bookmarks': FieldValue.arrayUnion([widget.blogID])
+                              });
+                            }
+                          });
+                        },
+                      ),
+                      SpeedDialChild(
+                        //TODO 分享 to be implemented
                         child: Icon(Icons.share),
                         backgroundColor: AppTheme.secondary,
                         label: "分享",
                         labelStyle: AppTheme.body1,
                         onTap: () => print('分享'),
-                      )
+                      ),
                     ],
                   ),
                   resizeToAvoidBottomPadding: false,
@@ -322,11 +376,9 @@ class _BlogDetail extends State<BlogDetail> {
                 appBar: AppBar(
                   backgroundColor: AppTheme.primary,
                 ),
-                body: Center(
-                  child: Container(
-                    child: Text("Loading blog"),
-                  ),
-                ),
+                body: PlaceHolderCard(
+                  text: 'Loadding Blog',
+                )
               );
             }
         }
