@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 
-class BlogListView extends StatelessWidget {
-  const BlogListView(
+class BlogCard extends StatelessWidget {
+  const BlogCard(
       {Key key,
         this.blogData,
         this.animationController,
@@ -106,8 +106,8 @@ class BlogListView extends StatelessWidget {
                                                 Text(
                                                   blogData['username'],
                                                   style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.grey.withOpacity(0.8)
+                                                      fontSize: 16,
+                                                      color: Colors.grey
                                                   ),
                                                 ),
                                                 const SizedBox(
@@ -115,20 +115,126 @@ class BlogListView extends StatelessWidget {
                                                 ),
                                               ],
                                             ),
-//                                            Padding(
-//                                              padding: const EdgeInsets.only(top: 4),
-//                                              child: Row(
-//                                                children: <Widget>[
-//                                                  Text(
-//                                                    '99 Reviews',
-//                                                    style: TextStyle(
-//                                                        fontSize: 14,
-//                                                        color: Colors.grey
-//                                                            .withOpacity(0.8)),
-//                                                  ),
-//                                                ],
-//                                              ),
-//                                            )
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 4),
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Container(
+                                                    width: MediaQuery.of(context).size.width/5,
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Icon(
+                                                            Icons.remove_red_eye
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                          blogData['views'].toString(),
+                                                          style: TextStyle(
+                                                              fontSize: 14,
+                                                              color: Colors.grey
+                                                                  .withOpacity(0.8)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 30,
+                                                    width: 2,
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme.nearlyBlack
+                                                          .withOpacity(0.5),
+                                                      borderRadius: BorderRadius.all(
+                                                          Radius.circular(4.0)),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding: EdgeInsets.only(left: 8),
+                                                    width: MediaQuery.of(context).size.width/5,
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Icon(
+                                                            Icons.favorite,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                          blogData['likes'].toString(),
+                                                          style: TextStyle(
+                                                              fontSize: 14,
+                                                              color: Colors.grey
+                                                                  .withOpacity(0.8)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 30,
+                                                    width: 2,
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme.nearlyBlack
+                                                          .withOpacity(0.5),
+                                                      borderRadius: BorderRadius.all(
+                                                          Radius.circular(4.0)),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding: EdgeInsets.only(left: 8),
+                                                    width: MediaQuery.of(context).size.width/5,
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Icon(
+                                                          Icons.bookmark,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                          blogData['markedBy'] != null ? blogData['markedBy'].length.toString() : '0' ,
+                                                          style: TextStyle(
+                                                              fontSize: 14,
+                                                              color: Colors.grey
+                                                                  .withOpacity(0.8)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 30,
+                                                    width: 2,
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme.nearlyBlack
+                                                          .withOpacity(0.5),
+                                                      borderRadius: BorderRadius.all(
+                                                          Radius.circular(4.0)),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding: EdgeInsets.only(left: 8),
+                                                    width: MediaQuery.of(context).size.width/5,
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Icon(
+                                                          Icons.comment,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                          blogData['comments'] != null ? blogData['comments'].length.toString() : '0' ,
+                                                          style: TextStyle(
+                                                              fontSize: 14,
+                                                              color: Colors.grey
+                                                                  .withOpacity(0.8)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
                                           ],
                                         ),
                                       ),
