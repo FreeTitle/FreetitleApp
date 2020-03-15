@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:freetitle/views/home/blog_list_view.dart';
+import 'package:freetitle/views/home/blog_card.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:freetitle/views/home/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/views/detail/blogDetail.dart';
+import 'package:freetitle/views/detail/blog_detail.dart';
 import 'package:tuple/tuple.dart';
-import 'package:freetitle/views/detail/missionDetail.dart';
+import 'package:freetitle/views/detail/mission_detail.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -142,7 +142,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                               );
                                               animationController
                                                   .forward();
-                                              return BlogListView(
+                                              return BlogCard(
                                                   callback: () {
                                                     getBlog(blogList[index]);
                                                   },

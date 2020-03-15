@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/detail/missionDetail.dart';
+import 'package:freetitle/model/util.dart';
+import 'package:freetitle/views/detail/mission_detail.dart';
 
 class MyMissionListView extends StatefulWidget {
   const MyMissionListView(
@@ -55,20 +56,20 @@ class _MyMissionListViewState extends State<MyMissionListView>
     );
   }
 
-  Widget noMissionWidget() {
-    return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24),
-      child: Card(
-        child: Center(
-          child: Container(
-            child: Text(
-                'No missions yet'
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+//  Widget noMissionWidget() {
+//    return Padding(
+//      padding: EdgeInsets.only(left: 24, right: 24),
+//      child: Card(
+//        child: Center(
+//          child: Container(
+//            child: Text(
+//                'No missions yet'
+//            ),
+//          ),
+//        ),
+//      ),
+//    );
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +83,7 @@ class _MyMissionListViewState extends State<MyMissionListView>
           future: getData(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
             if (!snapshot.hasData) {
-              return noMissionWidget();
+              return PlaceHolderCard(text: 'No missions yet',);
             }
             else{
               if(missionList.length != 0){
@@ -116,7 +117,7 @@ class _MyMissionListViewState extends State<MyMissionListView>
                 );
               }
               else{
-                return noMissionWidget();
+                return PlaceHolderCard(text: 'No missions yet',);
               }
             }
           },

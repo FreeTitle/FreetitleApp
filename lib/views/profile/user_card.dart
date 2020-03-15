@@ -151,7 +151,7 @@ class UserCard extends StatelessWidget{
                               child: ClipRRect(
                                 borderRadius:
                                 const BorderRadius.all(Radius.circular(80.0)),
-                                child: Image.network(userData['avatarUrl']),
+                                child: Image.network(userData['avatarUrl'], fit: BoxFit.fill,),
                               ),
                             ),
                           ),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/main.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/detail/missionDetail.dart';
+import 'package:freetitle/views/detail/mission_detail.dart';
 
 class PopularMissionListView extends StatefulWidget {
   const PopularMissionListView(

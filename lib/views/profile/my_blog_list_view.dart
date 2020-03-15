@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/detail/blogDetail.dart';
-import 'package:freetitle/views/home/blog_list_view.dart';
+import 'package:freetitle/model/util.dart';
+import 'package:freetitle/views/detail/blog_detail.dart';
+import 'package:freetitle/views/home/blog_card.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class MyBlogListView extends StatefulWidget {
@@ -33,23 +34,23 @@ class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixi
     super.dispose();
   }
 
-  Widget noBlogWidget() {
-    return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24),
-      child: Card(
-        child: Container(
-          height: 200,
-          child: Center(
-            child: Container(
-              child: Text(
-                  'No blogs yet'
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+//  Widget noBlogWidget() {
+//    return Padding(
+//      padding: EdgeInsets.only(left: 24, right: 24),
+//      child: Card(
+//        child: Container(
+//          height: 200,
+//          child: Center(
+//            child: Container(
+//              child: Text(
+//                  'No blogs yet'
+//              ),
+//            ),
+//          ),
+//        ),
+//      ),
+//    );
+//  }
 
   void getBlog(blog){
     Navigator.push<dynamic>(
@@ -79,7 +80,7 @@ class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixi
       animationController
           .forward();
       blogsWidget.add(
-          BlogListView(
+          BlogCard(
               callback: () {
                 getBlog(blogIDs[i]);
               },
@@ -116,7 +117,7 @@ class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixi
                     blogIDs.add(blog.documentID),
                   });
                   if(blogList.isEmpty){
-                    return noBlogWidget();
+                    return PlaceHolderCard(text: 'No blogs yet', height: 200.0,);
                   }
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -125,7 +126,7 @@ class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixi
                   );
                 }
                 else{
-                  return noBlogWidget();
+                  return PlaceHolderCard(text: 'No blogs yet', height: 200.0,);
                 }
             }
           },

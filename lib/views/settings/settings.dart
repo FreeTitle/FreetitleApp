@@ -106,8 +106,17 @@ class SettingsPage extends StatelessWidget{
     ));
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppTheme.primary,
-        title: Text('设置', style: TextStyle(color: Colors.white),),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        backgroundColor: AppTheme.white,
+        title: Text('设置', style: TextStyle(color: Colors.black),),
       ),
       body: Container(
         child: ListView.builder(
