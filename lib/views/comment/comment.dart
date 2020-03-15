@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 
 class CommentBottom extends StatefulWidget {
@@ -50,7 +51,7 @@ class _CommentBottom extends State<CommentBottom>{
     // TODO: implement build
     List commentIDs = widget.commentIDs.reversed.toList();
     return Container(
-      height: commentIDs.length*170.0,
+      height: commentIDs.length*300.0,
       child: ListView.builder(
           controller: _scrollController,
           itemCount: commentIDs.length,
@@ -76,8 +77,9 @@ class _CommentBottom extends State<CommentBottom>{
                         return CommentBox(commentData: comment, isSubCommentPage: false, blogID: widget.blogID, commentID: commentIDs[index],isCurrentUserComment: isCurrentUserComment,);
                     }
                     else{
-                      return SizedBox(
-
+                      return PlaceHolderCard(
+                        text: 'No comments yet',
+                        height: 200.0,
                       );
                     }
                 }
@@ -114,7 +116,7 @@ class CommentBox extends StatelessWidget {
     }
     Image img;
     if (content['image'] != null){
-      print(content['image']);
+//      print(content['image']);
       img = Image.network(content['image']);
     }
     if (img != null){
@@ -323,7 +325,10 @@ class CommentBox extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                getUser(),
+                Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: getUser(),
+                ),
                 ButtonBar(
                   children: <Widget>[
                     getDeleteButton(context),
@@ -412,14 +417,28 @@ class _CommentPage extends State<CommentPage>{
     List commentIDs = widget.commentIDs.reversed.toList();
     return Scaffold(
         appBar: AppBar(
-          title: Text("评论"),
-          backgroundColor: AppTheme.primary,
+          title: Text("评论", style: TextStyle(color: Colors.black),),
+          brightness: Brightness.light,
+          backgroundColor: AppTheme.white,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
+            color: Colors.black,
             onPressed: (){
               Navigator.pop(context);
             },
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.comment),
+          backgroundColor: AppTheme.primary,
+          onPressed: () {
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => CommentInputPage(blogID: widget.blogID, parentLevel: 0, parentID: widget.blogID, parentType: 'blog',)
+                )
+            );
+          },
         ),
         body: ListView(
           children: <Widget>[
