@@ -91,7 +91,7 @@ class UserRepository {
               final userData = snapshot.data;
               String userName = userData['displayName'];
               String avatarURL = userData['avatarUrl'];
-              Image avatar = Image.network(avatarURL);
+              Image avatar = Image.network(avatarURL, fit: BoxFit.fill,);
               return Material(
                 child: InkWell(
                   onTap: () {
