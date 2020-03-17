@@ -11,6 +11,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:freetitle/model/util.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -63,7 +64,7 @@ class _BlogDetail extends State<BlogDetail> {
     return commentIDs;
   }
 
-  List<Widget> processBlogContent(blog){
+  List<Widget> processBlogContent(blog, context){
     List<Widget> blogWidget = new List<Widget>();
     if(blog == null){
       blogWidget.add(Text('Loading blog'));
@@ -101,7 +102,7 @@ class _BlogDetail extends State<BlogDetail> {
                 int endLink = blockText.indexOf('</a>');
                 String link = blockText.substring(endUrl+2, endLink);
                 textLists.add( LinkTextSpan(
-                  style: AppTheme.caption,
+                  style: AppTheme.link,
                   url: url,
                   text: link,
                 ),);
@@ -151,6 +152,45 @@ class _BlogDetail extends State<BlogDetail> {
               child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
             )
           );
+        }
+        else if(block['type'] == 'embed'){
+          String code = block['data']['code'];
+          int end = code.indexOf('>');
+          String pre = code.substring(0, end);
+          pre += " allowfullscreen ";
+          pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
+          code = pre + code.substring(end);
+
+          if(code.contains('163')){
+            end = code.indexOf('//');
+            pre = code.substring(0, end);
+            pre += 'https:';
+            code = pre + code.substring(end);
+            blogWidget.add(
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 70,
+                  padding: EdgeInsets.all(16.0),
+                  child: WebView(
+                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
+                    javascriptMode: JavascriptMode.unrestricted,
+                  ),
+                )
+            );
+          }
+          else{
+            blogWidget.add(
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 270,
+                  padding: EdgeInsets.all(16.0),
+                  child: WebView(
+                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
+                    javascriptMode: JavascriptMode.unrestricted,
+                  ),
+                )
+            );
+          }
         }
       }
     }
@@ -240,9 +280,8 @@ class _BlogDetail extends State<BlogDetail> {
               if(blog['upvotedBy'] != null && blog['upvotedBy'].contains(userID)){
                 liked = true;
               }
-              print(userID);
-              print(liked);
               return Scaffold(
+                backgroundColor: AppTheme.nearlyWhite,
                   appBar: AppBar(
                     brightness: Brightness.light,
                     leading: IconButton(
@@ -307,6 +346,13 @@ class _BlogDetail extends State<BlogDetail> {
                           }).catchError((e) => {
                             print('get error ${e}'),
                           });
+                          Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                            "upvotedBy": FieldValue.arrayUnion([userID]),
+                          }).whenComplete(() => {
+                            print('like  succeeds'),
+                          }).catchError((e) => {
+                            print('like gets error ${e}'),
+                          });
                         },
                       ),
                       SpeedDialChild(
@@ -365,7 +411,7 @@ class _BlogDetail extends State<BlogDetail> {
                     child: Column(
                       key: PageStorageKey('blog'),
                       children:
-                      processBlogContent(blog),
+                      processBlogContent(blog, context),
                     ),
                   )
                 )

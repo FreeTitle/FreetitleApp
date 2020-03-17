@@ -117,7 +117,6 @@ class UserCard extends StatelessWidget{
                           ),
                           Row(
                             children: <Widget>[
-                              // 预留位
                               Container(
                                 height: 48,
                                 width: 2,

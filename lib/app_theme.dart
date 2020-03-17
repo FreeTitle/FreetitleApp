@@ -94,8 +94,8 @@ class AppTheme {
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
     fontSize: 16,
-    letterSpacing: 0.2,
-    color: nearlyBlue
+    letterSpacing: -0.05,
+    color: Colors.blue
   );
 
   static TextTheme _buildTextTheme(TextTheme base) {
