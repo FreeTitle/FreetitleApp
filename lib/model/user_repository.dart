@@ -76,7 +76,7 @@ class UserRepository {
     return (await _firebaseAuth.currentUser());
   }
 
-  Widget getUserWidget(uid) {
+  Widget getUserWidget(uid, {color=AppTheme.nearlyWhite}) {
     return StreamBuilder<DocumentSnapshot> (
       stream: Firestore.instance.collection('users').document(uid).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
@@ -93,6 +93,7 @@ class UserRepository {
               String avatarURL = userData['avatarUrl'];
               Image avatar = Image.network(avatarURL, fit: BoxFit.fill,);
               return Material(
+                color: color,
                 child: InkWell(
                   onTap: () {
                     Navigator.push<dynamic>(
