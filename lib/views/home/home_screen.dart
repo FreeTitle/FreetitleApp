@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:freetitle/views/home/blog_card.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:freetitle/views/home/mission_list_view.dart';
+import 'package:freetitle/views/mission/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/views/detail/blog_detail.dart';
 import 'package:tuple/tuple.dart';
-import 'package:freetitle/views/detail/mission_detail.dart';
+import 'package:freetitle/views/blog/blog_list_view.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -22,6 +20,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
 
   AnimationController animationController;
   List blogList;
+  List blogIDs;
   List missionList;
   List missionIDs;
 //  final ScrollController _scrollController = ScrollController();
@@ -88,7 +87,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                             children: <Widget>[
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Blogs'),
-                                stream: Firestore.instance.collection('blogs').orderBy('time', descending: true).snapshots(),
+                                stream: Firestore.instance.collection('blogs').limit(10).orderBy('time', descending: true).snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                   if (snapshot.hasError)
                                     return new Text('Error: ${snapshot.error}');
@@ -100,59 +99,12 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                     default:
                                       if (snapshot.hasData) {
                                         blogList = new List();
-//                                        blogList.clear();
+                                        blogIDs = new List();
                                         snapshot.data.documents.forEach((blog) => {
-                                          blogList.add(Tuple2(blog.documentID, blog.data))
+                                          blogList.add(blog.data),
+                                          blogIDs.add(blog.documentID),
                                         });
-                                        return LiquidPullToRefresh(
-                                          color: AppTheme.primary,
-                                          showChildOpacityTransition: false,
-                                          onRefresh: () async {
-                                            print('pull');
-                                            await Future.delayed(
-                                                Duration(milliseconds: 500));
-//                                            List newList = List();
-//                                            await Firestore.instance.collection('blogs').getDocuments().then((snap)=>{
-//                                              snap.documents.forEach((blog) => {
-//                                                newList.add(Tuple2(blog.documentID, blog.data))
-//                                              }),
-//                                            });
-//                                            setState(() {
-//                                              blogList = newList;
-//                                            });
-                                          },
-                                          child: ListView.builder(
-                                            itemCount: blogList.length,
-                                            padding: const EdgeInsets.only(top: 8),
-                                            scrollDirection: Axis.vertical,
-                                            itemBuilder: (
-                                                BuildContext context,
-                                                int index) {
-                                              final int count = blogList.length;
-                                              final Animation<double> animation = Tween<double>(
-                                                  begin: 0.0, end: 1.0)
-                                                  .animate(
-                                                  CurvedAnimation(
-                                                      parent: animationController,
-                                                      curve: Interval(
-                                                          (1 / count) * index, 1.0,
-                                                          curve: Curves.fastOutSlowIn
-                                                      )
-                                                  )
-                                              );
-                                              animationController
-                                                  .forward();
-                                              return BlogCard(
-                                                  callback: () {
-                                                    getBlog(blogList[index]);
-                                                  },
-                                                  blogData: blogList[index].item2,
-                                                  animation: animation,
-                                                  animationController: animationController
-                                              );
-                                            },
-                                          ),
-                                        );
+                                        return BlogListView(blogList: blogList, animationController: animationController, blogIDs: blogIDs,);
                                       }
                                       else{
                                         return new Text("Something is wrong with firebase");
@@ -233,15 +185,6 @@ class _Home extends State<Home> with TickerProviderStateMixin {
           ),
         ),
       ),
-    );
-  }
-
-  void getBlog(blog){
-    Navigator.push<dynamic>(
-      context,
-      MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) => BlogDetail(blogID: blog.item1,),
-      )
     );
   }
 

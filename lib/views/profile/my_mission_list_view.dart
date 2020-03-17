@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/util.dart';
-import 'package:freetitle/views/detail/mission_detail.dart';
+import 'package:freetitle/views/mission/mission_detail.dart';
 
 class MyMissionListView extends StatefulWidget {
   const MyMissionListView(

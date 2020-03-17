@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/main.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/detail/mission_detail.dart';
+import 'package:freetitle/views/mission/mission_detail.dart';
 
 class PopularMissionListView extends StatefulWidget {
   const PopularMissionListView(
@@ -216,7 +216,7 @@ class PopularMissionView extends StatelessWidget {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(6),
+                                      padding: EdgeInsets.all(8),
                                       child: Container(
                                         height: 120,
                                         width: 180,

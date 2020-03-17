@@ -182,7 +182,7 @@ class _BlogDetail extends State<BlogDetail> {
             blogWidget.add(
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 270,
+                  height: 280,
                   padding: EdgeInsets.all(16.0),
                   child: WebView(
                     initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),

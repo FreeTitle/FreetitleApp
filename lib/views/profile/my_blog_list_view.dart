@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/util.dart';
-import 'package:freetitle/views/detail/blog_detail.dart';
-import 'package:freetitle/views/home/blog_card.dart';
+import 'package:freetitle/views/blog/blog_detail.dart';
+import 'package:freetitle/views/blog/blog_card.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class MyBlogListView extends StatefulWidget {
