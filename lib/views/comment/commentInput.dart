@@ -50,8 +50,16 @@ class _CommentInputPage extends State<CommentInputPage> {
     print(targetID);
     return Scaffold(
       appBar: AppBar(
-        title: Text("发表评论"),
-        backgroundColor: AppTheme.primary,
+        title: Text("发表评论", style: TextStyle(color: Colors.black),),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          color: Colors.black,
+          onPressed: ()  {
+            Navigator.of(context).pop();
+          },
+        ),
+        backgroundColor: AppTheme.white,
+        brightness: Brightness.light,
         actions: <Widget>[
           Padding(
             padding: EdgeInsets.only(right: 5),
@@ -149,7 +157,7 @@ class _CommentInputPage extends State<CommentInputPage> {
                 }
                 Navigator.pop(context);
               },
-              child: Text('发表', style: TextStyle(color: Colors.white),),
+              child: Text('发表', style: TextStyle(color: Colors.black),),
             )
           ),
         ],

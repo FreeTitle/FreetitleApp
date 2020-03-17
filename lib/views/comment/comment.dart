@@ -134,7 +134,7 @@ class CommentBox extends StatelessWidget {
 
   Widget getUser(){
     UserRepository _userRepository = new UserRepository();
-    return _userRepository.getUserWidget(commentData['userID']);
+    return _userRepository.getUserWidget(commentData['userID'], color: AppTheme.white);
   }
 
   Widget getSubComment(BuildContext context){
