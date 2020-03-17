@@ -140,16 +140,6 @@ class BlogCard extends StatelessWidget {
                                                     ),
                                                   ),
                                                   Container(
-                                                    height: 30,
-                                                    width: 2,
-                                                    decoration: BoxDecoration(
-                                                      color: AppTheme.nearlyBlack
-                                                          .withOpacity(0.5),
-                                                      borderRadius: BorderRadius.all(
-                                                          Radius.circular(4.0)),
-                                                    ),
-                                                  ),
-                                                  Container(
                                                     padding: EdgeInsets.only(left: 8),
                                                     width: MediaQuery.of(context).size.width/5,
                                                     child: Row(
@@ -171,16 +161,6 @@ class BlogCard extends StatelessWidget {
                                                     ),
                                                   ),
                                                   Container(
-                                                    height: 30,
-                                                    width: 2,
-                                                    decoration: BoxDecoration(
-                                                      color: AppTheme.nearlyBlack
-                                                          .withOpacity(0.5),
-                                                      borderRadius: BorderRadius.all(
-                                                          Radius.circular(4.0)),
-                                                    ),
-                                                  ),
-                                                  Container(
                                                     padding: EdgeInsets.only(left: 8),
                                                     width: MediaQuery.of(context).size.width/5,
                                                     child: Row(
@@ -199,16 +179,6 @@ class BlogCard extends StatelessWidget {
                                                                   .withOpacity(0.8)),
                                                         ),
                                                       ],
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    height: 30,
-                                                    width: 2,
-                                                    decoration: BoxDecoration(
-                                                      color: AppTheme.nearlyBlack
-                                                          .withOpacity(0.5),
-                                                      borderRadius: BorderRadius.all(
-                                                          Radius.circular(4.0)),
                                                     ),
                                                   ),
                                                   Container(
