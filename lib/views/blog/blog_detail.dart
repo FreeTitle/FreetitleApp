@@ -12,6 +12,8 @@ import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:share/share.dart';
+import 'dart:io';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -158,7 +160,12 @@ class _BlogDetail extends State<BlogDetail> {
           int end = code.indexOf('>');
           String pre = code.substring(0, end);
           pre += " allowfullscreen ";
-          pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
+          if(Platform.isIOS){
+            pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
+          }
+          else{
+            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
+          }
           code = pre + code.substring(end);
 
           if(code.contains('163')){
@@ -169,7 +176,7 @@ class _BlogDetail extends State<BlogDetail> {
             blogWidget.add(
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 70,
+                  height: Platform.isAndroid ? 120 : 70,
                   padding: EdgeInsets.all(16.0),
                   child: WebView(
                     initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
@@ -399,7 +406,9 @@ class _BlogDetail extends State<BlogDetail> {
                         backgroundColor: AppTheme.secondary,
                         label: "分享",
                         labelStyle: AppTheme.body1,
-                        onTap: () => print('分享'),
+                        onTap: () {
+                          Share.share('请看博客${blog['title']}，点击https://freetitle.us/blogdetail?id=${widget.blogID}', subject: 'Look at this');
+                        },
                       ),
                     ],
                   ),
