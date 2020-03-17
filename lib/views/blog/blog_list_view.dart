@@ -11,16 +11,21 @@ class BlogListView extends StatefulWidget {
     this.blogList,
     this.blogIDs,
     this.animationController,
+    this.scrollController,
   }) : super(key: key);
 
   final blogList;
   final blogIDs;
   final animationController;
+  final scrollController;
   _BlogListView createState() => _BlogListView();
 
 }
 
 class _BlogListView extends State<BlogListView>{
+
+  int perPage = 15;
+  int pageCount = 1;
 
   void getBlog(blogID){
     Navigator.push<dynamic>(
@@ -36,23 +41,30 @@ class _BlogListView extends State<BlogListView>{
     List blogList = widget.blogList;
     List blogIDs = widget.blogIDs;
     int present = blogList.length;
-    int perPage = 15;
+
     return LiquidPullToRefresh(
+        scrollController: widget.scrollController,
         color: AppTheme.primary,
         showChildOpacityTransition: false,
         onRefresh: () async {
           await Future.delayed(Duration(milliseconds: 500));
-          blogList = new List();
-          blogIDs = new List();
-          await Firestore.instance.collection('blogs').getDocuments().then((snap)=>{
+          blogList.clear();
+          blogIDs.clear();
+
+          await Firestore.instance.collection('blogs').limit(15).orderBy('time', descending: true).getDocuments().then((snap)=>{
             snap.documents.forEach((blog) => {
               blogList.add(blog.data),
               blogIDs.add(blog.documentID),
             }),
+            present = blogList.length,
+            pageCount = 1,
+          });
+          setState(() {
+
           });
         },
         child:ListView.builder(
-          itemCount: blogList.length,
+          itemCount: present < perPage * pageCount ? present : present + 1,
           padding: const EdgeInsets.only(top: 8),
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
@@ -68,7 +80,33 @@ class _BlogListView extends State<BlogListView>{
             );
             widget.animationController
                 .forward();
-            return BlogCard(
+            return (index == present) ?
+            Padding(
+              padding: EdgeInsets.only(left: 24, right: 24),
+              child: Container(
+                color: AppTheme.grey,
+                child: FlatButton(
+                  child: Text("Load More", style: TextStyle(color: AppTheme.primary),),
+                  onPressed: () async {
+                    pageCount += 1;
+                    blogList.clear();
+                    blogIDs.clear();
+                    await Firestore.instance.collection('blogs').limit(pageCount*perPage).orderBy('time', descending: true).getDocuments().then((snap) => {
+                      snap.documents.forEach((blog) => {
+                        blogList.add(blog.data),
+                        blogIDs.add(blog.documentID),
+                      }),
+                      present = blogList.length,
+                    });
+                    setState(() {
+
+                    });
+                  },
+                ),
+              ),
+            )
+                :
+            BlogCard(
                 callback: () {
                   getBlog(blogIDs[index]);
                 },

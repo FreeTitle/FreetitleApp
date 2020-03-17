@@ -23,14 +23,14 @@ class _Home extends State<Home> with TickerProviderStateMixin {
   List blogIDs;
   List missionList;
   List missionIDs;
-//  final ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController;
 
   @override
   void initState(){
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this
     );
-
+    _scrollController = ScrollController(initialScrollOffset: 0.0);
     super.initState();
   }
 
@@ -42,6 +42,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
   @override
   void dispose() {
     animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -67,7 +68,12 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                       child: Scaffold(
                           appBar: AppBar(
                             brightness: Brightness.light,
-                            title: new Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
+                            title: new InkWell(
+                              child: Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
+                              onDoubleTap: () {
+                                _scrollController.jumpTo(0);
+                              },
+                            ),
                             actions: <Widget>[
                               Container(padding: EdgeInsets.only(right: 16),child: Icon(Icons.search, color: Colors.black,)),
                             ],
@@ -87,7 +93,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                             children: <Widget>[
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Blogs'),
-                                stream: Firestore.instance.collection('blogs').limit(10).orderBy('time', descending: true).snapshots(),
+                                stream: Firestore.instance.collection('blogs').limit(15).orderBy('time', descending: true).snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                   if (snapshot.hasError)
                                     return new Text('Error: ${snapshot.error}');
@@ -104,7 +110,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                           blogList.add(blog.data),
                                           blogIDs.add(blog.documentID),
                                         });
-                                        return BlogListView(blogList: blogList, animationController: animationController, blogIDs: blogIDs,);
+                                        return BlogListView(blogList: blogList, animationController: animationController, blogIDs: blogIDs, scrollController: _scrollController,);
                                       }
                                       else{
                                         return new Text("Something is wrong with firebase");
@@ -134,6 +140,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                           missionIDs.add(mission.documentID),
                                         });
                                         return SingleChildScrollView(
+                                          controller: _scrollController,
                                           child: Container(
                                             color: AppTheme.nearlyWhite,
 //                                            height: MediaQuery.of(context).size.height,
