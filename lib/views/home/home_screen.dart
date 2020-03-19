@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:freetitle/views/search/search.dart';
 import 'package:freetitle/views/mission/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tuple/tuple.dart';
 import 'package:freetitle/views/blog/blog_list_view.dart';
 
 class Home extends StatefulWidget {
@@ -74,9 +73,22 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                 _scrollController.jumpTo(0);
                               },
                             ),
-                            actions: <Widget>[
-                              Container(padding: EdgeInsets.only(right: 16),child: Icon(Icons.search, color: Colors.black,)),
-                            ],
+//                            actions: <Widget>[
+//                              Container(
+//                                  padding: EdgeInsets.only(right: 16),
+//                                  child: IconButton(
+//                                    icon: Icon(Icons.search, color: Colors.black,),
+//                                    onPressed: () {
+//                                      Navigator.push<dynamic>(
+//                                        context,
+//                                        MaterialPageRoute<dynamic>(
+//                                          builder: (BuildContext context) => SearchView()
+//                                        )
+//                                      );
+//                                    }
+//                                  )
+//                              ),
+//                            ],
                             backgroundColor: AppTheme.white,
                             bottom: TabBar(
                               labelColor: AppTheme.primary,
@@ -88,8 +100,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                               ],
                             ),
                           ),
-                          body:
-                          TabBarView(
+                          body: TabBarView(
                             children: <Widget>[
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Blogs'),

@@ -353,13 +353,24 @@ class _BlogDetail extends State<BlogDetail> {
                           }).catchError((e) => {
                             print('get error ${e}'),
                           });
-                          Firestore.instance.collection('blogs').document(widget.blogID).updateData({
-                            "upvotedBy": FieldValue.arrayUnion([userID]),
-                          }).whenComplete(() => {
-                            print('like  succeeds'),
-                          }).catchError((e) => {
-                            print('like gets error ${e}'),
-                          });
+                          if(liked){
+                            Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                              "upvotedBy": FieldValue.arrayUnion([userID]),
+                            }).whenComplete(() => {
+                              print('like  succeeds'),
+                            }).catchError((e) => {
+                              print('like gets error ${e}'),
+                            });
+                          }
+                          else{
+                            Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                              "upvotedBy": FieldValue.arrayRemove([userID]),
+                            }).whenComplete(() => {
+                              print('like  succeeds'),
+                            }).catchError((e) => {
+                              print('like gets error ${e}'),
+                            });
+                          }
                         },
                       ),
                       SpeedDialChild(
@@ -385,19 +396,36 @@ class _BlogDetail extends State<BlogDetail> {
                           setState(() {
                             marked = !marked;
                           });
-                          Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
-                            if(snap.data.isNotEmpty){
-                              await _userRepository.getUser().then((snap) => {
-                                userID = snap.uid,
-                              });
-                              await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
-                                'markedBy': FieldValue.arrayUnion([userID])
-                              });
-                              await Firestore.instance.collection('users').document(userID).updateData({
-                                'bookmarks': FieldValue.arrayUnion([widget.blogID])
-                              });
-                            }
-                          });
+                          if(marked){
+                            Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
+                              if(snap.data.isNotEmpty){
+                                await _userRepository.getUser().then((snap) => {
+                                  userID = snap.uid,
+                                });
+                                await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                                  'markedBy': FieldValue.arrayUnion([userID])
+                                });
+                                await Firestore.instance.collection('users').document(userID).updateData({
+                                  'bookmarks': FieldValue.arrayUnion([widget.blogID])
+                                });
+                              }
+                            });
+                          }
+                          else{
+                            Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
+                              if(snap.data.isNotEmpty){
+                                await _userRepository.getUser().then((snap) => {
+                                  userID = snap.uid,
+                                });
+                                await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                                  'markedBy': FieldValue.arrayRemove([userID])
+                                });
+                                await Firestore.instance.collection('users').document(userID).updateData({
+                                  'bookmarks': FieldValue.arrayRemove([widget.blogID])
+                                });
+                              }
+                            });
+                          }
                         },
                       ),
                       SpeedDialChild(
@@ -407,7 +435,10 @@ class _BlogDetail extends State<BlogDetail> {
                         label: "分享",
                         labelStyle: AppTheme.body1,
                         onTap: () {
-                          Share.share('请看博客${blog['title']}，点击https://freetitle.us/blogdetail?id=${widget.blogID}', subject: 'Look at this');
+                          Share.share('请看博客${blog['title']}，点击https://freetitle.us/blogdetail?id=${widget.blogID}', subject: 'Look at this')
+                              .catchError((e) => {
+                            print('sharing error ${e}')
+                          });
                         },
                       ),
                     ],
@@ -419,8 +450,7 @@ class _BlogDetail extends State<BlogDetail> {
                     padding: EdgeInsets.only(top: 16),
                     child: Column(
                       key: PageStorageKey('blog'),
-                      children:
-                      processBlogContent(blog, context),
+                      children: processBlogContent(blog, context),
                     ),
                   )
                 )

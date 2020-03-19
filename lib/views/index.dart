@@ -10,6 +10,7 @@ import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/home/home_screen.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:freetitle/views/search/search.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -24,6 +25,7 @@ class _IndexPageState extends State<IndexPage> {
   final List<Widget> _children = [
     Home(),
     Chat(),
+    SearchView(),
     GetMyProfile(),
   ];
 
@@ -35,14 +37,14 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarDividerColor: Colors.grey,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
+//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+//      statusBarColor: Colors.transparent,
+//      statusBarIconBrightness: Brightness.dark,
+//      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
+//      systemNavigationBarColor: Colors.white,
+//      systemNavigationBarDividerColor: Colors.grey,
+//      systemNavigationBarIconBrightness: Brightness.dark,
+//    ));
     return Container(
       child: Scaffold(
           body: BlocBuilder(
@@ -68,6 +70,7 @@ class _IndexPageState extends State<IndexPage> {
             ),
               child: new BottomNavigationBar(
                 currentIndex: _pageIndex,
+                type: BottomNavigationBarType.fixed,
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
@@ -82,6 +85,10 @@ class _IndexPageState extends State<IndexPage> {
 //              title: Text('社区'),
 //              activeColor: Colors.blue,
 //            ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.search),
+                    title: Text('发现'),
+                  ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),
                     title: Text('我的'),
