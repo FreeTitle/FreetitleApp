@@ -1,23 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/blog/blog_detail.dart';
+import 'package:freetitle/model/util.dart';
 
-class BlogCard extends StatelessWidget {
-  const BlogCard(
-      {Key key,
-        this.blogData,
-        this.animationController,
-        this.animation,
-        this.callback})
+class BlogCard extends StatefulWidget {
+  const BlogCard({Key key,
+    this.blogID,
+    this.blogData,
+    this.animationController,
+    this.animation,})
       : super(key: key);
 
-  final VoidCallback callback;
   final Map blogData;
   final AnimationController animationController;
   final Animation<dynamic> animation;
+  final String blogID;
+
+  _BlogCard createState() => _BlogCard();
+}
+
+class _BlogCard extends State<BlogCard>{
+  @override
+  void initState(){
+    super.initState();
+  }
 
   Image getBlogImage(){
     Image img;
+    final blogData = widget.blogData;
     if(blogData['article'] != null){
       for(var block in blogData['article']['blocks']){
         if(block['type'] == "image"){
@@ -37,8 +48,23 @@ class BlogCard extends StatelessWidget {
     return img;
   }
 
+  void getBlog(blogID, context){
+    Navigator.push<dynamic>(
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => BlogDetail(blogID: blogID,),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final animation = widget.animation;
+    final animationController = widget.animationController;
+    final blogData = widget.blogData;
+    final blogID = widget.blogID;
+
     return AnimatedBuilder(
       animation: animationController,
       builder: (BuildContext context, Widget child){
@@ -54,7 +80,7 @@ class BlogCard extends StatelessWidget {
               child: InkWell(
                 splashColor: Colors.transparent,
                 onTap: () {
-                  callback();
+                  getBlog(blogID, context);
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -103,12 +129,31 @@ class BlogCard extends StatelessWidget {
                                               crossAxisAlignment: CrossAxisAlignment.center,
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               children: <Widget>[
-                                                Text(
-                                                  blogData['username'],
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.grey
-                                                  ),
+                                                StreamBuilder<DocumentSnapshot>(
+                                                  stream: Firestore.instance.collection('users').document(blogData['user']).snapshots(),
+                                                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+                                                    if (snapshot.hasError)
+                                                      return new Text('Error: ${snapshot.error}');
+                                                    switch(snapshot.connectionState){
+                                                      case ConnectionState.waiting:
+                                                        return new Text(
+                                                          'FreeTitle Author',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors.grey
+                                                          )
+                                                        );
+                                                      default:
+                                                        if(snapshot.data.data != null){
+                                                          return Text(
+                                                              snapshot.data.data['displayName'],
+                                                              style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors.grey
+                                                          ));
+                                                        }
+                                                    }
+                                                  },
                                                 ),
                                                 const SizedBox(
                                                   width: 4,
@@ -130,7 +175,7 @@ class BlogCard extends StatelessWidget {
                                                           width: 20,
                                                         ),
                                                         Text(
-                                                          blogData['views'].toString(),
+                                                          blogData['views'] != null ? blogData['views'].toString() : '0',
                                                           style: TextStyle(
                                                               fontSize: 14,
                                                               color: Colors.grey

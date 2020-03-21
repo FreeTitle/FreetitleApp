@@ -102,33 +102,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                           ),
                           body: TabBarView(
                             children: <Widget>[
-                              StreamBuilder<QuerySnapshot>(
-                                key: PageStorageKey('Blogs'),
-                                stream: Firestore.instance.collection('blogs').limit(15).orderBy('time', descending: true).snapshots(),
-                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  if (snapshot.hasError)
-                                    return new Text('Error: ${snapshot.error}');
-                                  switch (snapshot.connectionState) {
-                                    case ConnectionState.waiting:
-                                      return new Center(
-                                        child: Text('Loading'),
-                                      );
-                                    default:
-                                      if (snapshot.hasData) {
-                                        blogList = new List();
-                                        blogIDs = new List();
-                                        snapshot.data.documents.forEach((blog) => {
-                                          blogList.add(blog.data),
-                                          blogIDs.add(blog.documentID),
-                                        });
-                                        return BlogListView(blogList: blogList, animationController: animationController, blogIDs: blogIDs, scrollController: _scrollController,);
-                                      }
-                                      else{
-                                        return new Text("Something is wrong with firebase");
-                                      }
-                                  }
-                                }
-                              ),
+                              BlogListView(animationController: animationController, scrollController: _scrollController,),
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Missions'),
                                 stream: Firestore.instance.collection('missions').orderBy('time', descending: true).snapshots(),

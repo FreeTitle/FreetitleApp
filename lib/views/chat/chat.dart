@@ -13,6 +13,7 @@ class _Chat extends State<Chat> {
     return Scaffold(
         body: Center(
           child: Text('Chat to be implemented'),
-        ));
+        )
+    );
   }
 }

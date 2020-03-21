@@ -81,9 +81,7 @@ class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixi
           .forward();
       blogsWidget.add(
           BlogCard(
-              callback: () {
-                getBlog(blogIDs[i]);
-              },
+              blogID: blogIDs[i],
               blogData: blogList[i],
               animation: animation,
               animationController: animationController
