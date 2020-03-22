@@ -54,5 +54,7 @@
 	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Users can upload photos to the comments</string>
 </dict>
 </plist>

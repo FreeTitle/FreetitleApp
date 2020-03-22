@@ -46,46 +46,47 @@ class _CommentBottom extends State<CommentBottom>{
     super.dispose();
   }
 
+  List<Widget>buildComments(){
+    List commentIDs = widget.commentIDs.reversed.toList();
+    List<Widget> commentList = List();
+    for(var index = 0; index < commentIDs.length;index++){
+      commentList.add(
+          StreamBuilder<DocumentSnapshot>(
+            stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
+            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+              if (snapshot.hasError)
+                return new Text('Error: ${snapshot.error}');
+              switch(snapshot.connectionState){
+                case ConnectionState.waiting:
+                  return new Text('Loading');
+                default:
+                  if(snapshot.data.data != null){
+                    final comment = snapshot.data.data;
+                    bool isCurrentUserComment = false;
+                    if(userID == comment['userID']){
+                      isCurrentUserComment = true;
+                    }
+                    if(comment['level'] == 1)
+                      return CommentBox(commentData: comment, isSubCommentPage: false, blogID: widget.blogID, commentID: commentIDs[index],isCurrentUserComment: isCurrentUserComment,);
+                  }
+                  else{
+                    return PlaceHolderCard(
+                      text: 'No comments yet',
+                      height: 200.0,
+                    );
+                  }
+              }
+            },
+          )
+      );
+    }
+    return commentList;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    List commentIDs = widget.commentIDs.reversed.toList();
-    return Container(
-      height: commentIDs.length*300.0,
-      child: ListView.builder(
-          controller: _scrollController,
-          itemCount: commentIDs.length,
-          padding: const EdgeInsets.only(top: 8),
-          scrollDirection: Axis.vertical,
-          itemBuilder: (BuildContext context, int index){
-            return StreamBuilder<DocumentSnapshot>(
-              stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                if (snapshot.hasError)
-                  return new Text('Error: ${snapshot.error}');
-                switch(snapshot.connectionState){
-                  case ConnectionState.waiting:
-                    return new Text('Loading');
-                  default:
-                    if(snapshot.data.data != null){
-                      final comment = snapshot.data.data;
-                      bool isCurrentUserComment = false;
-                      if(userID == comment['userID']){
-                        isCurrentUserComment = true;
-                      }
-                      if(comment['level'] == 1)
-                        return CommentBox(commentData: comment, isSubCommentPage: false, blogID: widget.blogID, commentID: commentIDs[index],isCurrentUserComment: isCurrentUserComment,);
-                    }
-                    else{
-                      return PlaceHolderCard(
-                        text: 'No comments yet',
-                        height: 200.0,
-                      );
-                    }
-                }
-              },
-            );
-          }),
+    return Column(
+      children: buildComments(),
     );
   }
 }
@@ -116,7 +117,6 @@ class CommentBox extends StatelessWidget {
     }
     Image img;
     if (content['image'] != null){
-//      print(content['image']);
       img = Image.network(content['image']);
     }
     if (img != null){
@@ -413,11 +413,15 @@ class _CommentPage extends State<CommentPage>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement liquid pull to refresh
     List commentIDs = widget.commentIDs.reversed.toList();
     return Scaffold(
         appBar: AppBar(
-          title: Text("评论", style: TextStyle(color: Colors.black),),
+          title: InkWell(
+            child: Text("评论", style: TextStyle(color: Colors.black),),
+            onTap: () {
+              _scrollController.jumpTo(0.0);
+            },
+          ),
           brightness: Brightness.light,
           backgroundColor: AppTheme.white,
           leading: IconButton(
@@ -440,47 +444,44 @@ class _CommentPage extends State<CommentPage>{
             );
           },
         ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-              height: commentIDs.length*170.0,
-              color: AppTheme.nearlyWhite,
-              child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: commentIDs.length,
-                  padding: const EdgeInsets.only(top: 8),
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (BuildContext context, int index){
-                    return StreamBuilder<DocumentSnapshot>(
-                      stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
-                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                        if (snapshot.hasError)
-                          return new Text('Error: ${snapshot.error}');
-                        switch(snapshot.connectionState){
-                          case ConnectionState.waiting:
-                            return new Text('Loading');
-                          default:
-                            if(snapshot.data.data != null){
-                              final comment = snapshot.data.data;
-                              bool isCurrentUserComment = false;
-                              if(userID == comment['userID']){
-                                isCurrentUserComment = true;
-                              }
-                              if(comment['level'] == 1)
-                                return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], blogID: widget.blogID, isCurrentUserComment: isCurrentUserComment,);
-                            }
-                            else{
-                              return SizedBox(
-
-                              );
-                            }
+        body: Padding(
+          key: PageStorageKey('CommentPage'),
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: ListView.builder(
+              controller: _scrollController,
+              itemCount: commentIDs.length,
+              padding: const EdgeInsets.only(top: 8),
+              scrollDirection: Axis.vertical,
+              itemBuilder: (BuildContext context, int index){
+                return StreamBuilder<DocumentSnapshot>(
+                  stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+                    if (snapshot.hasError)
+                      return new Text('Error: ${snapshot.error}');
+                    switch(snapshot.connectionState){
+                      case ConnectionState.waiting:
+                        return new Text('Loading');
+                      default:
+                        if(snapshot.data.data != null){
+                          final comment = snapshot.data.data;
+                          bool isCurrentUserComment = false;
+                          if(userID == comment['userID']){
+                            isCurrentUserComment = true;
+                          }
+                          if(comment['level'] == 1)
+                            return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], blogID: widget.blogID, isCurrentUserComment: isCurrentUserComment,);
                         }
-                      },
-                    );
-                  }),
-            ),
-          ],
-        )
+                        else{
+                          return SizedBox(
+
+                          );
+                        }
+                    }
+                  },
+                );
+              }
+          ),
+        ),
     );
   }
 }
@@ -528,11 +529,18 @@ class _SubCommentPage extends State<SubCommentPage>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement liquid pull to refresh
     return Scaffold(
       appBar: AppBar(
-        title: Text('回复'),
-        backgroundColor: AppTheme.primary,
+        brightness: Brightness.light,
+        title: Text('回复', style: TextStyle(color: Colors.black),),
+        backgroundColor: AppTheme.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: (){
+            Navigator.pop(context);
+          },
+        ),
       ),
       resizeToAvoidBottomPadding: false,
       body: StreamBuilder<DocumentSnapshot>(

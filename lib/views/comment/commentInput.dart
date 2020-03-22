@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CommentInputPage extends StatefulWidget {
@@ -30,11 +34,30 @@ class _CommentInputPage extends State<CommentInputPage> {
 
   final textController = TextEditingController();
 
+  File image;
+
   @override
   void dispose(){
     textController.dispose();
     super.dispose();
   }
+
+  Widget buildButtonIcon(){
+    if(image == null){
+      return Icon(Icons.image);
+    }
+    else{
+      return Container(
+        height: 100,
+        width: 100,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(80.0)),
+          child: Image.file(image, fit: BoxFit.fill,),
+        ),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +115,27 @@ class _CommentInputPage extends State<CommentInputPage> {
 
                 print("Input comment content ${data}");
                 String commentID;
+                String downLoadURL;
+                if (image != null){
+                  print('image');
+                  final FirebaseStorage _storage = FirebaseStorage(storageBucket: "gs://freetitle.appspot.com");
+                  String filePath = '${DateTime.now()}.png';
+                  await _storage.ref().child(filePath).putFile(image).onComplete.then((snap) => {
+                    print("Upload succeeds: ${snap}, ${snap.storageMetadata}, ${snap.ref.getDownloadURL()}"),
+                    snap.ref.getDownloadURL().then((url) => {
+                      downLoadURL = url
+                    })
+                  });
+
+                  await _storage.ref().child(filePath).getDownloadURL().then((url) => {
+                    downLoadURL = url,
+                  });
+                }
+
                 await Firestore.instance.collection('comments').add({
                   '_text': data['_text'],
                   'blogID': data['blogID'],
-                  'content': {'image': null, 'text': text},
+                  'content': {'image': downLoadURL, 'text': text},
                   'level': data['level'],
                   'parentID': data['parentID'],
                   'parentType': data['parentType'],
@@ -161,6 +201,16 @@ class _CommentInputPage extends State<CommentInputPage> {
             )
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: buildButtonIcon(),
+        onPressed: () async {
+          var _image = await ImagePicker.pickImage(source: ImageSource.gallery);
+          print(_image);
+          setState(() {
+            image = _image;
+          });
+        },
       ),
       body: Card(
         color: Colors.white70,
