@@ -252,7 +252,7 @@ class _BlogDetail extends State<BlogDetail> {
 //    }
     List<String> commentIDs = getCommentIDs(blog);
     if (commentIDs.isNotEmpty){
-      blogWidget.add(CommentBottom(commentIDs: commentIDs, blogID: widget.blogID,));
+      blogWidget.add(CommentBottom(commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs, blogID: widget.blogID,));
     }else{
       blogWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }
