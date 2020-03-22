@@ -21,6 +21,8 @@ class BlogCard extends StatefulWidget {
 }
 
 class _BlogCard extends State<BlogCard>{
+  final keyBlogDetail = PageStorageKey('blogDetail');
+
   @override
   void initState(){
     super.initState();
@@ -52,7 +54,7 @@ class _BlogCard extends State<BlogCard>{
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => BlogDetail(blogID: blogID,),
+          builder: (BuildContext context) => BlogDetail(key: keyBlogDetail,blogID: blogID,),
         )
     );
   }

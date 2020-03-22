@@ -39,6 +39,9 @@ class _BlogDetail extends State<BlogDetail> {
   bool liked = false;
   bool marked = false;
   String userID;
+  final commentPageKey = PageStorageKey('CommentPage');
+
+
   @override
   void initState(){
     _userRepository = new UserRepository();
@@ -307,12 +310,9 @@ class _BlogDetail extends State<BlogDetail> {
                             await Navigator.push<dynamic>(
                               context,
                               MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => CommentPage(commentIDs: getCommentIDs(blog), blogID: widget.blogID),
+                                builder: (BuildContext context) => CommentPage(key: commentPageKey, commentIDs: getCommentIDs(blog), blogID: widget.blogID),
                               )
                             );
-                            if(_scrollController.hasClients){
-                              _scrollController.jumpTo(500.0);
-                            }
                           },
                         ),
                       ),
@@ -449,7 +449,7 @@ class _BlogDetail extends State<BlogDetail> {
                   child: Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Column(
-                      key: PageStorageKey('blog'),
+                      key: PageStorageKey('blogDetail'),
                       children: processBlogContent(blog, context),
                     ),
                   )
