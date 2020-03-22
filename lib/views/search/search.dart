@@ -1,5 +1,6 @@
 import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/algolias_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
@@ -42,13 +43,19 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
       blogIDs.add(h.objectID),
     });
 
-//    List users = List();
-//
-//    for(final result in results){
-//      await Firestore.instance.collection('users').document(result['user']).get().then((snap) => {
-//        users.add(snap.data['displayName']),
-//      });
-//    }
+    query = algolia.instance.instance.index('users').search(search);
+    snap = await query.getObjects();
+    List userIDs = List();
+    snap.hits.forEach((h) => {
+      userIDs.add(h.objectID),
+    });
+
+    List users = List();
+
+    for(final uid in userIDs){
+      users.add(_userRepository.getUserWidget(uid, color: AppTheme.nearlyWhite));
+    }
+
     List blogList = List();
     for (var id in blogIDs){
       await Firestore.instance.collection('blogs').document(id).get().then((snap) => {
@@ -56,9 +63,14 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
       });
     }
     resultCount = blogList.length;
-    return List.generate(blogList.length, (int index) {
 
-      return SearchResult(blogList[index]['title'], blogList[index], blogIDs[index]);
+    return List.generate(blogList.length+1, (int index) {
+      if (index == 0){
+        return SearchResult("", Map(), "", users);
+      }
+      else{
+        return SearchResult(blogList[index-1]['title'], blogList[index-1], blogIDs[index-1], List());
+      }
     });
   }
 
@@ -66,6 +78,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      backgroundColor: AppTheme.nearlyWhite,
       body: SafeArea(
         child: Stack(
           children: <Widget>[
@@ -84,26 +97,46 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                     emptyWidget: Center(
                       child: Text('No blogs found'),
                     ),
-                    onItemFound: (SearchResult post, int index) {
-                      final int count = resultCount;
-                      final Animation<double> animation = Tween<double>(
-                          begin: 0.0, end: 1.0)
-                          .animate(
-                          CurvedAnimation(
-                              parent: animationController,
-                              curve: Interval(
-                                  (1 / count) * index, 1.0,
-                                  curve: Curves.fastOutSlowIn
-                              )
-                          )
-                      );
-                      animationController.forward();
-                      return BlogCard(
-                        blogID: post.blogID,
-                        blogData: post.blogData,
-                        animationController: animationController,
-                        animation: animation,
-                      );
+                    onItemFound: (SearchResult result, int index) {
+                      if (index != 0){
+                        final int count = resultCount;
+                        final Animation<double> animation = Tween<double>(
+                            begin: 0.0, end: 1.0)
+                            .animate(
+                            CurvedAnimation(
+                                parent: animationController,
+                                curve: Interval(
+                                    (1 / count) * index, 1.0,
+                                    curve: Curves.fastOutSlowIn
+                                )
+                            )
+                        );
+                        animationController.forward();
+                        return BlogCard(
+                          blogID: result.blogID,
+                          blogData: result.blogData,
+                          animationController: animationController,
+                          animation: animation,
+                        );
+                      }
+                      else{
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          height: 100,
+                          width: double.infinity,
+                          child: ListView.builder(
+                              itemCount: result.users.length,
+                              padding: const EdgeInsets.only(top: 8),
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (BuildContext context, int i){
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  child: result.users[i],
+                                );
+                              }
+                          ),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -120,6 +153,6 @@ class SearchResult {
   Map blogData;
   String blogID;
   String title;
-
-  SearchResult(this.title, this.blogData, this.blogID);
+  List users;
+  SearchResult(this.title, this.blogData, this.blogID, this.users);
 }
