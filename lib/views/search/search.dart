@@ -42,13 +42,18 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
     snap.hits.forEach((h) => {
       blogIDs.add(h.objectID),
     });
-
+    String match_uid;
     query = algolia.instance.instance.index('users').search(search);
     snap = await query.getObjects();
     List userIDs = List();
     snap.hits.forEach((h) => {
       userIDs.add(h.objectID),
+      if(h.data['_fieldsProto']['displayName']['stringValue'].toLowerCase().contains(search.toLowerCase())){
+        match_uid = h.objectID
+      }
     });
+
+    print(match_uid);
 
     List users = List();
 
@@ -56,15 +61,24 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
       users.add(_userRepository.getUserWidget(uid, color: AppTheme.nearlyWhite));
     }
 
+    await Firestore.instance.collection('users').document(match_uid).get().then((snap) => {
+      if(snap.data.containsKey('blogs')){
+        for(var blogID in snap.data['blogs']){
+          blogIDs.add(blogID)
+        }
+      }
+    });
+
     List blogList = List();
     for (var id in blogIDs){
       await Firestore.instance.collection('blogs').document(id).get().then((snap) => {
         blogList.add(snap.data)
       });
     }
+
     resultCount = blogList.length;
 
-    return List.generate(blogList.length+1, (int index) {
+    return List.generate(resultCount+1, (int index) {
       if (index == 0){
         return SearchResult("", Map(), "", users);
       }
@@ -120,21 +134,36 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                         );
                       }
                       else{
-                        return Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          height: 100,
-                          width: double.infinity,
-                          child: ListView.builder(
-                              itemCount: result.users.length,
-                              padding: const EdgeInsets.only(top: 8),
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (BuildContext context, int i){
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  child: result.users[i],
-                                );
-                              }
-                          ),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Text('Users', style: AppTheme.body1, textAlign: TextAlign.left,),
+                            ),
+                            Divider(color: AppTheme.dark_grey,),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              height: 70,
+                              width: double.infinity,
+                              child: ListView.builder(
+                                  itemCount: result.users.length,
+                                  padding: const EdgeInsets.only(top: 0),
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (BuildContext context, int i){
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 8),
+                                      child: result.users[i],
+                                    );
+                                  }
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Text('Blogs', style: AppTheme.body1, textAlign: TextAlign.left,),
+                            ),
+                            Divider(color: AppTheme.dark_grey,)
+                          ],
                         );
                       }
                     },
