@@ -66,12 +66,16 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                       length: 2,
                       child: Scaffold(
                           appBar: AppBar(
+                            centerTitle: true,
                             brightness: Brightness.light,
-                            title: new InkWell(
-                              child: Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
-                              onDoubleTap: () {
-                                _scrollController.jumpTo(0);
-                              },
+                            title: Container(
+                              width: 90,
+                              child: InkWell(
+                                child: Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
+                                onDoubleTap: () {
+                                  _scrollController.jumpTo(0);
+                                },
+                              ),
                             ),
 //                            actions: <Widget>[
 //                              Container(
@@ -117,9 +121,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                                     default:
                                       if(snapshot.hasData){
                                         missionList = List();
-//                                        missionList.clear();
                                         missionIDs = List();
-//                                        missionIDs.clear();
                                         snapshot.data.documents.forEach((mission) => {
                                           missionList.add(mission.data),
                                           missionIDs.add(mission.documentID),

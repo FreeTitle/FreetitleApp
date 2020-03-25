@@ -53,7 +53,7 @@ dependencies:
   flappy_search_bar: 1.4.1
   algolia: 0.1.7
   image_picker: 0.6.3+4
-
+  dash_chat: 1.0.16
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

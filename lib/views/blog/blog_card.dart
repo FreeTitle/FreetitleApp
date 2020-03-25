@@ -42,7 +42,9 @@ class _BlogCard extends State<BlogCard>{
       }
     }
     else{
-      img = Image.network(blogData['cover'], fit: BoxFit.cover,);
+      if (blogData.containsKey('cover')){
+        img = Image.network(blogData['cover'], fit: BoxFit.cover,);
+      }
     }
     if(img == null){
       img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
