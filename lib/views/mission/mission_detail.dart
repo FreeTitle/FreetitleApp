@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
+import 'package:share/share.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -341,11 +342,19 @@ class _MissionDetail extends State<MissionDetail>
                                         color: AppTheme.grey
                                             .withOpacity(0.2)),
                                   ),
-                                  child: Icon(
-                                    Icons.share,
-                                    color: AppTheme.primary,
-                                    size: 28,
-                                  ),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.share,
+                                      color: AppTheme.primary,
+                                      size: 28,
+                                    ),
+                                    onPressed: () {
+                                      Share.share('请看Mission${missionData['name']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
+                                          .catchError((e) => {
+                                        print('sharing error ${e}')
+                                      });
+                                    },
+                                  )
                                 ),
                               ),
                               const SizedBox(
