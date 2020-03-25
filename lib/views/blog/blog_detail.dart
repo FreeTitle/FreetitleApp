@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
@@ -204,7 +208,7 @@ class _BlogDetail extends State<BlogDetail> {
         }
       }
     }
-    else{
+    else if (blog.containsKey('blocks')){
       for(var block in blog['blocks']){
         if(block.contains('https')){
           blogWidget.add(
@@ -223,6 +227,24 @@ class _BlogDetail extends State<BlogDetail> {
           );
         }
       }
+    }
+
+    if(blog.containsKey('RSSarticle')){
+      blogWidget.add(
+        SizedBox(
+          height: 20,
+        )
+      );
+      blogWidget.add(
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: blog['RSSarticle'].length*0.3,
+          child: WebView(
+            initialUrl: Uri.dataFromString("<html><body>${blog['RSSarticle']}</body></html>",  mimeType: "text/html", encoding: Encoding.getByName('utf-8')).toString(),
+
+          ),
+        )
+      );
     }
 
     blogWidget.add(
