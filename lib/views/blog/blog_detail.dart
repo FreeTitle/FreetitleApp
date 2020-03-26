@@ -13,6 +13,7 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/comment/comment.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
+import 'package:freetitle/views/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -50,7 +51,8 @@ class _BlogDetail extends State<BlogDetail> {
   void initState(){
     _userRepository = new UserRepository();
     _userRepository.getUser().then((snap) => {
-      userID = snap.uid,
+      if(snap != null)
+        userID = snap.uid,
     });
     _scrollController = new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     super.initState();
@@ -73,7 +75,7 @@ class _BlogDetail extends State<BlogDetail> {
     return commentIDs;
   }
 
-  List<Widget> processBlogContent(blog, context){
+  List<Widget> buildBlogContent(blog, context){
     List<Widget> blogWidget = new List<Widget>();
     if(blog == null){
       blogWidget.add(Text('Loading blog'));
@@ -359,12 +361,20 @@ class _BlogDetail extends State<BlogDetail> {
                     shape: CircleBorder(),
                     children: [
                       SpeedDialChild(
-                        //TODO 点赞 to be implemented
                         child: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
                         backgroundColor: AppTheme.secondary,
                         label: "点赞 ${blog['likes'].toString()}",
                         labelStyle: AppTheme.body1,
                         onTap: () {
+                          if (userID==null){
+                            Navigator.push<dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) => LoginScreen(),
+                              ),
+                            );
+                            return;
+                          }
                           setState(() {
                             liked = !liked;
                           });
@@ -401,6 +411,15 @@ class _BlogDetail extends State<BlogDetail> {
                         label: "评论 ${blog['comments'] != null ? blog['comments'].length.toString() : '0' }",
                         labelStyle: AppTheme.body1,
                         onTap: () {
+                          if (userID == null){
+                            Navigator.push<dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) => LoginScreen(),
+                              ),
+                            );
+                            return;
+                          }
                           Navigator.push<dynamic>(
                             context,
                             MaterialPageRoute<dynamic>(
@@ -415,6 +434,15 @@ class _BlogDetail extends State<BlogDetail> {
                         label: "收藏 ${blog['markedBy'] != null ? blog['markedBy'].length.toString() : '0' }",
                         labelStyle: AppTheme.body1,
                         onTap: () {
+                          if (userID == null){
+                            Navigator.push<dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) => LoginScreen(),
+                              ),
+                            );
+                            return;
+                          }
                           setState(() {
                             marked = !marked;
                           });
@@ -451,7 +479,6 @@ class _BlogDetail extends State<BlogDetail> {
                         },
                       ),
                       SpeedDialChild(
-                        //TODO 分享 to be implemented
                         child: Icon(Icons.share),
                         backgroundColor: AppTheme.secondary,
                         label: "分享",
@@ -472,7 +499,7 @@ class _BlogDetail extends State<BlogDetail> {
                     padding: EdgeInsets.only(top: 16),
                     child: Column(
                       key: PageStorageKey('blogDetail'),
-                      children: processBlogContent(blog, context),
+                      children: buildBlogContent(blog, context),
                     ),
                   )
                 )

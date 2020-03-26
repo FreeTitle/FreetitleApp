@@ -35,7 +35,8 @@ class _CommentBottom extends State<CommentBottom>{
     _scrollController =  new ScrollController();
     _userRepository = UserRepository();
     _userRepository.getUser().then((snap)=>{
-      userID = snap.uid,
+      if(snap != null)
+        userID = snap.uid,
     });
     super.initState();
   }
