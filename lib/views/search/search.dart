@@ -53,7 +53,6 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
       }
     });
 
-    print(match_uid);
 
     List users = List();
 
@@ -61,15 +60,18 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
       users.add(_userRepository.getUserWidget(uid, color: AppTheme.nearlyWhite));
     }
 
-    await Firestore.instance.collection('users').document(match_uid).get().then((snap) => {
-      if(snap.data.containsKey('blogs')){
-        for(var blogID in snap.data['blogs']){
-          blogIDs.add(blogID)
+    if(match_uid != null){
+      await Firestore.instance.collection('users').document(match_uid).get().then((snap) => {
+        if(snap.data.containsKey('blogs')){
+          for(var blogID in snap.data['blogs']){
+            blogIDs.add(blogID)
+          }
         }
-      }
-    });
+      });
+    }
 
     List blogList = List();
+
     for (var id in blogIDs){
       await Firestore.instance.collection('blogs').document(id).get().then((snap) => {
         blogList.add(snap.data)
