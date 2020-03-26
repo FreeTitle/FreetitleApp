@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -20,7 +21,7 @@ class GoogleLoginButton extends StatelessWidget {
         },
         label: Text('使用谷歌账号登录', style: TextStyle(color: Colors.white)),
 
-        color: Colors.redAccent,
+        color: AppTheme.primary,
       ),
     );
   }
