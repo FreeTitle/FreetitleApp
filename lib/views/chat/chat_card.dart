@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/chat/chat.dart';
 
 class ChatCard extends StatefulWidget {
@@ -53,26 +54,52 @@ class _ChatCard extends State<ChatCard>{
         if(snapshot.connectionState == ConnectionState.done){
           return Container(
             width: MediaQuery.of(context).size.width,
+            color: AppTheme.nearlyWhite,
             height: 100,
-            child: InkWell(
-              onTap: () {
-                Navigator.push<dynamic>(
-                    context,
-                    MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) => Chat(chatID: widget.chatID,),
-                    )
-                );
-              },
-              child: Padding(
-                padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
-                child: Row(
-                  children: <Widget>[
-                    Image.network(avatar, fit: BoxFit.fill,),
-                    SizedBox(width: 10,),
-                    Text(latestMessage),
-                  ],
+            child: Column(
+              children: <Widget>[
+                InkWell(
+                  onTap: () {
+                    Navigator.push<dynamic>(
+                        context,
+                        MaterialPageRoute<dynamic>(
+                          builder: (BuildContext context) => Chat(chatID: widget.chatID,),
+                        )
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),
+                    child: Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                            ),
+                            child: ClipRRect(
+                              borderRadius:
+                              const BorderRadius.all(Radius.circular(80.0)),
+                              child: Image.network(avatar, fit: BoxFit.fill,),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        Column(
+                          children: <Widget>[
+                            Text(userName),
+                            SizedBox(height: 10,),
+                            Text(latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                Divider(color: AppTheme.dark_grey,)
+              ],
             )
           );
         }

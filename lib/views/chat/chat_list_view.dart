@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/chat/chat_card.dart';
+import 'package:freetitle/views/chat/contact_list_view.dart';
 
 class ChatListView extends StatefulWidget{
   _ChatListView createState() => _ChatListView();
@@ -10,7 +11,7 @@ class ChatListView extends StatefulWidget{
 class _ChatListView extends State<ChatListView>{
   String userID;
   UserRepository _userRepository;
-  String otherUserID;
+//  String otherUserID;
 
   @override
   void initState(){
@@ -26,14 +27,16 @@ class _ChatListView extends State<ChatListView>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('私信', style: TextStyle(color: Colors.black)),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add, color: Colors.black,),
             onPressed: () {
-
+              Navigator.of(context).push(contactListRoute());
             },
-          )
+          ),
+          SizedBox(width: 10,),
         ],
         backgroundColor: Colors.white,
         brightness: Brightness.light,
@@ -52,12 +55,13 @@ class _ChatListView extends State<ChatListView>{
               if(snapshot.hasData){
                 List messageList = List();
                 List messageIDs = List();
+                List otherUserIDs = List();
                 snapshot.data.documents.forEach((m) => {
                   messageIDs.add(m.documentID),
                   messageList.add(m.data),
                   for (var id in m.data['users']){
                     if(id != userID){
-                      otherUserID = id,
+                      otherUserIDs.add(id),
                     }
                   }
                 });
@@ -65,7 +69,7 @@ class _ChatListView extends State<ChatListView>{
                   itemCount: messageIDs.length,
                   scrollDirection: Axis.vertical,
                   itemBuilder: (BuildContext context, int index){
-                    return ChatCard(chatID: messageIDs[index], otherUserID: otherUserID);
+                    return ChatCard(chatID: messageIDs[index], otherUserID: otherUserIDs[index]);
                   }
                 );
               }
@@ -77,4 +81,22 @@ class _ChatListView extends State<ChatListView>{
       )
     );
   }
+}
+
+Route contactListRoute() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => ContactListView(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      var begin = Offset(0.0, 1.0);
+      var end = Offset.zero;
+      var curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }

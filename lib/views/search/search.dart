@@ -35,7 +35,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
   }
 
   Future<List<SearchResult>> search(String search) async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     AlgoliaQuery query = algolia.instance.index('blogs').search(search);
     AlgoliaQuerySnapshot snap = await query.getObjects();
     List blogIDs = List();
