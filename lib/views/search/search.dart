@@ -92,7 +92,6 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       backgroundColor: AppTheme.nearlyWhite,
       body: SafeArea(

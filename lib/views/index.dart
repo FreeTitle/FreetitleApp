@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freetitle/views/chat/chat_list_view.dart';
 import 'package:freetitle/views/profile/get_my_profile.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:freetitle/views/chat/chat.dart';
@@ -24,7 +25,7 @@ class _IndexPageState extends State<IndexPage> {
   int _pageIndex = 0;
   final List<Widget> _children = [
     Home(),
-    Chat(),
+    ChatListView(),
     SearchView(),
     GetMyProfile(),
   ];
