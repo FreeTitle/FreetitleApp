@@ -18,7 +18,7 @@ class ChatCard extends StatefulWidget {
 class _ChatCard extends State<ChatCard>{
 
   String avatar;
-  String userName;
+  String username;
   String latestMessage = 'text';
   String latestTime;
   List messageList = List();
@@ -28,7 +28,7 @@ class _ChatCard extends State<ChatCard>{
     await Firestore.instance.collection('users').document(widget.otherUserID).get().then((snap) => {
       if(snap != null){
         avatar = snap.data['avatarUrl'],
-        userName = snap.data['displayName'],
+        username = snap.data['displayName'],
       }
     });
 
@@ -63,7 +63,7 @@ class _ChatCard extends State<ChatCard>{
                     Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
-                          builder: (BuildContext context) => Chat(chatID: widget.chatID,),
+                          builder: (BuildContext context) => Chat(chatID: widget.chatID, otherUsername: username,),
                         )
                     );
                   },
@@ -88,8 +88,9 @@ class _ChatCard extends State<ChatCard>{
                         ),
                         SizedBox(width: 10,),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(userName),
+                            Text(username),
                             SizedBox(height: 10,),
                             Text(latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
                           ],

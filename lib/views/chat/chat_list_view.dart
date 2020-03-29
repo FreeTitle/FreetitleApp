@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/chat/chat_card.dart';
@@ -11,7 +12,9 @@ class ChatListView extends StatefulWidget{
 class _ChatListView extends State<ChatListView>{
   String userID;
   UserRepository _userRepository;
-//  String otherUserID;
+
+  List messageIDs = List();
+  List otherUserIDs = List();
 
   @override
   void initState(){
@@ -21,6 +24,30 @@ class _ChatListView extends State<ChatListView>{
         userID = snap.uid,
     });
     super.initState();
+  }
+
+  Future<bool> getChatList() async {
+    messageIDs.clear();
+    otherUserIDs.clear();
+    var possibleChats = await Firestore.instance.collection('chat').where(
+        'users', arrayContains: userID).getDocuments();
+    if (possibleChats.documents.isNotEmpty) {
+      await Firestore.instance.collection('users').document(userID).get().then((snap) => {
+        if(snap.data['chats'].isNotEmpty){
+          for(var doc in possibleChats.documents){
+            if(snap.data['chats'].contains(doc.documentID)){
+              messageIDs.add(doc.documentID),
+              for(var id in doc.data['users']){
+                if(id != userID){
+                  otherUserIDs.add(id),
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    return true;
   }
 
   @override
@@ -41,41 +68,43 @@ class _ChatListView extends State<ChatListView>{
         backgroundColor: Colors.white,
         brightness: Brightness.light,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('chat').where('users', arrayContains: userID).snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-          if (snapshot.hasError)
-            return new Text('Error: ${snapshot.error}');
-          switch (snapshot.connectionState){
-            case ConnectionState.waiting:
-              return new Center(
-                child: Text('Loading'),
-              );
-            default:
-              if(snapshot.hasData){
-                List messageList = List();
-                List messageIDs = List();
-                List otherUserIDs = List();
-                snapshot.data.documents.forEach((m) => {
-                  messageIDs.add(m.documentID),
-                  messageList.add(m.data),
-                  for (var id in m.data['users']){
-                    if(id != userID){
-                      otherUserIDs.add(id),
-                    }
-                  }
-                });
-                return ListView.builder(
-                  itemCount: messageIDs.length,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (BuildContext context, int index){
-                    return ChatCard(chatID: messageIDs[index], otherUserID: otherUserIDs[index]);
-                  }
-                );
-              }
-              else{
-                return new Text("Something is wrong with firebase");
-              }
+      body: FutureBuilder(
+        future: getChatList(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if(snapshot.connectionState == ConnectionState.done){
+            return ListView.builder(
+                itemCount: messageIDs.length,
+                scrollDirection: Axis.vertical,
+                itemBuilder: (BuildContext context, int index){
+                  var chat = ChatCard(chatID: messageIDs[index], otherUserID: otherUserIDs[index]);
+                  return Dismissible(
+                    key: ObjectKey(chat),
+                    onDismissed: (direction) async {
+                      await Firestore.instance.collection('users')
+                          .document(userID)
+                          .updateData({
+                        'chats': FieldValue.arrayRemove([messageIDs[index]]),
+                      });
+                    },
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 20.0),
+                      color: Colors.red,
+                      child: Icon(
+                        CupertinoIcons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    child: chat,
+                  );
+                  //ChatCard(chatID: messageIDs[index], otherUserID: otherUserIDs[index]);
+                }
+            );
+          }
+          else{
+            return Center(
+              child: Text('No chats yet'),
+            );
           }
         },
       )

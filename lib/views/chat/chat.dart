@@ -14,9 +14,11 @@ class Chat extends StatefulWidget{
   const Chat(
   { Key key,
     this.chatID,
+    this.otherUsername,
   }):super(key:key);
   
   final String chatID;
+  final String otherUsername;
 
   @override
   State<StatefulWidget> createState() {
@@ -61,8 +63,8 @@ class _Chat extends State<Chat> {
 
   void onSend(ChatMessage message){
     message.user.avatar = avatar;
-    var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
     Firestore.instance.runTransaction((transaction) async {
+      var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
       await transaction.set(documentRef, message.toJson()).catchError((e){
         print(e);
       });
@@ -76,7 +78,7 @@ class _Chat extends State<Chat> {
         brightness: Brightness.light,
         centerTitle: true,
         backgroundColor: AppTheme.white,
-        title: Text("Chat", style: TextStyle(color: Colors.black),),
+        title: Text(widget.otherUsername, style: TextStyle(color: Colors.black),),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           color: Colors.black,

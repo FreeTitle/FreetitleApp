@@ -40,24 +40,66 @@ class _ContactCard extends State<ContactCard>{
           children: <Widget>[
             InkWell(
               onTap: () async {
-                var documentRef = Firestore.instance.collection('chat').document();
-                await Firestore.instance.runTransaction((transaction) async {
-                  await transaction.set(documentRef, {
-                    'users': [
-                      userID,
-                      widget.otherUserID,
-                    ]
-                  });
+                List existingChats = List();
+                await Firestore.instance.collection('chat')
+                    .where('users', arrayContains: userID)
+                    .getDocuments().then((snap) => {
+                      if(snap.documents.isNotEmpty){
+                        for(var doc in snap.documents){
+                          if(doc.data['users'].contains(widget.otherUserID)){
+                            existingChats.add(doc),
+                          }
+                        }
+                      }
                 });
+                if(existingChats.isNotEmpty){
+                  assert (existingChats.length == 1);
 
-                var chatID = documentRef.documentID;
+                  var userRef = await Firestore.instance.collection('users').document(userID).get();
+                  String chatID = existingChats[0].documentID;
+                  if (userRef.data['chats'].contains(chatID) == false) {
+                    await Firestore.instance.collection('users').document(userID).updateData({
+                      'chats': FieldValue.arrayUnion([chatID])
+                    });
+                  }
 
-                Navigator.push<dynamic>(
+                  Navigator.push<dynamic>(
                     context,
                     MaterialPageRoute<dynamic>(
                       builder: (BuildContext context) => Chat(chatID: chatID,),
                     )
-                );
+                  );
+                }
+                else{
+                  String chatID;
+                  await Firestore.instance.runTransaction((transaction) async {
+                    var documentRef = Firestore.instance.collection('chat').document();
+                    await transaction.set(documentRef, {
+                      'users': [
+                        userID,
+                        widget.otherUserID,
+                      ]
+                    });
+                    chatID = documentRef.documentID;
+
+                    await Firestore.instance.collection('users').document(userID).updateData({
+                      'chats': FieldValue.arrayUnion([chatID]),
+                    });
+
+                    await Firestore.instance.collection('users').document(widget.otherUserID).updateData({
+                      'chats': FieldValue.arrayUnion([chatID]),
+                    });
+                  });
+
+
+
+                  Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute<dynamic>(
+                        builder: (BuildContext context) => Chat(chatID: chatID,),
+                      )
+                  );
+                }
               },
               child: Padding(
                 padding: EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),
