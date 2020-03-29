@@ -6,12 +6,12 @@ import 'package:freetitle/views/chat/chat.dart';
 
 class ContactCard extends StatefulWidget {
   const ContactCard({Key key,
-    this.avatar,
-    this.username,
+    this.otherAvatar,
+    this.otherUsername,
     this.otherUserID,
   }) : super(key: key);
-  final String avatar;
-  final String username;
+  final String otherAvatar;
+  final String otherUsername;
   final String otherUserID;
 
   _ContactCard createState() => _ContactCard();
@@ -66,7 +66,7 @@ class _ContactCard extends State<ContactCard>{
                   Navigator.push<dynamic>(
                     context,
                     MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) => Chat(chatID: chatID,),
+                      builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: widget.otherUsername,),
                     )
                   );
                 }
@@ -91,8 +91,6 @@ class _ContactCard extends State<ContactCard>{
                     });
                   });
 
-
-
                   Navigator.push<dynamic>(
                       context,
                       MaterialPageRoute<dynamic>(
@@ -116,14 +114,14 @@ class _ContactCard extends State<ContactCard>{
                         child: ClipRRect(
                           borderRadius:
                           const BorderRadius.all(Radius.circular(80.0)),
-                          child: Image.network(widget.avatar, fit: BoxFit.fill,),
+                          child: Image.network(widget.otherAvatar, fit: BoxFit.fill,),
                         ),
                       ),
                     ),
                     SizedBox(width: 10,),
                     Column(
                       children: <Widget>[
-                        Text(widget.username),
+                        Text(widget.otherUsername),
                       ],
                     )
                   ],

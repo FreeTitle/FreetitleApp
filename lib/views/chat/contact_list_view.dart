@@ -73,7 +73,7 @@ class _ContactListView extends State<ContactListView>{
               child: Text('未找到用户'),
             ),
             onItemFound: (ContactSearchResult result, int index){
-              return ContactCard(avatar: result.avatarUrl, username: result.name, otherUserID: result.uid,);
+              return ContactCard(otherAvatar: result.avatarUrl, otherUsername: result.name, otherUserID: result.uid,);
             },
           ),
         ),
