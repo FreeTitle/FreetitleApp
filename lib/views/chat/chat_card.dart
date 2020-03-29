@@ -20,7 +20,7 @@ class _ChatCard extends State<ChatCard>{
   String avatar;
   String username;
   String latestMessage = 'text';
-  String latestTime;
+  int latestTime;
   List messageList = List();
 
   Future<bool>getData() async {
@@ -37,6 +37,7 @@ class _ChatCard extends State<ChatCard>{
         .getDocuments().then((snap) => {
        if(snap.documents.isNotEmpty){
          latestMessage = snap.documents[0].data['text'],
+         latestTime = snap.documents[0].data['createdAt'],
          snap.documents.forEach((m) => {
            messageList.add(m.data),
          }),
@@ -44,6 +45,27 @@ class _ChatCard extends State<ChatCard>{
     });
 
     return true;
+  }
+
+  Widget buildTime(){
+    if(latestTime != null){
+      print(DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(latestTime)));
+      var time = DateTime.fromMillisecondsSinceEpoch(latestTime);
+      var timeDiff = DateTime.now().difference(time);
+      // TODO 把style改掉
+      if(timeDiff.inDays < 1){
+        return Text(time.hour.toString()+':'+time.minute.toString(), style: AppTheme.body1);
+      }
+      else if (timeDiff.inDays > 1 && timeDiff.inDays < 2){
+        return Text('昨天', style: AppTheme.body1,);
+      }
+      else{
+        return Text(time.month.toString() + '-' + time.day.toString(), style: AppTheme.body1);
+      }
+    }
+    else{
+      return Text('Future');
+    }
   }
 
   @override
@@ -55,7 +77,7 @@ class _ChatCard extends State<ChatCard>{
           return Container(
             width: MediaQuery.of(context).size.width,
             color: AppTheme.nearlyWhite,
-            height: 100,
+            height: 92,
             child: Column(
               children: <Widget>[
                 InkWell(
@@ -68,8 +90,10 @@ class _ChatCard extends State<ChatCard>{
                     );
                   },
                   child: Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),
+                    padding: EdgeInsets.only(left: 10, right: 10, top: 10),
                     child: Row(
+//                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -90,11 +114,14 @@ class _ChatCard extends State<ChatCard>{
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(username),
+                            Text(username, style: AppTheme.body1,),
                             SizedBox(height: 10,),
                             Text(latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
                           ],
-                        )
+                        ),
+                        Spacer(),
+                        buildTime(),
+                        SizedBox(width: 20,)
                       ],
                     ),
                   ),
