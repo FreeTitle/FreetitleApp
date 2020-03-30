@@ -168,89 +168,101 @@ class _BlogCard extends State<BlogCard>{
                                               padding: const EdgeInsets.only(top: 4),
                                               child: Row(
                                                 children: <Widget>[
-                                                  Container(
-                                                    width: MediaQuery.of(context).size.width/5,
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Icon(
-                                                            Icons.remove_red_eye
-                                                        ),
-                                                        SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Text(
-                                                          blogData['views'] != null ? blogData['views'].toString() : '0',
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              color: Colors.grey
-                                                                  .withOpacity(0.8)),
-                                                        ),
-                                                      ],
+                                                  Flexible(
+                                                    flex: 2,
+                                                    child: Container(
+//                                                      width: MediaQuery.of(context).size.width/5,
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          Icon(
+                                                              Icons.remove_red_eye
+                                                          ),
+                                                          SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                          Text(
+                                                            blogData['views'] != null ? blogData['views'].toString() : '0',
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors.grey
+                                                                    .withOpacity(0.8)),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                  Container(
-                                                    padding: EdgeInsets.only(left: 8),
-                                                    width: MediaQuery.of(context).size.width/5,
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Icon(
+                                                  Flexible(
+                                                    flex: 2,
+                                                    child: Container(
+                                                      padding: EdgeInsets.only(left: 8),
+//                                                      width: MediaQuery.of(context).size.width/5,
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          Icon(
                                                             Icons.favorite,
-                                                        ),
-                                                        SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Text(
-                                                          blogData['likes'].toString(),
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              color: Colors.grey
-                                                                  .withOpacity(0.8)),
-                                                        ),
-                                                      ],
+                                                          ),
+                                                          SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                          Text(
+                                                            blogData['likes'].toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors.grey
+                                                                    .withOpacity(0.8)),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                  Container(
-                                                    padding: EdgeInsets.only(left: 8),
-                                                    width: MediaQuery.of(context).size.width/5,
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Icon(
-                                                          Icons.bookmark,
-                                                        ),
-                                                        SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Text(
-                                                          blogData['markedBy'] != null ? blogData['markedBy'].length.toString() : '0' ,
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              color: Colors.grey
-                                                                  .withOpacity(0.8)),
-                                                        ),
-                                                      ],
+                                                  Flexible(
+                                                    flex: 2,
+                                                    child: Container(
+                                                      padding: EdgeInsets.only(left: 8),
+//                                                      width: MediaQuery.of(context).size.width/5,
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          Icon(
+                                                            Icons.bookmark,
+                                                          ),
+                                                          SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                          Text(
+                                                            blogData['markedBy'] != null ? blogData['markedBy'].length.toString() : '0' ,
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors.grey
+                                                                    .withOpacity(0.8)),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                  Container(
-                                                    padding: EdgeInsets.only(left: 8),
-                                                    width: MediaQuery.of(context).size.width/5,
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Icon(
-                                                          Icons.comment,
-                                                        ),
-                                                        SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Text(
-                                                          blogData['comments'] != null ? blogData['comments'].length.toString() : '0' ,
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              color: Colors.grey
-                                                                  .withOpacity(0.8)),
-                                                        ),
-                                                      ],
+                                                  Flexible(
+                                                    flex: 2,
+                                                    child: Container(
+                                                      padding: EdgeInsets.only(left: 8),
+//                                                      width: MediaQuery.of(context).size.width/5,
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          Icon(
+                                                            Icons.comment,
+                                                          ),
+                                                          SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                          Text(
+                                                            blogData['comments'] != null ? blogData['comments'].length.toString() : '0' ,
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors.grey
+                                                                    .withOpacity(0.8)),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
+                                                  )
                                                 ],
                                               ),
                                             )
