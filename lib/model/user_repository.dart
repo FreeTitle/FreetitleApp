@@ -29,13 +29,16 @@ class UserRepository {
     FirebaseUser user = await _firebaseAuth.currentUser();
     print('In user repository ${user}');
     await Firestore.instance.collection('users').document(user.uid).get()
-        .catchError((e) => {
-      Firestore.instance.collection('users').document(user.uid).setData({
-        'displayName': user.displayName,
-        'email': user.email,
-        'avatarUrl': user.photoUrl,
-      })
+        .then((snap) => {
+          if(snap.data == null){
+            Firestore.instance.collection('users').document(user.uid).setData({
+              'displayName': user.displayName,
+              'email': user.email,
+              'avatarUrl': user.photoUrl,
+            })
+          }
     });
+
     return _firebaseAuth.currentUser();
   }
 
