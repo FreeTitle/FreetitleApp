@@ -132,7 +132,7 @@ class _Chat extends State<Chat> {
                       inverted: false,
                       onSend: onSend,
                       user: user,
-                      height: MediaQuery.of(context).size.height - AppBar().preferredSize.height*2.5,
+                      height: Platform.isIOS ? MediaQuery.of(context).size.height - AppBar().preferredSize.height*2.5 : MediaQuery.of(context).size.height - AppBar().preferredSize.height*1.5,
                       inputDecoration: InputDecoration.collapsed(hintText: "Add message here..."),
                       dateFormat: DateFormat('yyyy-MMM-dd'),
                       timeFormat: DateFormat('HH:mm'),
@@ -140,7 +140,7 @@ class _Chat extends State<Chat> {
                       showUserAvatar: true,
                       showAvatarForEveryMessage: true,
                       scrollController: _scrollController,
-                      scrollToBottom: true,
+                      scrollToBottom: false,
 //                        messageBuilder: (ChatMessage message) {
 //                          return Container;
 //                        },
@@ -171,7 +171,7 @@ class _Chat extends State<Chat> {
                       onLoadEarlier: () {
                         print("loading...");
                       },
-                      shouldShowLoadEarlier: true,
+                      shouldShowLoadEarlier: false,
                       showTraillingBeforeSend: true,
                       trailing: <Widget>[
                         IconButton(
@@ -184,6 +184,8 @@ class _Chat extends State<Chat> {
                               maxWidth: 400,
                             );
 
+                            print(result);
+
                             if(result != null){
                               final FirebaseStorage _storage = FirebaseStorage(storageBucket: "gs://freetitle.appspot.com");
                               String filePath = 'chat_images/${DateTime.now()}.png';
@@ -195,7 +197,7 @@ class _Chat extends State<Chat> {
 
                               ChatMessage message = ChatMessage(text: "", user: user, image: url);
 
-                              var documentRef = Firestore.instance.collection('messages').document();
+                              var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
                               Firestore.instance.runTransaction((transaction) async {
                                 await transaction.set(
                                   documentRef,
