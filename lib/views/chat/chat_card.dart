@@ -53,7 +53,6 @@ class _ChatCard extends State<ChatCard>{
 
   Widget buildTime(){
     if(latestTime != null){
-      print(DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(latestTime)));
       var time = DateTime.fromMillisecondsSinceEpoch(latestTime);
       var timeDiff = DateTime.now().difference(time);
       // TODO 把style改掉

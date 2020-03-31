@@ -178,7 +178,7 @@ class _Chat extends State<Chat> {
           icon: Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: (){
-            Navigator.pop(context);
+            Navigator.of(context).popUntil((route) => route.isFirst);
           },
         ),
         actions: <Widget>[

@@ -9,8 +9,6 @@ import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/app_theme.dart';
 //import 'package:freetitle/views/drawer/navi_drawer.dart';
 import 'package:freetitle/views/home/home_screen.dart';
-import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:freetitle/views/search/search.dart';
 
 class IndexPage extends StatefulWidget {
