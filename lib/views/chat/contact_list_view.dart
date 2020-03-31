@@ -8,6 +8,13 @@ import 'package:freetitle/views/chat/contact_card.dart';
 
 class ContactListView extends StatefulWidget{
 
+  const ContactListView(
+  {Key key,
+    this.sharedBlogID,
+  }) : super(key: key);
+
+  final String sharedBlogID;
+
   _ContactListView createState() => _ContactListView();
 }
 
@@ -73,7 +80,7 @@ class _ContactListView extends State<ContactListView>{
               child: Text('未找到用户'),
             ),
             onItemFound: (ContactSearchResult result, int index){
-              return ContactCard(otherAvatar: result.avatarUrl, otherUsername: result.name, otherUserID: result.uid,);
+              return ContactCard(otherAvatar: result.avatarUrl, otherUsername: result.name, otherUserID: result.uid, sharedBlogID: widget.sharedBlogID,);
             },
           ),
         ),

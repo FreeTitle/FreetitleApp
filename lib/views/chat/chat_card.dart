@@ -38,6 +38,10 @@ class _ChatCard extends State<ChatCard>{
        if(snap.documents.isNotEmpty){
          latestMessage = snap.documents[0].data['text'],
          latestTime = snap.documents[0].data['createdAt'],
+         if(snap.documents[0].data['image'] != null)
+           latestMessage = '[图片]',
+         if(latestMessage.startsWith('shareblogid='))
+           latestMessage = '[Blog]',
          snap.documents.forEach((m) => {
            messageList.add(m.data),
          }),
