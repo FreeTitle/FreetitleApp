@@ -36,10 +36,6 @@ class _BlogListView extends State<BlogListView>{
           if (snapshot.hasError)
             return new Text('Error: ${snapshot.error}');
           switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return new Center(
-                child: Text('Loading'),
-              );
             default:
               if (snapshot.hasData) {
                 blogList = new List();
@@ -113,7 +109,7 @@ class _BlogListView extends State<BlogListView>{
                           ),
                         )
                             :
-                        BlogCard(
+                        AnimatedBlogCard(
                             blogID: blogIDs[index],
                             blogData: blogList[index],
                             animation: animation,

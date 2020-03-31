@@ -127,7 +127,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                             )
                         );
                         animationController.forward();
-                        return BlogCard(
+                        return AnimatedBlogCard(
                           blogID: result.blogID,
                           blogData: result.blogData,
                           animationController: animationController,

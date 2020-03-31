@@ -35,7 +35,7 @@ class _GetMyProfile extends State<GetMyProfile>{
             return Profile(userID: userID, isMyProfile: true, );
           }
           else{
-            return Text('User file broken');
+            return Text('Get User file broken');
           }
         }
     );
