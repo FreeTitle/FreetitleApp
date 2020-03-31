@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/views/chat/contact_list_view.dart';
 import 'package:freetitle/views/comment/comment.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
@@ -44,6 +46,7 @@ class _BlogDetail extends State<BlogDetail> {
   bool liked = false;
   bool marked = false;
   String userID;
+  bool showFloatingAction = true;
   final commentPageKey = PageStorageKey('CommentPage');
 
 
@@ -290,233 +293,339 @@ class _BlogDetail extends State<BlogDetail> {
     return blogWidget;
   }
 
+  void buildShareSheet(BuildContext context, Map blog){
+    var shareSheetController = showModalBottomSheet(
+        context: context,
+        builder: (context) => Container(
+          color: AppTheme.nearlyWhite,
+          height: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 8, bottom: 16),
+                child: Text('分享至', style: AppTheme.body1),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: IconButton(
+                          icon: Icon(Icons.people,),
+                          iconSize: 50,
+                          onPressed: () {
+                            Navigator.push<dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) => ContactListView(sharedBlogID: widget.blogID,)
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: Container(
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipRRect(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(80.0)),
+                        child: InkWell(
+                          child: Image.asset('assets/icons/wechat.png', fit: BoxFit.fill,),
+                          onTap: () {
+
+                          },
+                        )
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: IconButton(
+                          icon: Icon(CupertinoIcons.share,),
+                          iconSize: 50,
+                          onPressed: () {
+                            Share.share('请看博客${blog['title']}，点击https://freetitle.us/blogdetail?id=${widget.blogID}', subject: 'Look at this')
+                                .catchError((e) => {
+                              print('sharing error ${e}')
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: InkWell(
+                  child: Text('取消'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              )
+            ],
+          ),
+        )
+    );
+
+  }
+
+  void showFloatingActionButton(bool value){
+    setState(() {
+      showFloatingAction = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Map blog;
 
-    return StreamBuilder<DocumentSnapshot>(
-      stream: Firestore.instance.collection('blogs').document(widget.blogID).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-        if (snapshot.hasError)
-          return new Text('Error: ${snapshot.error}');
-        switch(snapshot.connectionState){
-          case ConnectionState.waiting:
-            return new PlaceHolderCard(
-              text: 'Loading Blog',
-              height: 200.0,
-            );
-          default:
-            if(snapshot.data.data != null){
-              blog = snapshot.data.data;
-              if(blog['markedBy'] != null && blog['markedBy'].contains(userID)){
-                marked = true;
-              }
-              if(blog['upvotedBy'] != null && blog['upvotedBy'].contains(userID)){
-                liked = true;
-              }
-              return Scaffold(
-                backgroundColor: AppTheme.nearlyWhite,
-                  appBar: AppBar(
-                    brightness: Brightness.light,
-                    leading: IconButton(
-                      icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
+    return Scaffold(
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: Firestore.instance.collection('blogs').document(widget.blogID).snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+          if (snapshot.hasError)
+            return new Text('Error: ${snapshot.error}');
+          switch(snapshot.connectionState){
+            case ConnectionState.waiting:
+              return new PlaceHolderCard(
+                text: 'Loading Blog',
+                height: 200.0,
+              );
+            default:
+              if(snapshot.data.data != null){
+                blog = snapshot.data.data;
+                if(blog['markedBy'] != null && blog['markedBy'].contains(userID)){
+                  marked = true;
+                }
+                if(blog['upvotedBy'] != null && blog['upvotedBy'].contains(userID)){
+                  liked = true;
+                }
+                return Scaffold(
+                    backgroundColor: AppTheme.nearlyWhite,
+                    appBar: AppBar(
+                      brightness: Brightness.light,
+                      leading: IconButton(
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      actions: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(right: 20),
+                          child: IconButton(
+                            icon: Icon(Icons.comment),
+                            color: Colors.black,
+                            onPressed: () async {
+                              await Navigator.push<dynamic>(
+                                  context,
+                                  MaterialPageRoute<dynamic>(
+                                    builder: (BuildContext context) => CommentPage(key: commentPageKey, commentIDs: getCommentIDs(blog), blogID: widget.blogID),
+                                  )
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                      backgroundColor: AppTheme.white,
+                      iconTheme: IconThemeData(color: Colors.white),
                     ),
-                    actions: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: IconButton(
-                          icon: Icon(Icons.comment),
-                          color: Colors.black,
-                          onPressed: () async {
-                            await Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => CommentPage(key: commentPageKey, commentIDs: getCommentIDs(blog), blogID: widget.blogID),
-                              )
+                    floatingActionButton: showFloatingAction ? SpeedDial(
+                      marginRight: 20,
+                      marginBottom: 20,
+                      animatedIcon: AnimatedIcons.menu_close,
+                      animatedIconTheme: IconThemeData(size: 22.0),
+                      closeManually: false,
+                      curve: Curves.bounceIn,
+                      overlayColor: Colors.black,
+                      overlayOpacity: 0.5,
+                      tooltip: 'Speed Dial',
+                      heroTag: 'speed-dial-hero-tag',
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 8.0,
+                      shape: CircleBorder(),
+                      children: [
+                        SpeedDialChild(
+                          child: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+                          backgroundColor: AppTheme.secondary,
+                          label: "点赞 ${blog['likes'].toString()}",
+                          labelStyle: AppTheme.body1,
+                          onTap: () {
+                            if (userID==null){
+                              Navigator.push<dynamic>(
+                                context,
+                                MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) => LoginScreen(),
+                                ),
+                              );
+                              return;
+                            }
+                            setState(() {
+                              liked = !liked;
+                            });
+                            Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                              "likes": FieldValue.increment((liked ? (1) : (-1))),
+                            }).whenComplete(() => {
+                              print('succeeded'),
+                            }).catchError((e) => {
+                              print('get error ${e}'),
+                            });
+                            if(liked){
+                              Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                                "upvotedBy": FieldValue.arrayUnion([userID]),
+                              }).whenComplete(() => {
+                                print('like  succeeds'),
+                              }).catchError((e) => {
+                                print('like gets error ${e}'),
+                              });
+                            }
+                            else{
+                              Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                                "upvotedBy": FieldValue.arrayRemove([userID]),
+                              }).whenComplete(() => {
+                                print('like  succeeds'),
+                              }).catchError((e) => {
+                                print('like gets error ${e}'),
+                              });
+                            }
+                          },
+                        ),
+                        SpeedDialChild(
+                          child: Icon(Icons.comment),
+                          backgroundColor: AppTheme.secondary,
+                          label: "评论 ${blog['comments'] != null ? blog['comments'].length.toString() : '0' }",
+                          labelStyle: AppTheme.body1,
+                          onTap: () {
+                            if (userID == null){
+                              Navigator.push<dynamic>(
+                                context,
+                                MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) => LoginScreen(),
+                                ),
+                              );
+                              return;
+                            }
+                            Navigator.push<dynamic>(
+                                context,
+                                MaterialPageRoute<dynamic>(
+                                    builder: (BuildContext context) => CommentInputPage(blogID: widget.blogID, parentLevel: 0, parentID: widget.blogID, parentType: 'blog',)
+                                )
                             );
                           },
                         ),
-                      ),
-                    ],
-                    backgroundColor: AppTheme.white,
-                    iconTheme: IconThemeData(color: Colors.white),
-                  ),
-                  floatingActionButton: SpeedDial(
-                    marginRight: 20,
-                    marginBottom: 20,
-                    animatedIcon: AnimatedIcons.menu_close,
-                    animatedIconTheme: IconThemeData(size: 22.0),
-                    closeManually: false,
-                    curve: Curves.bounceIn,
-                    overlayColor: Colors.black,
-                    overlayOpacity: 0.5,
-                    tooltip: 'Speed Dial',
-                    heroTag: 'speed-dial-hero-tag',
-                    backgroundColor: AppTheme.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 8.0,
-                    shape: CircleBorder(),
-                    children: [
-                      SpeedDialChild(
-                        child: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
-                        backgroundColor: AppTheme.secondary,
-                        label: "点赞 ${blog['likes'].toString()}",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          if (userID==null){
-                            Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => LoginScreen(),
-                              ),
-                            );
-                            return;
-                          }
-                          setState(() {
-                            liked = !liked;
-                          });
-                          Firestore.instance.collection('blogs').document(widget.blogID).updateData({
-                            "likes": FieldValue.increment((liked ? (1) : (-1))),
-                          }).whenComplete(() => {
-                            print('succeeded'),
-                          }).catchError((e) => {
-                            print('get error ${e}'),
-                          });
-                          if(liked){
-                            Firestore.instance.collection('blogs').document(widget.blogID).updateData({
-                              "upvotedBy": FieldValue.arrayUnion([userID]),
-                            }).whenComplete(() => {
-                              print('like  succeeds'),
-                            }).catchError((e) => {
-                              print('like gets error ${e}'),
+                        SpeedDialChild(
+                          child: marked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
+                          backgroundColor: AppTheme.secondary,
+                          label: "收藏 ${blog['markedBy'] != null ? blog['markedBy'].length.toString() : '0' }",
+                          labelStyle: AppTheme.body1,
+                          onTap: () {
+                            if (userID == null){
+                              Navigator.push<dynamic>(
+                                context,
+                                MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) => LoginScreen(),
+                                ),
+                              );
+                              return;
+                            }
+                            setState(() {
+                              marked = !marked;
                             });
-                          }
-                          else{
-                            Firestore.instance.collection('blogs').document(widget.blogID).updateData({
-                              "upvotedBy": FieldValue.arrayRemove([userID]),
-                            }).whenComplete(() => {
-                              print('like  succeeds'),
-                            }).catchError((e) => {
-                              print('like gets error ${e}'),
-                            });
-                          }
-                        },
-                      ),
-                      SpeedDialChild(
-                        child: Icon(Icons.comment),
-                        backgroundColor: AppTheme.secondary,
-                        label: "评论 ${blog['comments'] != null ? blog['comments'].length.toString() : '0' }",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          if (userID == null){
-                            Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => LoginScreen(),
-                              ),
-                            );
-                            return;
-                          }
-                          Navigator.push<dynamic>(
-                            context,
-                            MaterialPageRoute<dynamic>(
-                              builder: (BuildContext context) => CommentInputPage(blogID: widget.blogID, parentLevel: 0, parentID: widget.blogID, parentType: 'blog',)
-                            )
-                          );
-                        },
-                      ),
-                      SpeedDialChild(
-                        child: marked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
-                        backgroundColor: AppTheme.secondary,
-                        label: "收藏 ${blog['markedBy'] != null ? blog['markedBy'].length.toString() : '0' }",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          if (userID == null){
-                            Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => LoginScreen(),
-                              ),
-                            );
-                            return;
-                          }
-                          setState(() {
-                            marked = !marked;
-                          });
-                          if(marked){
-                            Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
-                              if(snap.data.isNotEmpty){
-                                await _userRepository.getUser().then((snap) => {
-                                  userID = snap.uid,
-                                });
-                                await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
-                                  'markedBy': FieldValue.arrayUnion([userID])
-                                });
-                                await Firestore.instance.collection('users').document(userID).updateData({
-                                  'bookmarks': FieldValue.arrayUnion([widget.blogID])
-                                });
-                              }
-                            });
-                          }
-                          else{
-                            Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
-                              if(snap.data.isNotEmpty){
-                                await _userRepository.getUser().then((snap) => {
-                                  userID = snap.uid,
-                                });
-                                await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
-                                  'markedBy': FieldValue.arrayRemove([userID])
-                                });
-                                await Firestore.instance.collection('users').document(userID).updateData({
-                                  'bookmarks': FieldValue.arrayRemove([widget.blogID])
-                                });
-                              }
-                            });
-                          }
-                        },
-                      ),
-                      SpeedDialChild(
-                        child: Icon(Icons.share),
-                        backgroundColor: AppTheme.secondary,
-                        label: "分享",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          Share.share('请看博客${blog['title']}，点击https://freetitle.us/blogdetail?id=${widget.blogID}', subject: 'Look at this')
-                              .catchError((e) => {
-                            print('sharing error ${e}')
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  resizeToAvoidBottomPadding: false,
-                body: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Column(
-                      key: PageStorageKey('blogDetail'),
-                      children: buildBlogContent(blog, context),
+                            if(marked){
+                              Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
+                                if(snap.data.isNotEmpty){
+                                  await _userRepository.getUser().then((snap) => {
+                                    userID = snap.uid,
+                                  });
+                                  await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                                    'markedBy': FieldValue.arrayUnion([userID])
+                                  });
+                                  await Firestore.instance.collection('users').document(userID).updateData({
+                                    'bookmarks': FieldValue.arrayUnion([widget.blogID])
+                                  });
+                                }
+                              });
+                            }
+                            else{
+                              Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
+                                if(snap.data.isNotEmpty){
+                                  await _userRepository.getUser().then((snap) => {
+                                    userID = snap.uid,
+                                  });
+                                  await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                                    'markedBy': FieldValue.arrayRemove([userID])
+                                  });
+                                  await Firestore.instance.collection('users').document(userID).updateData({
+                                    'bookmarks': FieldValue.arrayRemove([widget.blogID])
+                                  });
+                                }
+                              });
+                            }
+                          },
+                        ),
+                        SpeedDialChild(
+                          child: Icon(Icons.share),
+                          backgroundColor: AppTheme.secondary,
+                          label: "分享",
+                          labelStyle: AppTheme.body1,
+                          onTap: () {
+                            buildShareSheet(context, blog);
+                          },
+                        ),
+                      ],
+                    ) : Container(),
+                    resizeToAvoidBottomPadding: false,
+                    body: SingleChildScrollView(
+                        controller: _scrollController,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Column(
+                            key: PageStorageKey('blogDetail'),
+                            children: buildBlogContent(blog, context),
+                          ),
+                        )
+                    )
+                );
+              }
+              else{
+                return Scaffold(
+                    appBar: AppBar(
+                      backgroundColor: AppTheme.primary,
                     ),
-                  )
-                )
-              );
-            }
-            else{
-              return Scaffold(
-                appBar: AppBar(
-                  backgroundColor: AppTheme.primary,
-                ),
-                body: PlaceHolderCard(
-                  text: 'Loadding Blog',
-                )
-              );
-            }
-        }
-      },
+                    body: PlaceHolderCard(
+                      text: 'Loadding Blog',
+                    )
+                );
+              }
+          }
+        },
+      ),
     );
   }
 }
