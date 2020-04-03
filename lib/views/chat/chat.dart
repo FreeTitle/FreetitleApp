@@ -85,17 +85,29 @@ class _Chat extends State<Chat> {
   Widget buildMessage(ChatMessage message) {
     if(message.text.startsWith('shareblogid=')){
       return Container(
-        height: 300,
-        width: 337,
         child: StreamBuilder<DocumentSnapshot>(
           stream: Firestore.instance.collection('blogs').document(message.text.substring(12)).snapshots(),
           builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
             if(snapshot.hasData){
               if(snapshot.data.data != null){
                 return Container(
+                  height: 300,
+                  width: 318,
                   child: BlogCard(
                     blogID: message.text.substring(12),
                     blogData: snapshot.data.data,
+                  ),
+                );
+              }
+              else{
+                return Container(
+                  child: Center(
+                    child: ParsedText(
+                      text: '用户分享的博客不存在',
+                      style: TextStyle(
+                        color: Colors.black87,
+                      ),
+                    ),
                   ),
                 );
               }

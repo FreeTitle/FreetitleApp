@@ -96,7 +96,7 @@ class _ContactCard extends State<ContactCard>{
                   Navigator.push<dynamic>(
                       context,
                       MaterialPageRoute<dynamic>(
-                        builder: (BuildContext context) => Chat(chatID: chatID, sharedBlogID: widget.sharedBlogID,),
+                        builder: (BuildContext context) => Chat(chatID: chatID, sharedBlogID: widget.sharedBlogID, otherUsername: widget.otherUsername,),
                       )
                   );
                 }
