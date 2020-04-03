@@ -21,6 +21,8 @@ import 'package:freetitle/model/util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share/share.dart';
 import 'dart:io';
+import 'package:fluwx/fluwx.dart';
+import 'package:freetitle/views/chat/chat_list_view.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -48,10 +50,12 @@ class _BlogDetail extends State<BlogDetail> {
   String userID;
   bool showFloatingAction = true;
   final commentPageKey = PageStorageKey('CommentPage');
-
+  String wechatThumbailUrl;
+  String wechatDescription;
 
   @override
   void initState(){
+    final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
     _userRepository = new UserRepository();
     _userRepository.getUser().then((snap) => {
       if(snap != null)
@@ -104,6 +108,9 @@ class _BlogDetail extends State<BlogDetail> {
       for(var block in blog['article']['blocks']){
         if(block['type'] == 'paragraph'){
           // handle link case
+          if(wechatDescription == null){
+            wechatDescription = block['data']['text'];
+          }
           Widget curBlock = Text(block['data']['text']);
           List<TextSpan> textLists = new List<TextSpan>();
           if (block['data']['text'].contains('<a')){
@@ -159,6 +166,9 @@ class _BlogDetail extends State<BlogDetail> {
         else if(block['type'] == 'image'){
           if(block['data']['file']['url'] == null){
             continue;
+          }
+          if(wechatThumbailUrl == null){
+            wechatThumbailUrl = block['data']['file']['url'];
           }
           blogWidget.add(
             Padding(
@@ -348,7 +358,12 @@ class _BlogDetail extends State<BlogDetail> {
                         child: InkWell(
                           child: Image.asset('assets/icons/wechat.png', fit: BoxFit.fill,),
                           onTap: () {
-
+                            shareToWeChat(WeChatShareWebPageModel(
+                              "https://freetitle.us/blogdetail?id=${widget.blogID}",
+                              title: blog['title'],
+                              description: wechatDescription != null ? wechatDescription : "点击阅读全文",
+                              thumbnail: wechatThumbailUrl != null ? WeChatImage.network(wechatThumbailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                            ));
                           },
                         )
                       ),
