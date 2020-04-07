@@ -100,13 +100,53 @@ class _Chat extends State<Chat> {
                 );
               }
               else{
-                return Container(
-                  child: Center(
-                    child: ParsedText(
-                      text: '用户分享的博客不存在',
-                      style: TextStyle(
-                        color: Colors.black87,
-                      ),
+                return ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.8,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: message.user.containerColor != null
+                          ? message.user.containerColor
+                          : Color.fromRGBO(225, 225, 225, 1),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    margin: EdgeInsets.only(
+                      bottom: 5.0,
+                    ),
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        ParsedText(
+                          text: '用户分享的博客不存在',
+                          style: TextStyle(
+                            color: Colors.black87,
+                          ),
+                        ),
+                        if (message.image != null)
+                          Padding(
+                            padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                            child: FadeInImage.memoryNetwork(
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              fit: BoxFit.contain,
+                              image: message.image,
+                              placeholder: kTransparentImage,
+                            ),
+                          ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 5.0),
+                          child: Text(
+                            DateFormat('HH:mm:ss').format(message.createdAt),
+                            style: TextStyle(
+                              fontSize: 10.0,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 );
