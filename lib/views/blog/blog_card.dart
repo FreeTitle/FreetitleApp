@@ -70,7 +70,10 @@ class _BlogCard extends State<BlogCard>{
   Image getBlogImage(){
     Image img;
     final blogData = widget.blogData;
-    if(blogData['article'] != null){
+    if (blogData.containsKey('cover')){
+      img = Image.network(blogData['cover'], fit: BoxFit.cover,);
+    }
+    else if(blogData['article'] != null){
       for(var block in blogData['article']['blocks']){
         if(block['type'] == "image"){
           if(block['data']['file']['url'] != null){
@@ -80,11 +83,7 @@ class _BlogCard extends State<BlogCard>{
         }
       }
     }
-    else{
-      if (blogData.containsKey('cover')){
-        img = Image.network(blogData['cover'], fit: BoxFit.cover,);
-      }
-    }
+
     if(img == null){
       img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
     }
