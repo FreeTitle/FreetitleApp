@@ -106,36 +106,63 @@ class _BlogDetail extends State<BlogDetail> {
     // Process contents
     if(blog['article'] != null){
       for(var block in blog['article']['blocks']){
+        String blockText = block['data']['text'];
         if(block['type'] == 'paragraph'){
+          blockText = blockText.replaceAll('&nbsp;', ' ');
           // handle link case
           if(wechatDescription == null){
-            wechatDescription = block['data']['text'];
+            wechatDescription = blockText;
           }
-          Widget curBlock = Text(block['data']['text']);
+          Widget curBlock = Text(blockText, style: AppTheme.body1,);
           List<TextSpan> textLists = new List<TextSpan>();
-          if (block['data']['text'].contains('<a')){
-            List<String> blockTexts = block['data']['text'].split('<a ');
-            for(String blockText in blockTexts){
-              if(blockText.contains('href=')){
-                int startURL = blockText.indexOf('href=')+6;
-                int endUrl = blockText.indexOf('">');
-                String url = blockText.substring(startURL, endUrl);
-                int endLink = blockText.indexOf('</a>');
-                String link = blockText.substring(endUrl+2, endLink);
+          // handle embedded url
+          if (blockText.contains('<a') || blockText.contains('<i>') || blockText.contains('<b>')){
+            List<String> blockStrings = blockText.split(' <');
+            for(String blockString in blockStrings){
+              if(blockString.contains('href=')){
+                int startURL = blockString.indexOf('href=')+6;
+                int endUrl = blockString.indexOf('">');
+                String url = blockString.substring(startURL, endUrl);
+                int endLink = blockString.indexOf('</a>');
+                String link = blockString.substring(endUrl+2, endLink);
                 textLists.add( LinkTextSpan(
                   style: AppTheme.link,
                   url: url,
-                  text: link,
+                  text: ' ' + link,
                 ),);
+                textLists.add( LinkTextSpan(
+                  style: AppTheme.body1,
+                  text: blockString.substring(endLink+4),
+                ));
+              }
+              else if (blockString.contains('i>')){
+                int italic_start = blockString.indexOf('i>')+2;
+                int italic_end = blockString.indexOf('</i>');
+                textLists.add(TextSpan(
+                  style: AppTheme.body1Italic,
+                  text: ' ' + blockString.substring(italic_start, italic_end),
+                ));
                 textLists.add(TextSpan(
                   style: AppTheme.body1,
-                  text: blockText.substring(endLink+4),
+                  text: blockString.substring(italic_end+4),
+                ));
+              }
+              else if (blockString.contains('b>')){
+                int bold_start = blockString.indexOf('b>')+2;
+                int bold_end = blockString.indexOf('</b>');
+                textLists.add(TextSpan(
+                    style: AppTheme.body1Bold,
+                    text: ' ' + blockString.substring(bold_start, bold_end)
+                ));
+                textLists.add(TextSpan(
+                  style: AppTheme.body1,
+                  text: blockString.substring(bold_end+4),
                 ));
               }
               else{
                 textLists.add(TextSpan(
                   style: AppTheme.body1,
-                  text: blockText,
+                  text: blockString,
                 ),);
               }
             }
@@ -148,6 +175,7 @@ class _BlogDetail extends State<BlogDetail> {
               );
             }
           }
+
           blogWidget.add(
             Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 24.0, right: 24.0),
@@ -159,7 +187,7 @@ class _BlogDetail extends State<BlogDetail> {
           blogWidget.add(
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 8.0, left: 24.0, right: 24.0),
-                child: Text(block['data']['text'], style: AppTheme.title,),
+                child: Text(blockText, style: AppTheme.title,),
               )
           );
         }
