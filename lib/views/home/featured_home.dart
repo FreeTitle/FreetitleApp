@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/home/publication.dart';
 
 class FeaturedHome extends StatefulWidget {
 
@@ -12,9 +13,25 @@ class FeaturedHome extends StatefulWidget {
   _FeaturedHome createState() => _FeaturedHome();
 }
 
-class _FeaturedHome extends State<FeaturedHome>{
+class _FeaturedHome extends State<FeaturedHome> with TickerProviderStateMixin {
 
   List publications = List();
+
+  AnimationController animationController;
+
+  @override
+  void initState(){
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
 
   Future<bool> getPublications() async {
     publications.clear();
@@ -35,24 +52,19 @@ class _FeaturedHome extends State<FeaturedHome>{
       future: getPublications(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
         if(snapshot.connectionState == ConnectionState.done){
-          return InkWell(
-            onTap: () {
-
-            },
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child:StaggeredGridView.countBuilder(
-                key: PageStorageKey('Featured'),
-                itemCount: publications.length,
-                crossAxisCount: 4,
-                itemBuilder: (BuildContext context, int index) {
-                  return PublicationTile(publication: publications[index],);
-                },
-                staggeredTileBuilder: (int index) =>
-                    StaggeredTile.fit(2),
-                mainAxisSpacing: 16.0,
-                crossAxisSpacing: 16.0,
-              ),
+          return Padding(
+            padding: EdgeInsets.all(16),
+            child:StaggeredGridView.countBuilder(
+              key: PageStorageKey('Featured'),
+              itemCount: publications.length,
+              crossAxisCount: 4,
+              itemBuilder: (BuildContext context, int index) {
+                return PublicationTile(publication: publications[index],);
+              },
+              staggeredTileBuilder: (int index) =>
+                  StaggeredTile.fit(2),
+              mainAxisSpacing: 16.0,
+              crossAxisSpacing: 16.0,
             ),
           );
         }
@@ -87,25 +99,35 @@ class PublicationTile extends StatelessWidget{
           borderRadius: const BorderRadius.all(Radius.circular(16.0)),
           color: AppTheme.white
       ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-        child: Column(
-          children: <Widget>[
-            Image.network(publication['cover']),
-            SizedBox(height: 10,),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                publication['title'],
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  letterSpacing: 0.27,
-                  color: AppTheme.darkerText,
+      child: InkWell(
+        onTap: () {
+          Navigator.push<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => PublicationView(blogIDs: publication['blogIDList'], title: publication['title'],),
+            ),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+          child: Column(
+            children: <Widget>[
+              Image.network(publication['cover']),
+              SizedBox(height: 10,),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  publication['title'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    letterSpacing: 0.27,
+                    color: AppTheme.darkerText,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       )
     );
