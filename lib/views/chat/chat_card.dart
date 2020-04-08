@@ -88,7 +88,7 @@ class _ChatCard extends State<ChatCard>{
                     Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
-                          builder: (BuildContext context) => Chat(chatID: widget.chatID, otherUsername: username,),
+                          builder: (BuildContext context) => ChatView(chatID: widget.chatID, otherUsername: username,),
                         )
                     );
                   },
