@@ -100,6 +100,15 @@ class AppTheme {
     color: darkText,
   );
 
+  static const TextStyle body1BoldItalic = TextStyle( // body2 -> body1
+    fontFamily: fontName,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+    letterSpacing: -0.05,
+    color: darkText,
+    fontStyle: FontStyle.italic,
+  );
+
   static const TextStyle caption = TextStyle( // Caption -> caption
     fontFamily: fontName,
     fontWeight: FontWeight.w400,

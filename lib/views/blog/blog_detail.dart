@@ -77,6 +77,49 @@ class _BlogDetail extends State<BlogDetail> {
     return commentIDs;
   }
 
+  List<TextSpan> processText(blockText){
+    List<String> blockStrings = blockText.split('<');
+    List<TextSpan> textLists = List();
+    for(String blockString in blockStrings){
+      if(blockString.contains('href=')){
+        int startURL = blockString.indexOf('href=')+6;
+        int endUrl = blockString.indexOf('">');
+        String url = blockString.substring(startURL, endUrl);
+        String link = blockString.substring(endUrl+2);
+        textLists.add( LinkTextSpan(
+          style: AppTheme.link,
+          url: url,
+          text: ' ' + link,
+        ),);
+      }
+      else if (blockString.contains('i>') && !blockString.contains(('/'))){
+        final italicStart = blockString.indexOf('i>')+2;
+        textLists.add(TextSpan(
+          style: AppTheme.body1Italic,
+          text: ' ' + blockString.substring(italicStart),
+        ));
+      }
+      else if (blockString.contains('b>') && !blockString.contains('/')){
+        final boldStart = blockString.indexOf('b>')+2;
+        textLists.add(TextSpan(
+            style: AppTheme.body1Bold,
+            text: ' ' + blockString.substring(boldStart)
+        ));
+      }
+      else{
+        if(blockString.startsWith('/')){
+          blockString = blockString.substring(3);
+        }
+        textLists.add(TextSpan(
+          style: AppTheme.body1,
+          text: blockString,
+        ),);
+      }
+    }
+
+    return textLists;
+  }
+
   List<Widget> buildBlogContent(blog, context){
     List<Widget> blogWidget = new List<Widget>();
     if(blog == null){
@@ -112,54 +155,24 @@ class _BlogDetail extends State<BlogDetail> {
           List<TextSpan> textLists = new List<TextSpan>();
           // handle embedded url
           if (blockText.contains('<a') || blockText.contains('<i>') || blockText.contains('<b>')){
-            List<String> blockStrings = blockText.split(' <');
-            for(String blockString in blockStrings){
-              if(blockString.contains('href=')){
-                int startURL = blockString.indexOf('href=')+6;
-                int endUrl = blockString.indexOf('">');
-                String url = blockString.substring(startURL, endUrl);
-                int endLink = blockString.indexOf('</a>');
-                String link = blockString.substring(endUrl+2, endLink);
-                textLists.add( LinkTextSpan(
-                  style: AppTheme.link,
-                  url: url,
-                  text: ' ' + link,
-                ),);
-                textLists.add( LinkTextSpan(
-                  style: AppTheme.body1,
-                  text: blockString.substring(endLink+4),
-                ));
-              }
-              else if (blockString.contains('i>')){
-                final italicStart = blockString.indexOf('i>')+2;
-                final italicEnd = blockString.indexOf('</i>');
+            List<String> blockStrings = blockText.split('<i><b>');
+            for (String blockString in blockStrings) {
+              if(blockString.contains('</b></i>')){
+                final boldItalicStart = 0;
+                final boldItalicEnd = blockString.indexOf('</b>');
                 textLists.add(TextSpan(
-                  style: AppTheme.body1Italic,
-                  text: ' ' + blockString.substring(italicStart, italicEnd),
-                ));
-                textLists.add(TextSpan(
-                  style: AppTheme.body1,
-                  text: blockString.substring(italicEnd+4),
-                ));
-              }
-              else if (blockString.contains('b>')){
-                final boldStart = blockString.indexOf('b>')+2;
-                final boldEnd = blockString.indexOf('</b>');
-                print(boldEnd);
-                textLists.add(TextSpan(
-                    style: AppTheme.body1Bold,
-                    text: ' ' + blockString.substring(boldStart, boldEnd)
-                ));
-                textLists.add(TextSpan(
-                  style: AppTheme.body1,
-                  text: blockString.substring(boldEnd+4),
-                ));
+                    style: AppTheme.body1BoldItalic,
+                    text: ' ' + blockString.substring(boldItalicStart, boldItalicEnd),
+                  )
+                );
+                processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
+                  textLists.add(block);
+                });
               }
               else{
-                textLists.add(TextSpan(
-                  style: AppTheme.body1,
-                  text: blockString,
-                ),);
+                processText(blockString).forEach((block) {
+                  textLists.add(block);
+                });
               }
             }
 
