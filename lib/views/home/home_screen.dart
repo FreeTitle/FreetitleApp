@@ -16,9 +16,8 @@ class Home extends StatefulWidget {
   }
 }
 
-class _Home extends State<Home> with TickerProviderStateMixin {
+class _Home extends State<Home> {
 
-  AnimationController animationController;
   List blogList;
   List blogIDs;
   List missionList;
@@ -27,9 +26,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
 
   @override
   void initState(){
-    animationController = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this
-    );
+
     _scrollController = ScrollController(initialScrollOffset: 0.0);
     super.initState();
   }
@@ -41,7 +38,6 @@ class _Home extends State<Home> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    animationController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -109,7 +105,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                           ),
                           body: TabBarView(
                             children: <Widget>[
-                              BlogListView(animationController: animationController, scrollController: _scrollController,),
+                              BlogListView(scrollController: _scrollController,),
                               FeaturedHome(),
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Missions'),

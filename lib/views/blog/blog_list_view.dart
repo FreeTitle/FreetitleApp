@@ -7,20 +7,33 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class BlogListView extends StatefulWidget {
   const BlogListView(
   {Key key,
-    this.animationController,
     this.scrollController,
   }) : super(key: key);
 
-  final animationController;
   final scrollController;
   _BlogListView createState() => _BlogListView();
 
 }
 
-class _BlogListView extends State<BlogListView>{
+class _BlogListView extends State<BlogListView> with TickerProviderStateMixin {
 
   int perPage = 15;
   int pageCount = 1;
+
+  AnimationController animationController;
+
+  @override void initState() {
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,15 +85,14 @@ class _BlogListView extends State<BlogListView>{
                         final int count = blogList.length;
                         final Animation<double> animation = Tween<double>(begin: 0.0, end: 1.0)
                             .animate(CurvedAnimation(
-                            parent: widget.animationController,
+                            parent: animationController,
                             curve: Interval(
                                 (1 / count) * index, 1.0,
                                 curve: Curves.fastOutSlowIn
                             )
                         )
                         );
-                        widget.animationController
-                            .forward();
+                        animationController.forward();
                         return (index == present) ?
                         Padding(
                           padding: EdgeInsets.only(left: 24, right: 24),
@@ -111,7 +123,7 @@ class _BlogListView extends State<BlogListView>{
                             blogID: blogIDs[index],
                             blogData: blogList[index],
                             animation: animation,
-                            animationController: widget.animationController
+                            animationController: animationController
                         );
                       },
                     )
