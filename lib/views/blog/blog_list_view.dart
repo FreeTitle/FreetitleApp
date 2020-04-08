@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/views/blog/blog_card.dart';
-import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,7 +27,6 @@ class _BlogListView extends State<BlogListView>{
     List blogList = new List();
     List blogIDs = new List();
 
-    print(pageCount);
     return StreamBuilder<QuerySnapshot>(
         key: PageStorageKey('Blogs'),
         stream: Firestore.instance.collection('blogs').limit(pageCount*perPage).orderBy('time', descending: true).snapshots(),

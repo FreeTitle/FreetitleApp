@@ -27,7 +27,6 @@ class PlaceHolderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Padding(
       padding: EdgeInsets.only(left: 24, right: 24),
       child: Card(

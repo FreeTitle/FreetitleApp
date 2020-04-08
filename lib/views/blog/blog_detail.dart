@@ -3,26 +3,21 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/model/user_repository.dart';
-import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/chat/contact_list_view.dart';
 import 'package:freetitle/views/comment/comment.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:freetitle/views/login/login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share/share.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
-import 'package:freetitle/views/chat/chat_list_view.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -136,27 +131,28 @@ class _BlogDetail extends State<BlogDetail> {
                 ));
               }
               else if (blockString.contains('i>')){
-                int italic_start = blockString.indexOf('i>')+2;
-                int italic_end = blockString.indexOf('</i>');
+                final italicStart = blockString.indexOf('i>')+2;
+                final italicEnd = blockString.indexOf('</i>');
                 textLists.add(TextSpan(
                   style: AppTheme.body1Italic,
-                  text: ' ' + blockString.substring(italic_start, italic_end),
+                  text: ' ' + blockString.substring(italicStart, italicEnd),
                 ));
                 textLists.add(TextSpan(
                   style: AppTheme.body1,
-                  text: blockString.substring(italic_end+4),
+                  text: blockString.substring(italicEnd+4),
                 ));
               }
               else if (blockString.contains('b>')){
-                int bold_start = blockString.indexOf('b>')+2;
-                int bold_end = blockString.indexOf('</b>');
+                final boldStart = blockString.indexOf('b>')+2;
+                final boldEnd = blockString.indexOf('</b>');
+                print(boldEnd);
                 textLists.add(TextSpan(
                     style: AppTheme.body1Bold,
-                    text: ' ' + blockString.substring(bold_start, bold_end)
+                    text: ' ' + blockString.substring(boldStart, boldEnd)
                 ));
                 textLists.add(TextSpan(
                   style: AppTheme.body1,
-                  text: blockString.substring(bold_end+4),
+                  text: blockString.substring(boldEnd+4),
                 ));
               }
               else{
@@ -281,7 +277,7 @@ class _BlogDetail extends State<BlogDetail> {
       blogWidget.add(
         Container(
           width: MediaQuery.of(context).size.width,
-          height: blog['RSSarticle'].length*0.3,
+          height: MediaQuery.of(context).size.height-600,
           child: WebView(
             initialUrl: Uri.dataFromString("<html><body>${blog['RSSarticle']}</body></html>",  mimeType: "text/html", encoding: Encoding.getByName('utf-8')).toString(),
 

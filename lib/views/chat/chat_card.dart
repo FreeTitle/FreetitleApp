@@ -55,7 +55,6 @@ class _ChatCard extends State<ChatCard>{
     if(latestTime != null){
       var time = DateTime.fromMillisecondsSinceEpoch(latestTime);
       var timeDiff = DateTime.now().difference(time);
-      // TODO 把style改掉
       if(timeDiff.inDays < 1){
         String minute = time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString();
         return Text(time.hour.toString()+':'+ minute, style: AppTheme.body1);

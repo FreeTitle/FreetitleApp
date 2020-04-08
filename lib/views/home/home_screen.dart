@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:freetitle/views/search/search.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:freetitle/views/home/featured_home.dart';
 import 'package:freetitle/views/mission/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,7 +64,8 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                 },
                 child:
                     DefaultTabController(
-                      length: 2,
+                      length: 3,
+                      initialIndex: 1,
                       child: Scaffold(
                           appBar: AppBar(
                             centerTitle: true,
@@ -100,6 +102,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                               indicatorColor: AppTheme.primary,
                               tabs: <Widget>[
                                 Tab(child: Text('Blogs')),
+                                Tab(child: Text('Featured')),
                                 Tab(child: Text('Mission')),
                               ],
                             ),
@@ -107,6 +110,7 @@ class _Home extends State<Home> with TickerProviderStateMixin {
                           body: TabBarView(
                             children: <Widget>[
                               BlogListView(animationController: animationController, scrollController: _scrollController,),
+                              FeaturedHome(),
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Missions'),
                                 stream: Firestore.instance.collection('missions').orderBy('time', descending: true).snapshots(),

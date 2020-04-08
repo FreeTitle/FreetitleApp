@@ -89,63 +89,100 @@ class _LoginFormState extends State<LoginForm> {
           return Padding(
             padding: EdgeInsets.all(20.0),
             child: Form(
-              child: ListView(
+              child: Stack(
                 children: <Widget>[
-                  Hero(
-                    tag: 'hero',
-                    child: CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 48.0,
-                      child: Image.asset('assets/logo.png'),
-                    ),
-                  ),
-                  SizedBox(height: 48.0),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.email),
-                      labelText: 'Email',
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                    ),
-                    autovalidate: true,
-                    autocorrect: false,
-                    validator: (_) {
-                      return !state.isEmailValid ? 'Email格式不正确' : null;
-                    },
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.lock),
-                      contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                      labelText: '密码',
-                    ),
-                    obscureText: true,
-                    autovalidate: true,
-                    autocorrect: false,
-                    validator: (_) {
-                      return !state.isPasswordValid ? '密码错误' : null;
-                    },
-                  ),
-                  SizedBox(height: 24.0),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        LoginButton(
-                          onPressed: isLoginButtonEnabled(state)
-                              ? _onFormSubmitted
-                              : null,
+                  ListView(
+                    children: <Widget>[
+                      Hero(
+                        tag: 'hero',
+                        child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          radius: 48.0,
+                          child: Image.asset('assets/logo.png'),
                         ),
-                        GoogleLoginButton(),
-                        CreateAccountButton(),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 48.0),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.email),
+                          labelText: 'Email',
+                          contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                        ),
+                        autovalidate: true,
+                        autocorrect: false,
+                        validator: (_) {
+                          return !state.isEmailValid ? 'Email格式不正确' : null;
+                        },
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.lock),
+                          contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                          labelText: '密码',
+                        ),
+                        obscureText: true,
+                        autovalidate: true,
+                        autocorrect: false,
+                        validator: (_) {
+                          return !state.isPasswordValid ? '密码错误' : null;
+                        },
+                      ),
+                      SizedBox(height: 24.0),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            LoginButton(
+                              onPressed: isLoginButtonEnabled(state)
+                                  ? _onFormSubmitted
+                                  : null,
+                            ),
+                            GoogleLoginButton(),
+                            CreateAccountButton(),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                  Padding(
+                    padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top-20,),
+                    child: SizedBox(
+                      width: AppBar().preferredSize.height-8,
+                      height: AppBar().preferredSize.height-8,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
+//                          child: Container(
+//                            decoration: new BoxDecoration(
+//                              shape: BoxShape.circle,// You can use like this way or like the below line
+//                              //borderRadius: new BorderRadius.circular(30.0),
+//                              color: AppTheme.grey.withOpacity(0.5),
+//                            ),
+//                            child: Icon(
+//                              Icons.arrow_back_ios,
+//                              color: AppTheme.nearlyWhite,
+//                            ),
+//                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.black,
+                          ),
+                          onTap: () {
+                            if(Navigator.canPop(context)){
+                              Navigator.of(context).pop();
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  )
                 ],
-              ),
+              )
             ),
           );
         },

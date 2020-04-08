@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/blog/blog_detail.dart';
-import 'package:freetitle/model/util.dart';
 
 class AnimatedBlogCard extends StatefulWidget {
   const AnimatedBlogCard({Key key,

@@ -53,7 +53,9 @@ class UserRepository {
     await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    );
+    ).catchError((e) {
+      print(e);
+    });
     FirebaseUser user = await _firebaseAuth.currentUser();
     Firestore.instance.collection('users').document(user.uid).setData({
       'displayName': username,
