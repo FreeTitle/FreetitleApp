@@ -18,6 +18,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share/share.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
+import 'package:flutter/gestures.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -287,13 +288,17 @@ class _BlogDetail extends State<BlogDetail> {
           height: 20,
         )
       );
+
       blogWidget.add(
         Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height-600,
+          height: MediaQuery.of(context).size.height-350,
           child: WebView(
-            initialUrl: Uri.dataFromString("<html><body>${blog['RSSarticle']}</body></html>",  mimeType: "text/html", encoding: Encoding.getByName('utf-8')).toString(),
-
+            initialUrl: Uri.dataFromString("<html><body>${blog['RSSarticle']}</body></html>",
+            mimeType: "text/html",
+            encoding: Encoding.getByName('utf-8')).toString(),
+            javascriptMode: JavascriptMode.unrestricted,
+            gestureRecognizers: [Factory(() => PlatformViewVerticalGestureRecognizer())].toSet(),
           ),
         )
       );
