@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/views/register/register.dart';
+import 'package:freetitle/views/reset_password/reset_password.dart';
 import 'package:provider/provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class ResetPasswordScreen extends StatefulWidget {
 
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  RegisterBloc _registerBloc;
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  ModifyAccountBloc _modifyAccountBloc;
 
   @override
   Widget build(BuildContext context) {
     setState(() {
-      _registerBloc = RegisterBloc(
-        userRepository: Provider.of<UserRepository>(context),
+      _modifyAccountBloc = ModifyAccountBloc(
+        userRepository: Provider.of<UserRepository>(context)
       );
     });
     return Scaffold(
@@ -28,12 +28,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('注册', style: TextStyle(color: Colors.black),)
+        title: Text('修改密码', style: TextStyle(color: Colors.black),)
       ),
       body: Center(
-        child: BlocProvider<RegisterBloc>(
-          bloc: _registerBloc,
-          child: RegisterForm(),
+        child: BlocProvider<ModifyAccountBloc>(
+          bloc: _modifyAccountBloc,
+          child: ResetPasswordForm(),
         ),
       ),
     );
@@ -41,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _registerBloc.dispose();
+    _modifyAccountBloc.dispose();
     super.dispose();
   }
 }

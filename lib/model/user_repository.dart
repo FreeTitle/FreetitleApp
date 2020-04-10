@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freetitle/views/profile/profile.dart';
@@ -53,16 +54,57 @@ class UserRepository {
     await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    ).catchError((e) {
-      print(e);
-    });
+    );
     FirebaseUser user = await _firebaseAuth.currentUser();
+
+    await user.sendEmailVerification().catchError((e) {
+      print('email error $e');
+    }).whenComplete(() {
+      print('email sent');
+    });
+
     Firestore.instance.collection('users').document(user.uid).setData({
       'displayName': username,
       'email': email,
       'avatarUrl': 'https://firebasestorage.googleapis.com/v0/b/freetitle.appspot.com/o/default-user.jpg?alt=media&token=63dfd982-e9ca-4a3e-a432-d8c193de459a',
     });
-    return;
+  }
+
+  Future<void> resetPassword({String password}) async {
+    FirebaseUser user = await _firebaseAuth.currentUser();
+
+    await user.updatePassword(password).catchError((e) {
+      print('error changing password $e');
+      throw e;
+    }).whenComplete(() {
+      print('password changed');
+    });
+
+    return user.uid;
+  }
+
+  Future<void> resetEmail({String email}) async {
+    FirebaseUser user = await _firebaseAuth.currentUser();
+    await Firestore.instance.collection('users').document(user.uid).updateData({
+      'email': email,
+    });
+    await user.updateEmail(email).catchError((e) {
+      print('error changing email $e');
+      throw e;
+    }).whenComplete(() {
+      print('email changed');
+    });
+
+    return user.uid;
+  }
+
+  Future<void> resetUsername({String username}) async {
+    FirebaseUser user = await _firebaseAuth.currentUser();
+    await Firestore.instance.collection('users').document(user.uid).updateData({
+      'displayName': username,
+    });
+
+    return user.uid;
   }
 
   Future<void> signOut() async {

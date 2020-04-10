@@ -6,7 +6,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/register/register.dart';
 import 'package:freetitle/model/validators.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;
@@ -78,6 +77,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     String password,
   ) async* {
     yield RegisterState.loading();
+    // Check if username is used
     bool isUsernameUsed = false;
     await reference.where('displayName', isEqualTo: username).getDocuments().then((user) {
       if (user.documents.isEmpty) {

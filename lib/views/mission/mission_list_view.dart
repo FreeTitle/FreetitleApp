@@ -181,7 +181,7 @@ class PopularMissionView extends StatelessWidget {
                                         children: <Widget>[
                                           Text(
                                             //TODO this truncate is ugly... needs to be fixed taking into account different languages
-                                            mission['name'].length > 15 ? mission['name'].substring(0,12)+'...' : mission['name'],
+                                            mission['name'].length > 12 ? mission['name'].substring(0,12)+'...' : mission['name'],
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,
@@ -193,28 +193,28 @@ class PopularMissionView extends StatelessWidget {
                                         ],
                                       )
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 24, bottom: 0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Container(
-                                            child: Text(
-                                              mission['username'],
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 12,
-                                                letterSpacing: 0.27,
-                                                color: AppTheme.grey,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+//                                    Padding(
+//                                      padding: const EdgeInsets.only(
+//                                          left: 24, bottom: 0),
+//                                      child: Row(
+//                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                        crossAxisAlignment: CrossAxisAlignment.center,
+//                                        children: <Widget>[
+//                                          Container(
+//                                            child: Text(
+//                                              mission['username'],
+//                                              textAlign: TextAlign.left,
+//                                              style: TextStyle(
+//                                                fontWeight: FontWeight.w400,
+//                                                fontSize: 12,
+//                                                letterSpacing: 0.27,
+//                                                color: AppTheme.grey,
+//                                              ),
+//                                            ),
+//                                          ),
+//                                        ],
+//                                      ),
+//                                    ),
                                     Padding(
                                       padding: EdgeInsets.all(8),
                                       child: Container(
@@ -517,30 +517,30 @@ class LatestMissionView extends StatelessWidget {
                                               ],
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 8, left: 16, right: 16, bottom: 8),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: <Widget>[
-                                                Expanded(
-                                                  child: Container(
-                                                    child: Text(
-                                                      mission['username'],
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.w400,
-                                                        fontSize: 12,
-                                                        letterSpacing: 0.27,
-                                                        color: AppTheme.grey,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+//                                          Padding(
+//                                            padding: const EdgeInsets.only(
+//                                                top: 8, left: 16, right: 16, bottom: 8),
+//                                            child: Row(
+//                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                              crossAxisAlignment: CrossAxisAlignment.center,
+//                                              children: <Widget>[
+//                                                Expanded(
+//                                                  child: Container(
+//                                                    child: Text(
+//                                                      mission['username'],
+//                                                      textAlign: TextAlign.left,
+//                                                      style: TextStyle(
+//                                                        fontWeight: FontWeight.w400,
+//                                                        fontSize: 12,
+//                                                        letterSpacing: 0.27,
+//                                                        color: AppTheme.grey,
+//                                                      ),
+//                                                    ),
+//                                                  ),
+//                                                ),
+//                                              ],
+//                                            ),
+//                                          ),
                                           Container(
                                             child: Padding(
                                               padding:
