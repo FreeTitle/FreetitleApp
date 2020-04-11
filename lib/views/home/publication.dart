@@ -63,7 +63,7 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
             Navigator.of(context).pop();
           },
         ),
-        title: Text(widget.title.substring(0, 15) +  '...', style: TextStyle(color: Colors.black),),
+        title: Text(widget.title.length > 15 ? widget.title.substring(0, 15) +  '...' : widget.title, style: TextStyle(color: Colors.black),),
       ),
       body: FutureBuilder<bool>(
         future: getBlogs(),

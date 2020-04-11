@@ -69,7 +69,7 @@ class _Home extends State<Home> {
                             title: Container(
                               width: 90,
                               child: InkWell(
-                                child: Center(child: Text('Freetitle', style: TextStyle(color: Colors.black),) ),
+                                child: Center(child: Text('FreeTitle', style: TextStyle(color: Colors.black),) ),
                                 onDoubleTap: () {
                                   _scrollController.jumpTo(0);
                                 },
@@ -79,14 +79,9 @@ class _Home extends State<Home> {
 //                              Container(
 //                                  padding: EdgeInsets.only(right: 16),
 //                                  child: IconButton(
-//                                    icon: Icon(Icons.search, color: Colors.black,),
+//                                    icon: Icon(Icons.camera_alt, color: Colors.black,),
 //                                    onPressed: () {
-//                                      Navigator.push<dynamic>(
-//                                        context,
-//                                        MaterialPageRoute<dynamic>(
-//                                          builder: (BuildContext context) => SearchView()
-//                                        )
-//                                      );
+//
 //                                    }
 //                                  )
 //                              ),

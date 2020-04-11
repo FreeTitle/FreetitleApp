@@ -6,7 +6,7 @@ import 'package:dash_chat/dash_chat.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/blog/blog_card.dart';
-import 'package:freetitle/views/profile/profile.dart';
+import 'package:freetitle/views/profile/my_profile.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -341,7 +341,7 @@ class _Chat extends State<Chat>{
         Navigator.push<dynamic>(
             context,
             MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => Profile(userID: user.uid, isMyProfile: false, userName: user.name,)
+                builder: (BuildContext context) => MyProfile(userID: user.uid, isMyProfile: false, userName: user.name,)
             )
         );
       },

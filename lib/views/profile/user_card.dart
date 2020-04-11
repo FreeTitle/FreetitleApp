@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/profile/profile.dart';
 
 class UserCard extends StatelessWidget{
   const UserCard(
@@ -149,7 +150,17 @@ class UserCard extends StatelessWidget{
                               child: ClipRRect(
                                 borderRadius:
                                 const BorderRadius.all(Radius.circular(80.0)),
-                                child: Image.network(userData['avatarUrl'], fit: BoxFit.fill,),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute<dynamic>(
+                                        builder: (BuildContext context) => Profile()
+                                      )
+                                    );
+                                  },
+                                  child: Image.network(userData['avatarUrl'], fit: BoxFit.fill,),
+                                )
                               ),
                             ),
                           ),

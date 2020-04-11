@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:freetitle/app_theme.dart';
 
 class LinkTextSpan extends TextSpan {
 
@@ -43,6 +44,59 @@ class PlaceHolderCard extends StatelessWidget {
       ),
     );
   }
+}
+
+List<TextSpan> processText(blockText){
+  List<String> blockStrings = blockText.split('<');
+  List<TextSpan> textLists = List();
+  for(String blockString in blockStrings){
+    if(blockString.contains('href=')){
+      int startURL = blockString.indexOf('href=')+6;
+      int endUrl = blockString.indexOf('">');
+      String url = blockString.substring(startURL, endUrl);
+      String link = blockString.substring(endUrl+2);
+      textLists.add( LinkTextSpan(
+        style: AppTheme.link,
+        url: url,
+        text: ' ' + link,
+      ),);
+    }
+    else if (blockString.contains('i>') && !blockString.contains(('/'))){
+      final italicStart = blockString.indexOf('i>')+2;
+      textLists.add(TextSpan(
+        style: AppTheme.body1Italic,
+        text: ' ' + blockString.substring(italicStart),
+      ));
+    }
+    else if (blockString.contains('b>') && !blockString.contains('/')){
+      final boldStart = blockString.indexOf('b>')+2;
+      textLists.add(TextSpan(
+          style: AppTheme.body1Bold,
+          text: ' ' + blockString.substring(boldStart)
+      ));
+    }
+    else{
+      if(blockString.startsWith('/')){
+        blockString = blockString.substring(3);
+      }
+      textLists.add(TextSpan(
+        style: AppTheme.body1,
+        text: blockString,
+      ),);
+    }
+  }
+
+  return textLists;
+}
+
+List<String> getCommentIDs(data){
+  List<String> commentIDs = new List();
+  if (data['comments'] != null){
+    for(String commentID in data['comments']){
+      commentIDs.add(commentID);
+    }
+  }
+  return commentIDs;
 }
 
 class PlatformViewVerticalGestureRecognizer

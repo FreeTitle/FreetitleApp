@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/views/chat/chat_list_view.dart';
 import 'package:freetitle/views/profile/get_my_profile.dart';
-import 'package:freetitle/views/profile/profile.dart';
+import 'package:freetitle/views/profile/my_profile.dart';
 import 'package:freetitle/views/chat/chat.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';

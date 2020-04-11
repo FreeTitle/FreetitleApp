@@ -186,7 +186,7 @@ class _BlogCard extends State<BlogCard>{
                                       ],
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 4),
+                                      padding: const EdgeInsets.only(top: 12, bottom: 8),
                                       child: Row(
                                         children: <Widget>[
                                           Flexible(
@@ -198,7 +198,7 @@ class _BlogCard extends State<BlogCard>{
                                                   Flexible(
                                                     flex: 3,
                                                     child: Icon(
-                                                        Icons.remove_red_eye
+                                                        Icons.remove_red_eye,
                                                     ),
                                                   ),
                                                   Flexible(

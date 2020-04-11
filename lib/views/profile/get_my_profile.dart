@@ -1,6 +1,6 @@
 import 'package:freetitle/model/user_repository.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:freetitle/views/profile/profile.dart';
+import 'package:freetitle/views/profile/my_profile.dart';
 
 class GetMyProfile extends StatefulWidget {
 
@@ -32,7 +32,7 @@ class _GetMyProfile extends State<GetMyProfile>{
         future: getData(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
           if(userID != null){
-            return Profile(userID: userID, isMyProfile: true, );
+            return MyProfile(userID: userID, isMyProfile: true, );
           }
           else{
             return Text('Get User file broken');

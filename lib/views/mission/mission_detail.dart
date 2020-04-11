@@ -3,6 +3,13 @@ import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:share/share.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:io';
+import 'dart:ui';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:freetitle/views/comment/comment.dart';
+import 'package:freetitle/model/util.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -58,46 +65,59 @@ class _MissionDetail extends State<MissionDetail>
     return img;
   }
 
-  List<Widget> processMissionContent(mission){
-    List<Widget> missionWidget = new List<Widget>();
+  List<Widget> buildMissionContent(mission, context){
+    List<Widget> blogWidget = new List<Widget>();
     if(mission == null){
-      missionWidget.add(Text('Loading mission'));
-      return missionWidget;
+      blogWidget.add(Text('Loading blog'));
+      return blogWidget;
     }
+//    Padding title = new Padding(
+//      padding: EdgeInsets.only(top: 8.0, left: 24.0, right: 24.0),
+//      child: Text(mission['name'], style: AppTheme.headline,),
+//    );
+//    // Add title
+//    blogWidget.add(title);
+//    // Add author
+//    Widget author = _userRepository.getUserWidget(mission['ownerID']);
+//    blogWidget.add(Padding(
+//      padding: EdgeInsets.only(top: 8, left: 24, right: 24),
+//      child: author,
+//    ));
     // Add time
-//    var date = mission['time'].toDate();
+    var date = mission['time'].toDate();
 
     // Process contents
     if(mission['article'] != null){
       for(var block in mission['article']['blocks']){
+        String blockText = block['data']['text'];
         if(block['type'] == 'paragraph'){
+          blockText = blockText.replaceAll('&nbsp;', ' ');
           // handle link case
-          Widget curBlock = Text(block['data']['text']);
+//          if(wechatDescription == null){
+//            wechatDescription = blockText;
+//          }
+          Widget curBlock = Text(blockText, style: AppTheme.body1,);
           List<TextSpan> textLists = new List<TextSpan>();
-          if (block['data']['text'].contains('<a')){
-            List<String> blockTexts = block['data']['text'].split('<a ');
-            for(String blockText in blockTexts){
-              if(blockText.contains('href=')){
-                int startURL = blockText.indexOf('href=')+6;
-                int endUrl = blockText.indexOf('">');
-                String url = blockText.substring(startURL, endUrl);
-                int endLink = blockText.indexOf('</a>');
-                String link = blockText.substring(endUrl+2, endLink);
-                textLists.add( LinkTextSpan(
-                  style: AppTheme.caption,
-                  url: url,
-                  text: link,
-                ),);
+          // handle embedded url
+          if (blockText.contains('<a') || blockText.contains('<i>') || blockText.contains('<b>')){
+            List<String> blockStrings = blockText.split('<i><b>');
+            for (String blockString in blockStrings) {
+              if(blockString.contains('</b></i>')){
+                final boldItalicStart = 0;
+                final boldItalicEnd = blockString.indexOf('</b>');
                 textLists.add(TextSpan(
-                  style: AppTheme.body1,
-                  text: blockText.substring(endLink+4),
-                ));
+                  style: AppTheme.body1BoldItalic,
+                  text: ' ' + blockString.substring(boldItalicStart, boldItalicEnd),
+                )
+                );
+                processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
+                  textLists.add(block);
+                });
               }
               else{
-                textLists.add(TextSpan(
-                  style: AppTheme.body1,
-                  text: blockText,
-                ),);
+                processText(blockString).forEach((block) {
+                  textLists.add(block);
+                });
               }
             }
 
@@ -109,7 +129,8 @@ class _MissionDetail extends State<MissionDetail>
               );
             }
           }
-          missionWidget.add(
+
+          blogWidget.add(
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 24.0, right: 24.0),
                 child: curBlock,
@@ -117,10 +138,10 @@ class _MissionDetail extends State<MissionDetail>
           );
         }
         else if(block['type'] == 'header'){
-          missionWidget.add(
+          blogWidget.add(
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 8.0, left: 24.0, right: 24.0),
-                child: Text(block['data']['text'], style: AppTheme.title,),
+                child: Text(blockText, style: AppTheme.title,),
               )
           );
         }
@@ -128,19 +149,66 @@ class _MissionDetail extends State<MissionDetail>
           if(block['data']['file']['url'] == null){
             continue;
           }
-          missionWidget.add(
+//          if(wechatThumbailUrl == null){
+//            wechatThumbailUrl = block['data']['file']['url'];
+//          }
+          blogWidget.add(
               Padding(
                 padding: EdgeInsets.all(20.0),
                 child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
               )
           );
         }
+        else if(block['type'] == 'embed'){
+          String code = block['data']['code'];
+          int end = code.indexOf('>');
+          String pre = code.substring(0, end);
+          pre += " allowfullscreen ";
+          if(Platform.isIOS){
+            pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
+          }
+          else{
+            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
+          }
+          code = pre + code.substring(end);
+
+          if(code.contains('163')){
+            end = code.indexOf('//');
+            pre = code.substring(0, end);
+            pre += 'https:';
+            code = pre + code.substring(end);
+            blogWidget.add(
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: Platform.isAndroid ? 120 : 70,
+                  padding: EdgeInsets.all(16.0),
+                  child: WebView(
+                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
+                    javascriptMode: JavascriptMode.unrestricted,
+                  ),
+                )
+            );
+          }
+          else{
+            blogWidget.add(
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 280,
+                  padding: EdgeInsets.all(16.0),
+                  child: WebView(
+                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
+                    javascriptMode: JavascriptMode.unrestricted,
+                  ),
+                )
+            );
+          }
+        }
       }
     }
-    else{
+    else if (mission.containsKey('blocks')){
       for(var block in mission['blocks']){
         if(block.contains('https')){
-          missionWidget.add(
+          blogWidget.add(
               Padding(
                 padding: EdgeInsets.all(20.0),
                 child: Image.network(block, fit: BoxFit.contain,),
@@ -148,7 +216,7 @@ class _MissionDetail extends State<MissionDetail>
           );
         }
         else{
-          missionWidget.add(
+          blogWidget.add(
               Padding(
                 padding: EdgeInsets.only(top: 16.0, bottom: 16.0, left: 24.0, right: 24.0),
                 child: Text(block, style: TextStyle(height: 2, fontSize: 15),),
@@ -157,13 +225,176 @@ class _MissionDetail extends State<MissionDetail>
         }
       }
     }
-    missionWidget.add(
+
+    if(mission.containsKey('RSSarticle')){
+      blogWidget.add(
+          SizedBox(
+            height: 20,
+          )
+      );
+
+      blogWidget.add(
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height-350,
+            child: WebView(
+              initialUrl: Uri.dataFromString("<html><body>${mission['RSSarticle']}</body></html>",
+                  mimeType: "text/html",
+                  encoding: Encoding.getByName('utf-8')).toString(),
+              javascriptMode: JavascriptMode.unrestricted,
+              gestureRecognizers: [Factory(() => PlatformViewVerticalGestureRecognizer())].toSet(),
+            ),
+          )
+      );
+    }
+
+    blogWidget.add(
+        Row(
+            children: <Widget>[
+              Expanded(
+                  child: Divider(color: AppTheme.dark_grey,)
+              ),
+
+              Text("Comments", style: AppTheme.title,),
+
+              Expanded(
+                  child: Divider(color: AppTheme.dark_grey,)
+              ),
+            ]
+        )
+    );
+
+//    if (blog['comments'] != null){
+//      List<String> commentIDs = new List();
+//      for(String commentID in blog['comments']){
+//        commentIDs.add(commentID);
+//      }
+//      if (commentIDs.isNotEmpty){
+//        blogWidget.add(CommentBottom(commentIDs: commentIDs,));
+//      }
+//    }
+    List<String> commentIDs = getCommentIDs(mission);
+    if (commentIDs.isNotEmpty){
+      blogWidget.add(CommentBottom(commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs, blogID: widget.missionID,));
+    }else{
+      blogWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
+    }
+
+    blogWidget.add(
         SizedBox(
           height: 36,
         )
     );
-    return missionWidget;
+
+    return blogWidget;
   }
+
+//  List<Widget> processMissionContent(mission){
+//    List<Widget> missionWidget = new List<Widget>();
+//    if(mission == null){
+//      missionWidget.add(Text('Loading mission'));
+//      return missionWidget;
+//    }
+//    // Add time
+////    var date = mission['time'].toDate();
+//
+//    // Process contents
+//    if(mission['article'] != null){
+//      for(var block in mission['article']['blocks']){
+//        if(block['type'] == 'paragraph'){
+//          // handle link case
+//          Widget curBlock = Text(block['data']['text']);
+//          List<TextSpan> textLists = new List<TextSpan>();
+//          if (block['data']['text'].contains('<a')){
+//            List<String> blockTexts = block['data']['text'].split('<a ');
+//            for(String blockText in blockTexts){
+//              if(blockText.contains('href=')){
+//                int startURL = blockText.indexOf('href=')+6;
+//                int endUrl = blockText.indexOf('">');
+//                String url = blockText.substring(startURL, endUrl);
+//                int endLink = blockText.indexOf('</a>');
+//                String link = blockText.substring(endUrl+2, endLink);
+//                textLists.add( LinkTextSpan(
+//                  style: AppTheme.caption,
+//                  url: url,
+//                  text: link,
+//                ),);
+//                textLists.add(TextSpan(
+//                  style: AppTheme.body1,
+//                  text: blockText.substring(endLink+4),
+//                ));
+//              }
+//              else{
+//                textLists.add(TextSpan(
+//                  style: AppTheme.body1,
+//                  text: blockText,
+//                ),);
+//              }
+//            }
+//
+//            if(textLists.isNotEmpty){
+//              curBlock = RichText(
+//                text: TextSpan(
+//                  children: textLists,
+//                ),
+//              );
+//            }
+//          }
+//          missionWidget.add(
+//              Padding(
+//                padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 24.0, right: 24.0),
+//                child: curBlock,
+//              )
+//          );
+//        }
+//        else if(block['type'] == 'header'){
+//          missionWidget.add(
+//              Padding(
+//                padding: EdgeInsets.only(top: 8.0, bottom: 8.0, left: 24.0, right: 24.0),
+//                child: Text(block['data']['text'], style: AppTheme.title,),
+//              )
+//          );
+//        }
+//        else if(block['type'] == 'image'){
+//          if(block['data']['file']['url'] == null){
+//            continue;
+//          }
+//          missionWidget.add(
+//              Padding(
+//                padding: EdgeInsets.all(20.0),
+//                child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+//              )
+//          );
+//        }
+//      }
+//    }
+//    else{
+//      for(var block in mission['blocks']){
+//        if(block.contains('https')){
+//          missionWidget.add(
+//              Padding(
+//                padding: EdgeInsets.all(20.0),
+//                child: Image.network(block, fit: BoxFit.contain,),
+//              )
+//          );
+//        }
+//        else{
+//          missionWidget.add(
+//              Padding(
+//                padding: EdgeInsets.only(top: 16.0, bottom: 16.0, left: 24.0, right: 24.0),
+//                child: Text(block, style: TextStyle(height: 2, fontSize: 15),),
+//              )
+//          );
+//        }
+//      }
+//    }
+//    missionWidget.add(
+//        SizedBox(
+//          height: 36,
+//        )
+//    );
+//    return missionWidget;
+//  }
 
   List<Widget> getLabels(){
     List<Widget> labels = List();
@@ -313,7 +544,7 @@ class _MissionDetail extends State<MissionDetail>
                                   padding: const EdgeInsets.only(
                                       left: 8, right: 8, top: 0, bottom: 0),
                                   child: Column(
-                                    children: processMissionContent(missionData),
+                                    children: buildMissionContent(missionData, context),
                                   ),
                                 ),
                               ],

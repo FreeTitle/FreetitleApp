@@ -68,58 +68,7 @@ class _BlogDetail extends State<BlogDetail> {
     super.dispose();
   }
 
-  List<String> getCommentIDs(blogData){
-    List<String> commentIDs = new List();
-    if (blogData['comments'] != null){
-      for(String commentID in blogData['comments']){
-        commentIDs.add(commentID);
-      }
-    }
-    return commentIDs;
-  }
 
-  List<TextSpan> processText(blockText){
-    List<String> blockStrings = blockText.split('<');
-    List<TextSpan> textLists = List();
-    for(String blockString in blockStrings){
-      if(blockString.contains('href=')){
-        int startURL = blockString.indexOf('href=')+6;
-        int endUrl = blockString.indexOf('">');
-        String url = blockString.substring(startURL, endUrl);
-        String link = blockString.substring(endUrl+2);
-        textLists.add( LinkTextSpan(
-          style: AppTheme.link,
-          url: url,
-          text: ' ' + link,
-        ),);
-      }
-      else if (blockString.contains('i>') && !blockString.contains(('/'))){
-        final italicStart = blockString.indexOf('i>')+2;
-        textLists.add(TextSpan(
-          style: AppTheme.body1Italic,
-          text: ' ' + blockString.substring(italicStart),
-        ));
-      }
-      else if (blockString.contains('b>') && !blockString.contains('/')){
-        final boldStart = blockString.indexOf('b>')+2;
-        textLists.add(TextSpan(
-            style: AppTheme.body1Bold,
-            text: ' ' + blockString.substring(boldStart)
-        ));
-      }
-      else{
-        if(blockString.startsWith('/')){
-          blockString = blockString.substring(3);
-        }
-        textLists.add(TextSpan(
-          style: AppTheme.body1,
-          text: blockString,
-        ),);
-      }
-    }
-
-    return textLists;
-  }
 
   List<Widget> buildBlogContent(blog, context){
     List<Widget> blogWidget = new List<Widget>();
