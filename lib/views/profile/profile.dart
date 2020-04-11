@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/profile/bottom_drag_list_view.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -9,36 +8,42 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-//  List<String> _tabs = ['BLOGS', 'MISSIONS', 'MARKS'];
 
   @override
   Widget build(BuildContext context) {
-    return BottomDragWidget(
-      body: Container(
+    return Container(
+      child: Container(
         color: Colors.white,
-        child: ProfileBackground(),
-      ),
-      dragContainer: DragContainer(
-        drawer: ProfileForeground(),
-        defaultShowHeight: 550.0,
-        height: MediaQuery.of(context).size.height - 50.0 - MediaQuery.of(context).padding.top,
+        child: Stack(
+          children: <Widget>[
+            UserInfoView(),
+            DraggableScrollableSheet(
+              initialChildSize: 0.65,
+              minChildSize: 0.65,
+              maxChildSize: 0.9,
+              builder: (BuildContext context, ScrollController _scrollController) {
+                return UserContentView(scrollController: _scrollController,);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class ProfileBackground extends StatefulWidget {
+class UserInfoView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _ProfileBackgroundState();
+    return _UserInfoViewState();
   }
 }
 
-class _ProfileBackgroundState extends State<ProfileBackground> {
-  var _following = 0;
-  var _follower = 0;
+class _UserInfoViewState extends State<UserInfoView> {
+//  var _following = 0;
+//  var _follower = 0;
 
-  bool isFollowing = false;
+//  bool isFollowing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -123,68 +128,49 @@ class _ProfileBackgroundState extends State<ProfileBackground> {
                                           SizedBox(
                                             width: 10.0,
                                           ),
-//                                          Text(
-//                                            '$_following',
-//                                            style: TextStyle(
-//                                              color: Colors.black,
-//                                              fontFamily: 'Quicksand',
-//                                              fontWeight: FontWeight.bold,
-//                                              fontSize: 18.0,
-//                                            ),
-//                                          )
+                                          Container(
+                                            child: Icon(Icons.mood),
+                                          )
                                         ],
                                       ),
-//                                      SizedBox(
-//                                        height: 10.0,
-//                                      ),
-//                                      // follower
-//                                      Row(
-//                                        children: <Widget>[
-//                                          Text(
-//                                            'Follower',
-//                                            style: TextStyle(
-//                                              color: Colors.black,
+                                      SizedBox(
+                                        height: 10.0,
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text(
+                                            'Labels',
+                                            style: TextStyle(
+                                              color: Colors.black,
 //                                              fontFamily: 'Quicksand',
-//                                              fontWeight: FontWeight.bold,
-//                                              fontSize: 18.0,
-//                                            ),
-//                                          ),
-//                                          SizedBox(
-//                                            width: 10.0,
-//                                          ),
-//                                          Text(
-//                                            '$_follower',
-//                                            style: TextStyle(
-//                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.0,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10.0,
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Text(
+                                            'Campus',
+                                            style: TextStyle(
+                                              color: Colors.black,
 //                                              fontFamily: 'Quicksand',
-//                                              fontWeight: FontWeight.bold,
-//                                              fontSize: 18.0,
-//                                            ),
-//                                          )
-//                                        ],
-//                                      ),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.0,
+                                            ),
+                                          )
+                                        ],
+                                      )
                                     ],
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          // username
-//                          Padding(
-//                            padding: EdgeInsets.all(20.0),
-//                            child: Container(
-//                              child: Align(
-//                                alignment: Alignment.centerLeft,
-//                                child: Text(
-//                                  'Username',
-//                                  style: TextStyle(
-//                                    fontSize: 13.0,
-//                                    color: Colors.black,
-//                                  ),
-//                                ),
-//                              ),
-//                            ),
-//                          ),
                           SizedBox(
                             height: 30,
                           ),
@@ -329,7 +315,12 @@ class _ProfileBackgroundState extends State<ProfileBackground> {
   }
 }
 
-class ProfileForeground extends StatelessWidget {
+class UserContentView extends StatelessWidget {
+
+  const UserContentView({Key key, this.scrollController}) : super(key : key);
+
+  final ScrollController scrollController;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -339,7 +330,7 @@ class ProfileForeground extends StatelessWidget {
         removeTop: true,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(30.0),
             color: Colors.white,
           ),
           child: Scaffold(
@@ -347,7 +338,7 @@ class ProfileForeground extends StatelessWidget {
             appBar: AppBar(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(10.0),
+                  top: Radius.circular(30.0),
                 ),
               ),
               automaticallyImplyLeading: false,
@@ -359,57 +350,22 @@ class ProfileForeground extends StatelessWidget {
                   splashColor: Colors.transparent,
                 ),
                 child: TabBar(
-                  // indicatorColor: Colors.transparent,
+                  labelColor: AppTheme.primary,
+                  unselectedLabelColor: Colors.black,
+                  indicatorColor: AppTheme.primary,
                   tabs: <Widget>[
-                    Container(
-                      // height: 40.0,
-                      child: Center(
-                        child: Text(
-                          "BLOGS",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      // height: 40.0,
-                      child: Center(
-                        child: Text(
-                          "MISSIONS",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      // height: 40.0,
-                      child: Center(
-                        child: Text(
-                          "MARKS",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                    Tab(child: Text('Blogs')),
+                    Tab(child: Text('Missions')),
+                    Tab(child: Text('Marks')),
                   ],
                 ),
               ),
             ),
             body: TabBarView(
               children: <Widget>[
-                ListPage('post'),
-                ListPage('comment'),
-                ListPage('bookmark'),
+                ContentPage('post', scrollController),
+                ContentPage('comment', scrollController),
+                ContentPage('bookmark', scrollController),
               ],
             ),
           ),
@@ -419,17 +375,19 @@ class ProfileForeground extends StatelessWidget {
   }
 }
 
-class ListPage extends StatelessWidget {
+class ContentPage extends StatelessWidget {
   final _name;
 
-  ListPage(@required this._name);
+  ContentPage(this._name, this.scrollController);
+
+  final scrollController;
 
   @override
   Widget build(BuildContext context) {
     final items = List<String>.generate(20, (i) => "$_name ${i + 1}");
 
-    return OverscrollNotificationWidget(
-      child: ListView.builder(
+    return ListView.builder(
+        controller: scrollController,
         itemCount: items.length,
         itemBuilder: (context, idx) {
           return Container(
@@ -446,7 +404,7 @@ class ListPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                    image: AssetImage('assets/chris.jpg'),
+                    image: AssetImage('assets/logo.png'),
                   ),
                 ),
               ),
@@ -461,8 +419,7 @@ class ListPage extends StatelessWidget {
             ),
           );
         },
-        physics: const ClampingScrollPhysics(),
-      ),
-    );
+//        physics: const ClampingScrollPhysics(),
+      );
   }
 }
