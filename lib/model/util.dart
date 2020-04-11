@@ -29,9 +29,19 @@ class PlaceHolderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24),
-      child: Card(
-        child: Container(
+      padding: EdgeInsets.only(top:8, left: 24, right: 24),
+      child: Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            color: AppTheme.white,
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.6),
+                offset: const Offset(4, 4),
+                blurRadius: 16,
+              ),
+            ],
+          ),
           height: height,
           child: Center(
             child: Container(
@@ -40,8 +50,7 @@ class PlaceHolderCard extends StatelessWidget {
               ),
             ),
           ),
-        )
-      ),
+        ),
     );
   }
 }
