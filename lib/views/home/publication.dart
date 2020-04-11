@@ -40,10 +40,10 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
     blogList.clear();
     await Firestore.instance.collection('blogs').getDocuments().then((snap) {
       if(snap.documents.isNotEmpty){
-        snap.documents.forEach((blogSnap) {
-          if(widget.blogIDs.contains(blogSnap.documentID)){
+        widget.blogIDs.forEach((id) {
+          snap.documents.where((doc) => doc.documentID == id).forEach((blogSnap) {
             blogList.add(blogSnap.data);
-          }
+          });
         });
       }
     });
@@ -70,6 +70,7 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if(snapshot.connectionState == ConnectionState.done){
             return LiquidPullToRefresh(
+              key: PageStorageKey('Publication View'),
               color: AppTheme.primary,
               showChildOpacityTransition: false,
               onRefresh: () async {

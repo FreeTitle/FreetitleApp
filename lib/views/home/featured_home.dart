@@ -97,8 +97,16 @@ class PublicationTile extends StatelessWidget{
     return Container(
       decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-          color: AppTheme.white
+          color: AppTheme.white,
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.6),
+              offset: const Offset(4, 4),
+              blurRadius: 8,
+            ),
+          ],
       ),
+
       child: InkWell(
         onTap: () {
           Navigator.push<dynamic>(
