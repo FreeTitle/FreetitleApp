@@ -44,7 +44,7 @@ with TickerProviderStateMixin {
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => MissionDetail(missionData: missionData, missionID: missionID,),
+          builder: (BuildContext context) => MissionDetail(missionID: missionID,),
         )
     );
   }
@@ -263,11 +263,13 @@ class HorizontalMissionView extends StatelessWidget {
 class VerticalMissionListView extends StatefulWidget {
   const VerticalMissionListView(
       {Key key,
-        this.missionList
+        this.missionList,
+        this.missionIDs,
       }) : super(key: key);
 
   // callback passed downwards for handling tapping
   final List missionList;
+  final List missionIDs;
   @override
   _VerticalMissionListViewState createState() => _VerticalMissionListViewState();
 }
@@ -292,18 +294,11 @@ class _VerticalMissionListViewState extends State<VerticalMissionListView>
     animationController.dispose();
     super.dispose();
   }
-
-  void getMission(missionData, missionID){
-    Navigator.push<dynamic>(
-        context,
-        MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => MissionDetail(missionData: missionData, missionID: missionID,),
-        )
-    );
-  }
+  
 
   List<Widget> buildMissionGrid(){
     List missionList = widget.missionList;
+    List missionIDs = widget.missionIDs;
     List<Widget> missionGrid = List();
     for (var i = 0;i < missionList.length-1;i+=2){
       final int count = missionList.length;
@@ -321,13 +316,11 @@ class _VerticalMissionListViewState extends State<VerticalMissionListView>
           Container(
             height: 220,
             width: MediaQuery.of(context).size.width/2-25,
-            child: VerticalMissionView(
-              mission: missionList[i],
+            child: AnimatedVerticalMissionView(
+              missionID: missionIDs[i],
+              missionData: missionList[i],
               animationController: animationController,
               animation: animation,
-              callback: (){
-                getMission(missionList[i], '0');
-              },
             ),
           ),
           SizedBox(
@@ -336,13 +329,11 @@ class _VerticalMissionListViewState extends State<VerticalMissionListView>
           Container(
             height: 220,
             width: MediaQuery.of(context).size.width/2-25,
-            child: VerticalMissionView(
-              mission: missionList[i+1],
+            child: AnimatedVerticalMissionView(
+              missionID: missionIDs[i+1],
+              missionData: missionList[i+1],
               animationController: animationController,
               animation: animation,
-              callback: (){
-                getMission(missionList[i+1], '0');
-              },
             ),
           ),
         ],
@@ -368,13 +359,11 @@ class _VerticalMissionListViewState extends State<VerticalMissionListView>
           Container(
             height: 220,
             width: MediaQuery.of(context).size.width/2-25,
-            child: VerticalMissionView(
-              mission: missionList[missionList.length-1],
+            child: AnimatedVerticalMissionView(
+              missionID: missionIDs[missionIDs.length-1],
+              missionData: missionList[missionList.length-1],
               animationController: animationController,
               animation: animation,
-              callback: (){
-                getMission(missionList[missionList.length-1], '0');
-              },
             ),
           ),
           SizedBox(
@@ -405,25 +394,52 @@ class _VerticalMissionListViewState extends State<VerticalMissionListView>
 }
 
 
-class VerticalMissionView extends StatelessWidget {
-  const VerticalMissionView(
+class AnimatedVerticalMissionView extends StatelessWidget {
+  const AnimatedVerticalMissionView(
       {Key key,
-        this.mission,
+        this.missionData,
+        this.missionID,
         this.animationController,
-        this.animation,
-        this.callback})
+        this.animation})
       : super(key: key);
-
-  final VoidCallback callback;
-  final Map mission;
+  
+  final Map missionData;
+  final String missionID;
   final AnimationController animationController;
   final Animation<dynamic> animation;
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animationController,
+      builder: (BuildContext context, Widget child){
+        return FadeTransition(
+          opacity: animation,
+          child: Transform(
+            transform: Matrix4.translationValues(
+                0.0, 50 * (1.0 - animation.value), 0.0),
+            child: VerticalMissionCard(missionData: missionData, missionID: missionID,)
+          ),
+        );
+      },
+    );
+  }
+}
+
+class VerticalMissionCard extends StatelessWidget {
+
+  const VerticalMissionCard({Key key, this.missionData, this.missionID}) : super(key : key);
+
+  final Map missionData;
+  final String missionID;
 
   Image getImage(){
     Image img;
     img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
-    if(mission['article'] != null){
-      for(var block in mission['article']['blocks']){
+    if(missionData['article'] != null){
+      for(var block in missionData['article']['blocks']){
         if(block['type'] == "image"){
           if(block['data']['file']['url'] != null){
             img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
@@ -437,88 +453,81 @@ class VerticalMissionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animationController,
-      builder: (BuildContext context, Widget child){
-        return FadeTransition(
-          opacity: animation,
-          child: Transform(
-            transform: Matrix4.translationValues(
-                0.0, 50 * (1.0 - animation.value), 0.0),
-            child: InkWell(
-              splashColor: Colors.transparent,
-              onTap: () {
-                callback();
-              },
-              child: SizedBox(
-                height: 280,
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  children: <Widget>[
-                    Container(
+    return InkWell(
+      splashColor: Colors.transparent,
+      onTap: () {
+        Navigator.push<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => MissionDetail(missionID: missionID,),
+            )
+        );
+      },
+      child: SizedBox(
+        height: 280,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+          children: <Widget>[
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: HexColor('#F8FAFB'),
+                        borderRadius: const BorderRadius.all(
+                            Radius.circular(16.0)),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                              color: AppTheme.grey
+                                  .withOpacity(0.2),
+                              offset: const Offset(0.0, 0.0),
+                              blurRadius: 6.0),
+                        ],
+                      ),
                       child: Column(
                         children: <Widget>[
                           Expanded(
                             child: Container(
-                              decoration: BoxDecoration(
-                                color: HexColor('#F8FAFB'),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(16.0)),
-                                  boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                      color: AppTheme.grey
-                                          .withOpacity(0.2),
-                                      offset: const Offset(0.0, 0.0),
-                                      blurRadius: 6.0),
-                                ],
-                              ),
                               child: Column(
                                 children: <Widget>[
-                                  Expanded(
-                                    child: Container(
-                                      child: Column(
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 8, left: 16, right: 16),
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: <Widget>[
-                                                Expanded(
-                                                  child: Container(
-                                                    child: Text(
-                                                      mission['name'],
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.w600,
-                                                        fontSize: 16,
-                                                        letterSpacing: 0.27,
-                                                        color: AppTheme.darkerText,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            child: Padding(
-                                              padding:
-                                              const EdgeInsets.only(top: 8, right: 16, left: 16, bottom: 8),
-                                              child: Container(
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                  const BorderRadius.all(Radius.circular(8.0)),
-                                                  child: AspectRatio(
-                                                    aspectRatio: 1.28,
-                                                    child: getImage(),
-                                                  ),
-                                                ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8, left: 16, right: 16),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: Container(
+                                            child: Text(
+                                              missionData['name'],
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16,
+                                                letterSpacing: 0.27,
+                                                color: AppTheme.darkerText,
                                               ),
                                             ),
                                           ),
-                                        ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Padding(
+                                      padding:
+                                      const EdgeInsets.only(top: 8, right: 16, left: 16, bottom: 8),
+                                      child: Container(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                          const BorderRadius.all(Radius.circular(8.0)),
+                                          child: AspectRatio(
+                                            aspectRatio: 1.28,
+                                            child: getImage(),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -529,13 +538,13 @@ class VerticalMissionView extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
