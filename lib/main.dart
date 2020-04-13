@@ -39,13 +39,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
 //    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-////      statusBarColor: Colors.transparent,
-////      statusBarIconBrightness: Brightness.dark,
-////      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
-////      systemNavigationBarColor: Colors.white,
-////      systemNavigationBarDividerColor: Colors.grey,
-////      systemNavigationBarIconBrightness: Brightness.dark,
-////    ));
+//      statusBarColor: Colors.transparent,
+//      statusBarIconBrightness: Brightness.dark,
+//      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
+//      systemNavigationBarColor: Colors.white,
+//      systemNavigationBarDividerColor: Colors.grey,
+//      systemNavigationBarIconBrightness: Brightness.dark,
+//    ));
     return BlocProvider(
       bloc: _authenticationBloc,
       child: Provider<UserRepository>.value(

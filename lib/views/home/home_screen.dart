@@ -5,7 +5,7 @@ import 'package:freetitle/views/home/featured_home.dart';
 import 'package:freetitle/views/mission/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/views/blog/blog_list_view.dart';
+import 'package:freetitle/views/home/home_blog_list_view.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -100,7 +100,7 @@ class _Home extends State<Home> {
                           ),
                           body: TabBarView(
                             children: <Widget>[
-                              BlogListView(scrollController: _scrollController,),
+                              HomeBlogListView(scrollController: _scrollController,),
                               FeaturedHome(),
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Missions'),
@@ -127,13 +127,14 @@ class _Home extends State<Home> {
                                             color: AppTheme.nearlyWhite,
 //                                            height: MediaQuery.of(context).size.height,
                                             child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 Column(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: <Widget>[
                                                     Padding(
-                                                      padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16, bottom: 4),
+                                                      padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16, bottom: 4),
                                                       child: Text(
                                                         'Popular Mission',
                                                         textAlign: TextAlign.left,
@@ -145,14 +146,27 @@ class _Home extends State<Home> {
                                                         ),
                                                       ),
                                                     ),
-                                                    PopularMissionListView(
+                                                    HorizontalMissionListView(
                                                       missionList: missionList,
                                                     ),
                                                   ],
                                                 ),
                                                 Padding(
-                                                    padding: const EdgeInsets.only(top: 0.0, left: 18, right: 16),
-                                                    child: LatestMissionListView(missionList: missionList,),
+                                                  padding: EdgeInsets.only(left: 16, bottom: 8),
+                                                  child: Text(
+                                                    'Latest Mission',
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 22,
+                                                      letterSpacing: 0.27,
+                                                      color: AppTheme.darkerText,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                    padding: const EdgeInsets.only(top: 0.0, left: 16, right: 16),
+                                                    child: VerticalMissionListView(missionList: missionList,),
                                                 ),
                                               ],
                                             ),

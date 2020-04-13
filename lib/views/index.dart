@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/views/chat/chat_list_view.dart';
-import 'package:freetitle/views/profile/get_my_profile.dart';
 import 'package:freetitle/views/profile/my_profile.dart';
-import 'package:freetitle/views/chat/chat.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/app_theme.dart';
-//import 'package:freetitle/views/drawer/navi_drawer.dart';
 import 'package:freetitle/views/home/home_screen.dart';
 import 'package:freetitle/views/search/search.dart';
 
@@ -86,7 +83,7 @@ class _IndexPageState extends State<IndexPage> {
 //            ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    title: Text('发现'),
+                    title: Text('搜索'),
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),

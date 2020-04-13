@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freetitle/views/profile/my_profile.dart';
+import 'package:freetitle/views/profile/profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
@@ -149,7 +150,7 @@ class UserRepository {
                     Navigator.push<dynamic>(
                       context,
                       MaterialPageRoute<dynamic>(
-                        builder: (BuildContext context) => MyProfile(userID: uid, isMyProfile: false, userName: userData['displayName'],),
+                        builder: (BuildContext context) => Profile(userID: uid, isMyProfile: false),
                       ),
                     );
                   },

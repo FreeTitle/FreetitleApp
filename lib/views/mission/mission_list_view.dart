@@ -4,8 +4,8 @@ import 'package:freetitle/main.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/mission/mission_detail.dart';
 
-class PopularMissionListView extends StatefulWidget {
-  const PopularMissionListView(
+class HorizontalMissionListView extends StatefulWidget {
+  const HorizontalMissionListView(
       {Key key, 
         this.missionList,
         this.missionID,
@@ -13,10 +13,10 @@ class PopularMissionListView extends StatefulWidget {
   final List missionList;
   final String missionID;
   @override
-  _PopularMissionListViewState createState() => _PopularMissionListViewState();
+  _HorizontalMissionListViewState createState() => _HorizontalMissionListViewState();
 }
 
-class _PopularMissionListViewState extends State<PopularMissionListView>
+class _HorizontalMissionListViewState extends State<HorizontalMissionListView>
 with TickerProviderStateMixin {
   AnimationController animationController;
   ScrollController _scrollController;
@@ -83,7 +83,7 @@ with TickerProviderStateMixin {
                               curve: Curves.fastOutSlowIn)));
                   animationController.forward();
 
-                  return PopularMissionView(
+                  return HorizontalMissionView(
                       mission: missionList[index],
                       animation: animation,
                       animationController: animationController,
@@ -101,8 +101,8 @@ with TickerProviderStateMixin {
   }
 }
 
-class PopularMissionView extends StatelessWidget {
-  const PopularMissionView(
+class HorizontalMissionView extends StatelessWidget {
+  const HorizontalMissionView(
       {Key key,
         this.mission,
         this.animationController,
@@ -260,21 +260,19 @@ class PopularMissionView extends StatelessWidget {
 }
 
 // List View showing latest missions
-class LatestMissionListView extends StatefulWidget {
-  const LatestMissionListView(
+class VerticalMissionListView extends StatefulWidget {
+  const VerticalMissionListView(
       {Key key,
-        this.callBack,
         this.missionList
       }) : super(key: key);
 
   // callback passed downwards for handling tapping
-  final Function callBack;
   final List missionList;
   @override
-  _LatestMissionListViewState createState() => _LatestMissionListViewState();
+  _VerticalMissionListViewState createState() => _VerticalMissionListViewState();
 }
 
-class _LatestMissionListViewState extends State<LatestMissionListView>
+class _VerticalMissionListViewState extends State<VerticalMissionListView>
     with TickerProviderStateMixin {
   AnimationController animationController;
   @override
@@ -307,19 +305,6 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
   List<Widget> buildMissionGrid(){
     List missionList = widget.missionList;
     List<Widget> missionGrid = List();
-    missionGrid.add(Padding(
-      padding: EdgeInsets.only(bottom: 4),
-      child: Text(
-        'Latest Mission',
-        textAlign: TextAlign.left,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 22,
-          letterSpacing: 0.27,
-          color: AppTheme.darkerText,
-        ),
-      ),
-    ));
     for (var i = 0;i < missionList.length-1;i+=2){
       final int count = missionList.length;
       final Animation<double> animation =
@@ -336,7 +321,7 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
           Container(
             height: 220,
             width: MediaQuery.of(context).size.width/2-25,
-            child: LatestMissionView(
+            child: VerticalMissionView(
               mission: missionList[i],
               animationController: animationController,
               animation: animation,
@@ -351,7 +336,7 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
           Container(
             height: 220,
             width: MediaQuery.of(context).size.width/2-25,
-            child: LatestMissionView(
+            child: VerticalMissionView(
               mission: missionList[i+1],
               animationController: animationController,
               animation: animation,
@@ -383,7 +368,7 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
           Container(
             height: 220,
             width: MediaQuery.of(context).size.width/2-25,
-            child: LatestMissionView(
+            child: VerticalMissionView(
               mission: missionList[missionList.length-1],
               animationController: animationController,
               animation: animation,
@@ -420,8 +405,8 @@ class _LatestMissionListViewState extends State<LatestMissionListView>
 }
 
 
-class LatestMissionView extends StatelessWidget {
-  const LatestMissionView(
+class VerticalMissionView extends StatelessWidget {
+  const VerticalMissionView(
       {Key key,
         this.mission,
         this.animationController,
@@ -517,46 +502,11 @@ class LatestMissionView extends StatelessWidget {
                                               ],
                                             ),
                                           ),
-//                                          Padding(
-//                                            padding: const EdgeInsets.only(
-//                                                top: 8, left: 16, right: 16, bottom: 8),
-//                                            child: Row(
-//                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                              crossAxisAlignment: CrossAxisAlignment.center,
-//                                              children: <Widget>[
-//                                                Expanded(
-//                                                  child: Container(
-//                                                    child: Text(
-//                                                      mission['username'],
-//                                                      textAlign: TextAlign.left,
-//                                                      style: TextStyle(
-//                                                        fontWeight: FontWeight.w400,
-//                                                        fontSize: 12,
-//                                                        letterSpacing: 0.27,
-//                                                        color: AppTheme.grey,
-//                                                      ),
-//                                                    ),
-//                                                  ),
-//                                                ),
-//                                              ],
-//                                            ),
-//                                          ),
                                           Container(
                                             child: Padding(
                                               padding:
                                               const EdgeInsets.only(top: 8, right: 16, left: 16, bottom: 8),
                                               child: Container(
-                      //                          decoration: BoxDecoration(
-                      //                            borderRadius:
-                      //                            const BorderRadius.all(Radius.circular(16.0)),
-                      //                            boxShadow: <BoxShadow>[
-                      //                              BoxShadow(
-                      //                                  color: AppTheme.grey
-                      //                                      .withOpacity(0.2),
-                      //                                  offset: const Offset(0.0, 0.0),
-                      //                                  blurRadius: 6.0),
-                      //                            ],
-                      //                          ),
                                                 child: ClipRRect(
                                                   borderRadius:
                                                   const BorderRadius.all(Radius.circular(8.0)),
