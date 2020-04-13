@@ -13,15 +13,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 class CommentInputPage extends StatefulWidget {
   const CommentInputPage(
   {Key key,
-    this.blogID,
-    this.parentLevel,
-    this.parentID,
-    this.parentType,
+    @required this.pageID,
+    @required this.pageType,
+    @required this.parentLevel,
+    @required this.parentID,
+    @required this.parentType,
     this.targetID,
   }):super(key: key);
 
-  final blogID;
+  final pageID;
   final parentLevel;
+  final pageType;
   final parentID;
   final parentType;
   final targetID;
@@ -61,12 +63,12 @@ class _CommentInputPage extends State<CommentInputPage> {
 
   @override
   Widget build(BuildContext context) {
-    String blogID = widget.blogID;
+    String pageID = widget.pageID;
     int parentLevel = widget.parentLevel;
     String parentID = widget.parentID;
     String parentType = widget.parentType;
     String targetID = widget.targetID;
-    print(blogID);
+    print(pageID);
     print(parentLevel);
     print(parentID);
     print(parentType);
@@ -91,7 +93,7 @@ class _CommentInputPage extends State<CommentInputPage> {
                 String text = textController.text;
                 final Map data = new Map();
                 data['_text'] = text;
-                data['blogID'] = blogID;
+                data['pageID'] = pageID;
                 data['content'] = Map();
                 data['content']['image'] = null;
                 data['content']['text'] = text;
@@ -134,7 +136,7 @@ class _CommentInputPage extends State<CommentInputPage> {
 
                 await Firestore.instance.collection('comments').add({
                   '_text': data['_text'],
-                  'blogID': data['blogID'],
+                  'pageID': data['pageID'],
                   'content': {'image': downLoadURL, 'text': text},
                   'level': data['level'],
                   'parentID': data['parentID'],
@@ -149,20 +151,36 @@ class _CommentInputPage extends State<CommentInputPage> {
                 });
 
                 // Level 1 comment setup
-                if(data['level'] == 1 && data['blogID'] == data['parentID']){
-                  // Set target blog's comments
-                  List blogComments;
-                  await Firestore.instance.collection('blogs').document(data['blogID']).get().then((snap) => {
-                    print(snap.data['comments']),
-                    blogComments = snap.data['comments'],
-                  });
-                  if(blogComments == null){
-                    blogComments = List();
+                if(data['level'] == 1 && data['pageID'] == data['parentID']){
+                  // Set target page's comments
+                  List pageComments;
+                  if(widget.pageType == 'blog') {
+                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) => {
+                      print(snap.data['comments']),
+                      pageComments = snap.data['comments'],
+                    });
+                    if(pageComments == null){
+                      pageComments = List();
+                    }
+                    pageComments.add(commentID);
+                    await Firestore.instance.collection('blogs').document(data['pageID']).updateData({
+                      'comments': pageComments,
+                    });
                   }
-                  blogComments.add(commentID);
-                  await Firestore.instance.collection('blogs').document(data['blogID']).updateData({
-                    'comments': blogComments,
-                  });
+                  else if(widget.pageType == 'mission') {
+                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) => {
+                      print(snap.data['comments']),
+                      pageComments = snap.data['comments'],
+                    });
+                    if(pageComments == null){
+                      pageComments = List();
+                    }
+                    pageComments.add(commentID);
+                    await Firestore.instance.collection('missions').document(data['pageID']).updateData({
+                      'comments': pageComments,
+                    });
+                  }
+
                 } // Level 2 and level 3 comment setup
                 else if(data['level'] == 2 || data['level'] == 3){
 
@@ -179,18 +197,32 @@ class _CommentInputPage extends State<CommentInputPage> {
                     'replies': commentReplies,
                   });
 
-                  // Set target blog's subcomments
-                  List blogSubcomments;
-                  await Firestore.instance.collection('blogs').document(data['blogID']).get().then((snap) => {
-                    blogSubcomments = snap.data['subcomments']
-                  });
-                  if(blogSubcomments == null){
-                    blogSubcomments = List();
+                  // Set target page's subcomments
+                  List pageSubcomments;
+                  if(widget.pageType == 'blog'){
+                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) => {
+                      pageSubcomments = snap.data['subcomments']
+                    });
+                    if(pageSubcomments == null){
+                      pageSubcomments = List();
+                    }
+                    pageSubcomments.add(commentID);
+                    await Firestore.instance.collection('blogs').document(data['pageID']).updateData({
+                      'subcomments': pageSubcomments
+                    });
                   }
-                  blogSubcomments.add(commentID);
-                  await Firestore.instance.collection('blogs').document(data['blogID']).updateData({
-                    'subcomments': blogSubcomments
-                  });
+                  else if(widget.pageType == 'mission') {
+                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) => {
+                      pageSubcomments = snap.data['subcomments']
+                    });
+                    if(pageSubcomments == null){
+                      pageSubcomments = List();
+                    }
+                    pageSubcomments.add(commentID);
+                    await Firestore.instance.collection('missions').document(data['pageID']).updateData({
+                      'subcomments': pageSubcomments
+                    });
+                  }
                 }
                 else{
                   print('level is wrong');

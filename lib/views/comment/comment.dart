@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +11,14 @@ class CommentBottom extends StatefulWidget {
 
   const CommentBottom(
       {Key key,
-        this.commentIDs,
-        this.blogID,
+        @required this.commentIDs,
+        @required this.pageID,
+        @required this.pageType,
       }): super(key: key);
 
-  final String blogID;
+  final String pageID;
   final List<String> commentIDs;
+  final String pageType;
 
   @override
   _CommentBottom createState() => _CommentBottom();
@@ -68,7 +68,7 @@ class _CommentBottom extends State<CommentBottom>{
                       isCurrentUserComment = true;
                     }
                     if(comment['level'] == 1)
-                      return CommentBox(commentData: comment, isSubCommentPage: false, blogID: widget.blogID, commentID: commentIDs[index],isCurrentUserComment: isCurrentUserComment,);
+                      return CommentBox(commentData: comment, isSubCommentPage: false, pageID: widget.pageID, commentID: commentIDs[index], isCurrentUserComment: isCurrentUserComment, pageType: widget.pageType,);
                   }
                   else{
                     return PlaceHolderCard(
@@ -96,18 +96,20 @@ class CommentBox extends StatelessWidget {
 
   const CommentBox(
   {Key key,
-    this.commentData,
-    this.isSubCommentPage,
-    this.blogID,
-    this.commentID,
+    @required this.commentData,
+    @required this.isSubCommentPage,
+    @required this.pageID,
+    @required this.pageType,
+    @required this.commentID,
     this.isCurrentUserComment,
   }) : super(key: key);
 
   final Map commentData;
   final bool isSubCommentPage;
-  final String blogID;
+  final String pageID;
   final String commentID;
   final bool isCurrentUserComment;
+  final String pageType;
 
   Widget getContent(){
     final Map content = commentData['content'];
@@ -148,7 +150,7 @@ class CommentBox extends StatelessWidget {
           Navigator.push<dynamic>(
               context,
               MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => SubCommentPage(blogID: blogID, commentID: commentID,),
+                builder: (BuildContext context) => SubCommentPage(pageID: pageID, commentID: commentID, pageType: pageType,),
               )
           );
         },
@@ -248,18 +250,36 @@ class CommentBox extends StatelessWidget {
 
                             List comments;
                             List subcomments;
-                            await Firestore.instance.collection('blogs').document(blogID).get().then((snap) => {
-                              comments = snap.data['comments'],
-                              subcomments = snap.data['subcomments'],
-                            });
-                            comments.remove(commentID);
-                            for(var id in subCommentIDs){
-                              subcomments.remove(id);
+
+                            if(pageType == 'blog') {
+                              await Firestore.instance.collection('blogs').document(pageID).get().then((snap) => {
+                                comments = snap.data['comments'],
+                                subcomments = snap.data['subcomments'],
+                              });
+                              comments.remove(commentID);
+                              for(var id in subCommentIDs){
+                                subcomments.remove(id);
+                              }
+                              await Firestore.instance.collection('blogs').document(pageID).updateData({
+                                'comments': comments,
+                                'subcomments': subcomments
+                              });
                             }
-                            await Firestore.instance.collection('blogs').document(blogID).updateData({
-                              'comments': comments,
-                              'subcomments': subcomments
-                            });
+                            else if(pageType == 'mission') {
+                              await Firestore.instance.collection('missions').document(pageID).get().then((snap) => {
+                                comments = snap.data['comments'],
+                                subcomments = snap.data['subcomments'],
+                              });
+                              comments.remove(commentID);
+                              for(var id in subCommentIDs){
+                                subcomments.remove(id);
+                              }
+                              await Firestore.instance.collection('missions').document(pageID).updateData({
+                                'comments': comments,
+                                'subcomments': subcomments
+                              });
+                            }
+
 
                           }).catchError((e) => {
                             print("Level 1 Comment deletion error ${e}"),
@@ -341,9 +361,9 @@ class CommentBox extends StatelessWidget {
                           MaterialPageRoute<dynamic>(
                             builder: (BuildContext context) {
                               if (commentData['level']  == 1)
-                                return CommentInputPage(blogID: blogID, parentLevel: commentData['level'], parentID: commentID, parentType: 'comment', targetID: commentID,);
+                                return CommentInputPage(pageID: pageID, parentLevel: commentData['level'], parentID: commentID, parentType: 'page', targetID: commentID, pageType: pageType,);
                               else
-                                return CommentInputPage(blogID: blogID, parentLevel: commentData['level'], parentID: commentData['parentID'], parentType: 'comment', targetID: commentID,);
+                                return CommentInputPage(pageID: pageID, parentLevel: commentData['level'], parentID: commentData['parentID'], parentType: 'comment', targetID: commentID, pageType: pageType,);
                             }
                           )
                         );
@@ -379,12 +399,14 @@ class CommentBox extends StatelessWidget {
 class CommentPage extends StatefulWidget{
   const CommentPage(
       {Key key,
-        this.commentIDs,
-        this.blogID,
+        @required this.commentIDs,
+        @required this.pageID,
+        @required this.pageType,
       }): super(key: key);
 
   final List<String> commentIDs;
-  final String blogID;
+  final String pageID;
+  final String pageType;
 
   @override
   _CommentPage createState() => _CommentPage();
@@ -440,7 +462,7 @@ class _CommentPage extends State<CommentPage>{
             Navigator.push<dynamic>(
                 context,
                 MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) => CommentInputPage(blogID: widget.blogID, parentLevel: 0, parentID: widget.blogID, parentType: 'blog',)
+                    builder: (BuildContext context) => CommentInputPage(pageID: widget.pageID, parentLevel: 0, parentID: widget.pageID, parentType: 'comment', pageType: widget.pageType, )
                 )
             );
           },
@@ -470,7 +492,7 @@ class _CommentPage extends State<CommentPage>{
                             isCurrentUserComment = true;
                           }
                           if(comment['level'] == 1)
-                            return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], blogID: widget.blogID, isCurrentUserComment: isCurrentUserComment,);
+                            return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], pageID: widget.pageID, isCurrentUserComment: isCurrentUserComment, pageType: widget.pageType,);
                         }
                         else{
                           return SizedBox(
@@ -491,12 +513,14 @@ class SubCommentPage extends StatefulWidget {
   const SubCommentPage(
   {Key key,
 //    this.commentData,
-    this.commentID,
-    this.blogID,
+    @required this.commentID,
+    @required this.pageID,
+    @required this.pageType,
   }) : super(key: key);
 
   final String commentID;
-  final String blogID;
+  final String pageID;
+  final String pageType;
 //  final commentData;
 
   @override
@@ -561,7 +585,7 @@ class _SubCommentPage extends State<SubCommentPage>{
                   child: Column(
                     children: <Widget>[
                       // Level 1 comment
-                      CommentBox(commentData: commentData, isSubCommentPage: true, commentID: widget.commentID, blogID: widget.blogID,),
+                      CommentBox(commentData: commentData, isSubCommentPage: true, commentID: widget.commentID, pageID: widget.pageID, pageType: widget.pageType,),
                       Container(
                         height: subCommentIDs.length*170.0,
                         color: AppTheme.nearlyWhite,
@@ -588,7 +612,7 @@ class _SubCommentPage extends State<SubCommentPage>{
                                         }
                                         return Padding(
                                             padding: EdgeInsets.only(left: 16, right: 16),
-                                            child: CommentBox(commentData: subcomment, isSubCommentPage: true, commentID: subCommentIDs[index], blogID: widget.blogID, isCurrentUserComment: isCurrentUserComment)
+                                            child: CommentBox(commentData: subcomment, isSubCommentPage: true, commentID: subCommentIDs[index], pageID: widget.pageID, isCurrentUserComment: isCurrentUserComment, pageType: widget.pageType,)
                                         );
                                       }
                                       else{
