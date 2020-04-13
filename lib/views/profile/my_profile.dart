@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/login/login.dart';
-import 'package:freetitle/views/profile/my_blog_list_view.dart';
+import 'package:freetitle/views/profile/profile_blog_list_view.dart';
 import 'package:freetitle/views/profile/title_view.dart';
 import 'package:freetitle/views/profile/user_card.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
-import 'package:freetitle/views/profile/my_mission_list_view.dart';
+import 'package:freetitle/views/profile/profile_mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/settings/settings.dart';
 
@@ -36,27 +36,28 @@ class _MyProfile extends State<MyProfile> {
     final userID = widget.userID;
 
     List<Widget> profileWidget = List();
-    profileWidget.add(UserCard(userData: userData,));
+    profileWidget.add(UserCard(userData: userData, userID: userID,));
     profileWidget.add(TitleView(
       titleTxt: 'Missions',
       subTxt: 'More',
     ));
-    profileWidget.add(MyMissionListView(ownerID: userID, missionIDs: userData['missions'],));
+    profileWidget.add(ProfileHorizontalMissionListView(ownerID: userID, missionIDs: userData['missions'],));
     profileWidget.add(TitleView(
       titleTxt: 'Blogs',
       subTxt: 'More',
     ));
-    profileWidget.add(MyBlogListView(ownerID: userID,));
+    profileWidget.add(ProfileBlogListView(ownerID: userID,));
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.only(
 //          top: MediaQuery.of(context).padding.top,
-          bottom: 62 + MediaQuery.of(context).padding.bottom,
+          bottom: MediaQuery.of(context).padding.bottom,
         ),
         child: Column(
           children: profileWidget,
         ),
-      )
+      ),
+      physics: ClampingScrollPhysics(),
     );
   }
 
@@ -144,6 +145,46 @@ class _MyProfile extends State<MyProfile> {
           },
         ),
 //      body: buildProfileList(),
+    );
+  }
+}
+
+class GetMyProfile extends StatefulWidget {
+
+  _GetMyProfile createState() => _GetMyProfile();
+}
+
+class _GetMyProfile extends State<GetMyProfile>{
+
+  UserRepository _userRepository;
+  String userID;
+
+  @override
+  void initState(){
+    _userRepository = UserRepository();
+    super.initState();
+  }
+
+  Future<bool> getData() async {
+    await _userRepository.getUser().then((snap) => {
+      userID = snap.uid,
+    });
+
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+        future: getData(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+          if(userID != null){
+            return MyProfile(userID: userID, isMyProfile: true, );
+          }
+          else{
+            return Text('Get User file broken');
+          }
+        }
     );
   }
 }

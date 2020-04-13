@@ -62,35 +62,7 @@ class _ProfileBlogListView extends State<ProfileBlogListView> with TickerProvide
     );
   }
 
-  List<Widget> buildBlogList(blogList, blogIDs){
-    List<Widget> blogsWidget = List();
-    for(var i = 0;i < blogList.length;i++){
-      final blog = blogList[i];
-      final int count = blogList.length;
-      final Animation<double> animation = Tween<double>(
-          begin: 0.0, end: 1.0)
-          .animate(
-          CurvedAnimation(
-              parent: animationController,
-              curve: Interval(
-                  (1 / count) * i, 1.0,
-                  curve: Curves.fastOutSlowIn
-              )
-          )
-      );
-      animationController
-          .forward();
-      blogsWidget.add(
-          AnimatedBlogCard(
-              blogID: blogIDs[i],
-              blogData: blogList[i],
-              animation: animation,
-              animationController: animationController
-          )
-      );
-    }
-    return blogsWidget;
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -124,11 +96,7 @@ class _ProfileBlogListView extends State<ProfileBlogListView> with TickerProvide
                       child: PlaceHolderCard(text: 'No blogs yet', height: 200.0,),
                     );
                   }
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: buildBlogList(blogList, blogIDs),
-                  );
+                  return ProfileBlogList(animationController: animationController, scrollController: widget.scrollController, blogIDs: blogIDs, blogList: blogList,);
                 }
                 else{
                   return SingleChildScrollView(
@@ -141,5 +109,74 @@ class _ProfileBlogListView extends State<ProfileBlogListView> with TickerProvide
         ),
       ),
     );
+  }
+}
+
+
+class ProfileBlogList extends StatefulWidget {
+
+  const ProfileBlogList({Key key, this.animationController, this.scrollController, this.blogList, this.blogIDs}) : super(key:key);
+
+  final animationController;
+  final scrollController;
+  final blogList;
+  final blogIDs;
+
+  _ProfileBlogListState createState() => _ProfileBlogListState();
+}
+
+class _ProfileBlogListState extends State<ProfileBlogList> with TickerProviderStateMixin {
+
+  List<Widget> buildBlogList(blogList, blogIDs){
+
+    final animationController = widget.animationController;
+
+    List<Widget> blogsWidget = List();
+    for(var i = 0;i < blogList.length;i++) {
+      final int count = blogList.length;
+      final Animation<double> animation = Tween<double>(
+          begin: 0.0, end: 1.0)
+          .animate(
+          CurvedAnimation(
+              parent: animationController,
+              curve: Interval(
+                  (1 / count) * i, 1.0,
+                  curve: Curves.fastOutSlowIn
+              )
+          )
+      );
+      animationController
+          .forward();
+      blogsWidget.add(
+          AnimatedBlogCard(
+              blogID: blogIDs[i],
+              blogData: blogList[i],
+              animation: animation,
+              animationController: animationController
+          )
+      );
+    }
+    return blogsWidget;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    if(widget.blogList.length == 0){
+      return SingleChildScrollView(
+        controller: widget.scrollController,
+        child: PlaceHolderCard(text: 'No blogs yet', height: 200.0,)
+      );
+    }
+    else{
+      return SingleChildScrollView(
+        controller: widget.scrollController,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: buildBlogList(widget.blogList, widget.blogIDs),
+        ),
+      );
+    }
   }
 }

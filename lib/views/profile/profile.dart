@@ -1,38 +1,134 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/model/util.dart';
+import 'package:freetitle/views/chat/chat.dart';
+import 'package:freetitle/views/mission/mission_list_view.dart';
+import 'package:freetitle/views/profile/profile_blog_list_view.dart';
+import 'package:flutter/services.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 class Profile extends StatefulWidget {
+  Profile({Key key, this.userID, this.isMyProfile}) : super(key : key);
+
+  final String userID;
+  final bool isMyProfile;
+
   @override
   _ProfileState createState() => _ProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileState extends State<Profile> with TickerProviderStateMixin {
+
+  List blogList;
+  List blogIDs;
+  List missionList;
+  List bookmarkList;
+  Map userData;
+
+  AnimationController animationController;
+
+  @override void initState() {
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> getUserStuff() async {
+    await Firestore.instance.collection('users').document(widget.userID).get().then((snap) {
+      userData = snap.data;
+    });
+
+    blogList = List();
+    blogIDs = List();
+    await Firestore.instance.collection('blogs').where('user', isEqualTo: widget.userID).getDocuments().then((snap){
+      snap.documents.forEach((doc) {
+        blogList.add(doc.data);
+        blogIDs.add(doc.documentID);
+      });
+    });
+
+    missionList = List();
+    await Firestore.instance.collection('missions').where('ownerID', isEqualTo: widget.userID).getDocuments().then((snap) {
+      snap.documents.forEach((doc) {
+        missionList.add(doc.data);
+      });
+    });
+
+    bookmarkList = List();
+    await Firestore.instance.collection('blogs').getDocuments().then((snap){
+      if(userData['bookmarks'] != null && userData['bookmarks'].length != 0){
+        userData['bookmarks'].forEach((id) {
+          snap.documents.where((doc) => doc.documentID == id).forEach((blogSnap){
+            bookmarkList.add(blogSnap.data);
+          });
+        });
+      }
+    });
+
+    return true;
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Container(
-        color: Colors.white,
-        child: Stack(
-          children: <Widget>[
-            UserInfoView(),
-            DraggableScrollableSheet(
-              initialChildSize: 0.65,
-              minChildSize: 0.65,
-              maxChildSize: 0.9,
-              builder: (BuildContext context, ScrollController _scrollController) {
-                return UserContentView(scrollController: _scrollController,);
-              },
+    return FutureBuilder<bool>(
+      future: getUserStuff(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+        if(snapshot.connectionState == ConnectionState.done){
+          return Container(
+            child: Container(
+              color: Colors.white,
+              child: Stack(
+                children: <Widget>[
+                  UserInfoView(userData: userData, isMyProfile: widget.isMyProfile, userID: widget.userID,),
+                  DraggableScrollableSheet(
+                    initialChildSize: 0.65,
+                    minChildSize: 0.65,
+                    maxChildSize: 0.9,
+                    builder: (BuildContext context, ScrollController _scrollController) {
+                      return UserContentView(
+                        scrollController: _scrollController,
+                        animationController: animationController,
+                        blogList: blogList,
+                        blogIDs: blogIDs,
+                        missionList: missionList,
+                        bookmarkIDs: userData['bookmarks'],
+                        bookmarkList: bookmarkList,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
+          );
+        }else{
+          return Scaffold(
+            body:  PlaceHolderCard(text: '加载中',),
+          );
+        }
+      },
     );
   }
 }
 
 class UserInfoView extends StatefulWidget {
+
+  UserInfoView({Key key, @required this.userData, @required this.isMyProfile, @required this.userID}) : super(key : key);
+
+  final Map userData;
+  final bool isMyProfile;
+  final String userID;
+
   @override
   State<StatefulWidget> createState() {
     return _UserInfoViewState();
@@ -45,159 +141,202 @@ class _UserInfoViewState extends State<UserInfoView> {
 
 //  bool isFollowing = false;
 
+  Color backgroundColor = Color(0xFFFFFFFF);
+
+  Future<bool> getBackgroundColor() async {
+    ImageProvider img;
+    final backgroundUrl = widget.userData['backgroundUrl'];
+    if(backgroundUrl != null && backgroundUrl != ''){
+      img = NetworkImage(backgroundUrl);
+    }
+    else{
+      img = AssetImage('assets/images/blog_placeholder.png');
+    }
+    PaletteGenerator pg = await PaletteGenerator.fromImageProvider(img);
+
+    if(pg.dominantColor?.color !=null)
+      backgroundColor = pg.dominantColor?.color;
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
 
+    final userData = widget.userData;
     return Scaffold(
       backgroundColor: Colors.transparent,
-//      appBar: PreferredSize(
-//        preferredSize: Size.fromHeight(0.0),
-//        child: AppBar(
-//          brightness: Brightness.light,
-//          elevation: 0.0,
-//          backgroundColor: Colors.transparent,
-//        ),
-//      ),
-      body: Stack(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 1.2,
-                child: Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.fill,),
+      body: FutureBuilder(
+        future: getBackgroundColor(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+          if(snapshot.connectionState == ConnectionState.done){
+            Color color = backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+            // Change status bar brightness according to image
+            SystemChrome.setSystemUIOverlayStyle(
+              SystemUiOverlayStyle(
+                // For iOS
+                statusBarBrightness: backgroundColor.computeLuminance() > 0.5 ? Brightness.light : Brightness.dark,
+                // For Android M and higher
+                statusBarIconBrightness: backgroundColor.computeLuminance() > 0.5 ? Brightness.light : Brightness.dark,
               ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 70.0),
-            child: Container(
-              color: Colors.transparent,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: <Widget>[
-                  // avatar and following and follower
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Container(
-                      padding: EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Container(
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Row(
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 20.0,
-                                        ),
-                                        Container(
-                                          width: 100.0,
-                                          height: 100.0,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(),
-                                            image: DecorationImage(
-                                              image: AssetImage('assets/logo.png'),
+            );
+            return Stack(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    AspectRatio(
+                      aspectRatio: 1.2,
+                      child: userData.containsKey('backgroundUrl') && userData['backgroundUrl'] != '' ? Image.network(userData['backgroundUrl'], fit: BoxFit.fill,) : Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.fill,),
+                    ),
+                  ],
+                ),
+//          Positioned(
+//            top: 45,
+//            left: 20,
+//            child: Container(
+//              height: 250,
+//              width: 375,
+//              color: Colors.grey.withOpacity(0.8),
+//            ),
+//          ),
+                Padding(
+                  padding: EdgeInsets.only(top: 70.0),
+                  child: Container(
+                    color: Colors.transparent,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: <Widget>[
+                        // avatar and following and follower
+                        Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Container(
+                            padding: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Row(
+                                          children: <Widget>[
+                                            SizedBox(
+                                              width: 20.0,
                                             ),
-                                          ),
+                                            Container(
+                                              width: 100.0,
+                                              height: 100.0,
+                                              decoration: BoxDecoration(
+                                                boxShadow: <BoxShadow>[
+                                                  BoxShadow(
+                                                    color: color,
+                                                    blurRadius: 1,
+                                                  ),
+                                                ],
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.all(Radius.circular(80.0)),
+                                                child: userData['avatarUrl'] != null ? Image.network(userData['avatarUrl'], fit: BoxFit.fill,) : Image.asset('assets/logo.png', fit: BoxFit.fill),
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 30,),
+                                    Column(
+//                                mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        // following
+                                        Row(
+                                          children: <Widget>[
+                                            Text(
+                                              userData['displayName'],
+                                              style: TextStyle(
+                                                fontFamily: 'WorkSans',
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 24,
+                                                letterSpacing: 0.27,
+                                                color: color,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 10.0,
+                                            ),
+                                            Container(
+                                              child: Icon(Icons.mood),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10.0,
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            Text(
+                                              "",
+                                              style: TextStyle(
+                                                color: color,
+//                                              fontFamily: 'Quicksand',
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.0,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10.0,
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            Text(
+                                              userData['campus'] != null ? userData['campus'] : '',
+                                              style: TextStyle(
+                                                color: color,
+//                                              fontFamily: 'Quicksand',
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.0,
+                                              ),
+                                            ),
+                                          ],
+                                        )
                                       ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                Divider(
+                                  color: color,
+                                ),
+                                //self-intro
+                                Padding(
+                                  padding: EdgeInsets.all(4.0),
+                                  child: Container(
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        userData['statement'] != null && userData['statement'] != "" ? userData['statement'].toString() : 'This user has no art statement yet',
+                                        style: TextStyle(
+                                          color: color,
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Column(
-                                    children: <Widget>[
-                                      // following
-                                      Row(
-                                        children: <Widget>[
-                                          Text(
-                                            'Username',
-                                            style: AppTheme.headline,
-                                          ),
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
-                                          Container(
-                                            child: Icon(Icons.mood),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 10.0,
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Text(
-                                            'Labels',
-                                            style: TextStyle(
-                                              color: Colors.black,
-//                                              fontFamily: 'Quicksand',
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 10.0,
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Text(
-                                            'Campus',
-                                            style: TextStyle(
-                                              color: Colors.black,
-//                                              fontFamily: 'Quicksand',
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.0,
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Divider(
-                            color: Colors.black,
-                          ),
-                          //self-intro
-                          Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Container(
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Self-Intro',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18.0,
-                                  ),
-                                ),
-                              ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // follow or unfollow
+                        ),
+                        // follow or unfollow
 //                  Container(
 //                    height: 50.0,
 //                    child: Row(
@@ -250,76 +389,105 @@ class _UserInfoViewState extends State<UserInfoView> {
 //                      ],
 //                    ),
 //                  ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, left: MediaQuery.of(context).padding.right+15),
-            child: SizedBox(
-              width: AppBar().preferredSize.height-8,
-              height: AppBar().preferredSize.height-8,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
-                  child: Container(
-//                    decoration: new BoxDecoration(
-//                      shape: BoxShape.circle,// You can use like this way or like the below line
-//                      //borderRadius: new BorderRadius.circular(30.0),
-//                      color: AppTheme.grey.withOpacity(0.5),
-//                    ),
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: AppTheme.nearlyBlack,
+                      ],
                     ),
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 44,
-            right: 20,
-            child: SizedBox(
-              width: AppBar().preferredSize.height-8,
-              height: AppBar().preferredSize.height-8,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
-                  child: Container(
-//                    decoration: new BoxDecoration(
-//                      shape: BoxShape.circle,// You can use like this way or like the below line
-//                      //borderRadius: new BorderRadius.circular(30.0),
-//                      color: AppTheme.grey.withOpacity(0.5),
-//                    ),
-                    child: Icon(
-                      Icons.more_horiz,
-                      color: AppTheme.nearlyWhite,
+                Positioned(
+                  top: MediaQuery.of(context).padding.top,
+                  left: MediaQuery.of(context).padding.left + 20,
+                  child: SizedBox(
+                    width: AppBar().preferredSize.height-8,
+                    height: AppBar().preferredSize.height-8,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
+                        child: Container(
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            color: color,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
                   ),
-                  onTap: () {
-//                    Navigator.pop(context);
-                  },
                 ),
-              ),
-            ),
-          ),
-        ],
-      )
+                Positioned(
+                  top: MediaQuery.of(context).padding.top,
+                  right: MediaQuery.of(context).padding.right + 20,
+                  child: SizedBox(
+                    width: AppBar().preferredSize.height-8,
+                    height: AppBar().preferredSize.height-8,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
+                        child: Container(
+                          child: Icon(
+                            Icons.more_horiz,
+                            color: color,
+                          ),
+                        ),
+                        onTap: () {
+
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                !widget.isMyProfile ?
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 115,
+                  right: MediaQuery.of(context).padding.right + 50,
+                  child: InkWell(
+                    onTap: () async {
+                      UserRepository _userRepository = UserRepository();
+                      final thisUser = await _userRepository.getUser();
+                      final uid = thisUser.uid;
+                      launchChat(context, uid, widget.userID, userData['displayName']);
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        color: AppTheme.primary,
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.send,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                ) : SizedBox(width: 0,)
+              ],
+            );
+          }else{
+            return PlaceHolderCard(text: 'Loading Profile');
+          }
+        },
+      ),
     );
   }
 }
 
 class UserContentView extends StatelessWidget {
 
-  const UserContentView({Key key, this.scrollController}) : super(key : key);
+  const UserContentView({Key key, this.scrollController, this.bookmarkList, this.bookmarkIDs, this.animationController, this.blogIDs, this.blogList, this.missionList}) : super(key : key);
 
   final ScrollController scrollController;
+  final AnimationController animationController;
+  final List blogIDs;
+  final List blogList;
+  final List missionList;
+  final List bookmarkList;
+  final List bookmarkIDs;
 
   @override
   Widget build(BuildContext context) {
@@ -363,9 +531,27 @@ class UserContentView extends StatelessWidget {
             ),
             body: TabBarView(
               children: <Widget>[
-                ContentPage('post', scrollController),
-                ContentPage('comment', scrollController),
-                ContentPage('bookmark', scrollController),
+                ProfileBlogList(
+                  animationController: animationController,
+                  scrollController: scrollController,
+                  blogIDs: blogIDs,
+                  blogList: blogList,
+                ),
+                SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: VerticalMissionListView(
+                      missionList: missionList,
+                    ),
+                  ),
+                ),
+                ProfileBlogList(
+                  animationController: animationController,
+                  scrollController: scrollController,
+                  blogIDs: bookmarkIDs,
+                  blogList: bookmarkList,
+                ),
               ],
             ),
           ),
@@ -375,51 +561,50 @@ class UserContentView extends StatelessWidget {
   }
 }
 
-class ContentPage extends StatelessWidget {
-  final _name;
-
-  ContentPage(this._name, this.scrollController);
-
-  final scrollController;
-
-  @override
-  Widget build(BuildContext context) {
-    final items = List<String>.generate(20, (i) => "$_name ${i + 1}");
-
-    return ListView.builder(
-        controller: scrollController,
-        itemCount: items.length,
-        itemBuilder: (context, idx) {
-          return Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(width: 1.0, color: Colors.black),
-              ),
-            ),
-            child: ListTile(
-              // thumbnail
-              leading: Container(
-                width: 40.0,
-                height: 30.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage('assets/logo.png'),
-                  ),
-                ),
-              ),
-              title: Container(
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    items[idx],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-//        physics: const ClampingScrollPhysics(),
-      );
-  }
-}
+//class ContentPage extends StatelessWidget {
+//  final _name;
+//
+//  ContentPage(this._name, this.scrollController);
+//
+//  final scrollController;
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    final items = List<String>.generate(20, (i) => "$_name ${i + 1}");
+//
+//    return ListView.builder(
+//        controller: scrollController,
+//        itemCount: items.length,
+//        itemBuilder: (context, idx) {
+//          return Container(
+//            decoration: BoxDecoration(
+//              border: Border(
+//                top: BorderSide(width: 1.0, color: Colors.black),
+//              ),
+//            ),
+//            child: ListTile(
+//              // thumbnail
+//              leading: Container(
+//                width: 40.0,
+//                height: 30.0,
+//                decoration: BoxDecoration(
+//                  shape: BoxShape.circle,
+//                  image: DecorationImage(
+//                    image: AssetImage('assets/logo.png'),
+//                  ),
+//                ),
+//              ),
+//              title: Container(
+//                child: Align(
+//                  alignment: Alignment.topLeft,
+//                  child: Text(
+//                    items[idx],
+//                  ),
+//                ),
+//              ),
+//            ),
+//          );
+//        },
+//      );
+//  }
+//}

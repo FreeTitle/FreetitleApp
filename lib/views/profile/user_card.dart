@@ -7,10 +7,12 @@ class UserCard extends StatelessWidget{
   const UserCard(
       {Key key,
         this.userData,
+        this.userID,
       }
   ): super(key: key);
 
   final userData;
+  final userID;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +157,7 @@ class UserCard extends StatelessWidget{
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute<dynamic>(
-                                        builder: (BuildContext context) => Profile()
+                                        builder: (BuildContext context) => Profile(userID: userID, isMyProfile: true,)
                                       )
                                     );
                                   },

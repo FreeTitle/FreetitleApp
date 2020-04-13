@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/mission/mission_detail.dart';
+import 'package:freetitle/views/mission/mission_list_view.dart';
 
-class MyMissionListView extends StatefulWidget {
-  const MyMissionListView(
+class ProfileHorizontalMissionListView extends StatefulWidget {
+  const ProfileHorizontalMissionListView(
       {Key key,
         this.ownerID,
         this.missionIDs,
@@ -13,10 +14,10 @@ class MyMissionListView extends StatefulWidget {
   final String ownerID;
   final List missionIDs;
   @override
-  _MyMissionListViewState createState() => _MyMissionListViewState();
+  _ProfileHorizontalMissionListViewState createState() => _ProfileHorizontalMissionListViewState();
 }
 
-class _MyMissionListViewState extends State<MyMissionListView>
+class _ProfileHorizontalMissionListViewState extends State<ProfileHorizontalMissionListView>
     with TickerProviderStateMixin {
   AnimationController animationController;
   ScrollController _scrollController;
@@ -105,7 +106,7 @@ class _MyMissionListViewState extends State<MyMissionListView>
                                 curve: Curves.fastOutSlowIn)));
                     animationController.forward();
 
-                    return MyMissionView(
+                    return HorizontalMissionView(
                       mission: missionList[index],
                       animation: animation,
                       animationController: animationController,
@@ -127,162 +128,4 @@ class _MyMissionListViewState extends State<MyMissionListView>
   }
 }
 
-class MyMissionView extends StatelessWidget {
-  const MyMissionView(
-      {Key key,
-        this.mission,
-        this.animationController,
-        this.animation,
-        this.callback})
-      : super(key: key);
-
-  final VoidCallback callback;
-  final Map mission;
-  final AnimationController animationController;
-  final Animation<dynamic> animation;
-
-  Image getImage(){
-    Image img;
-    img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
-    if(mission['article'] != null){
-      for(var block in mission['article']['blocks']){
-        if(block['type'] == "image"){
-          if(block['data']['file']['url'] != null){
-            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
-            break;
-          }
-        }
-      }
-    }
-    return img;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animationController,
-      builder: (BuildContext context, Widget child){
-        return FadeTransition(
-          opacity: animation,
-          child: Transform(
-            transform: Matrix4.translationValues(
-                100 * (1.0 - animation.value), 0.0, 0.0),
-            child: InkWell(
-              splashColor: Colors.transparent,
-              onTap: () {
-                print('tap');
-                callback();
-              },
-              child: SizedBox(
-                width: 240,
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      child: Row(
-                        children: <Widget>[
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: AppTheme.white,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0)),
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                        color: AppTheme.grey
-                                            .withOpacity(0.2),
-                                        offset: const Offset(0.0, 0.0),
-                                        blurRadius: 6.0),
-                                  ],
-                                ),
-                                child: Container(
-                                  child: Column(
-                                    children: <Widget>[
-                                      Padding(
-                                          padding: const EdgeInsets.only(top: 16, left: 24, bottom: 4),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: <Widget>[
-                                              Text(
-                                                //TODO this truncate is ugly... needs to be fixed taking into account different languages
-                                                mission['name'].length > 15 ? mission['name'].substring(0,12)+'...' : mission['name'],
-                                                textAlign: TextAlign.left,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 16,
-                                                  letterSpacing: 0.27,
-                                                  color: AppTheme.darkerText,
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 24, bottom: 0),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Container(
-                                              child: Text(
-                                                mission['username'],
-                                                textAlign: TextAlign.left,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 12,
-                                                  letterSpacing: 0.27,
-                                                  color: AppTheme.grey,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(6),
-                                        child: Container(
-                                          height: 120,
-                                          width: 180,
-//                                        decoration: BoxDecoration(
-//                                          borderRadius:
-//                                          const BorderRadius.all(Radius.circular(16.0)),
-//                                          boxShadow: <BoxShadow>[
-//                                            BoxShadow(
-//                                                color: AppTheme.grey
-//                                                    .withOpacity(0.2),
-//                                                offset: const Offset(0.0, 0.0),
-//                                                blurRadius: 6.0),
-//                                          ],
-//                                        ),
-                                          child: ClipRRect(
-                                            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                                            child: AspectRatio(
-                                              aspectRatio: 1.5,
-                                              child: getImage(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
 
