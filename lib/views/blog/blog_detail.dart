@@ -18,7 +18,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share/share.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
-import 'package:flutter/gestures.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -280,7 +279,7 @@ class _BlogDetail extends State<BlogDetail> {
 //    }
     List<String> commentIDs = getCommentIDs(blog);
     if (commentIDs.isNotEmpty){
-      blogWidget.add(CommentBottom(commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs, blogID: widget.blogID,));
+      blogWidget.add(CommentBottom(commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs, pageID: widget.blogID, pageType: 'blog',));
     }else{
       blogWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }
@@ -451,7 +450,7 @@ class _BlogDetail extends State<BlogDetail> {
                               await Navigator.push<dynamic>(
                                   context,
                                   MaterialPageRoute<dynamic>(
-                                    builder: (BuildContext context) => CommentPage(key: commentPageKey, commentIDs: getCommentIDs(blog), blogID: widget.blogID),
+                                    builder: (BuildContext context) => CommentPage(key: commentPageKey, commentIDs: getCommentIDs(blog), pageID: widget.blogID, pageType: 'blog',),
                                   )
                               );
                             },
@@ -540,7 +539,7 @@ class _BlogDetail extends State<BlogDetail> {
                             Navigator.push<dynamic>(
                                 context,
                                 MaterialPageRoute<dynamic>(
-                                    builder: (BuildContext context) => CommentInputPage(blogID: widget.blogID, parentLevel: 0, parentID: widget.blogID, parentType: 'blog',)
+                                    builder: (BuildContext context) => CommentInputPage(pageID: widget.blogID, parentLevel: 0, parentID: widget.blogID, parentType: 'blog', pageType: 'blog', targetID: widget.blogID,)
                                 )
                             );
                           },

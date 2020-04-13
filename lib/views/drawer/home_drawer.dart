@@ -1,18 +1,16 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:flutter/material.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
-import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:freetitle/views/login/login_screen.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer(
       {Key key,
-        this.screenIndex,
-        this.iconAnimationController,
-        this.callBackIndex})
+      this.screenIndex,
+      this.iconAnimationController,
+      this.callBackIndex})
       : super(key: key);
 
   final AnimationController iconAnimationController;
@@ -26,13 +24,14 @@ class HomeDrawer extends StatefulWidget {
 class _HomeDrawerState extends State<HomeDrawer> {
   List<DrawerList> drawerList;
   String uid;
+
   @override
   void initState() {
     setdDrawerListArray();
     final _userRepository = new UserRepository();
     _userRepository.getUser().then((user) => {
-      uid = user.uid,
-    });
+          uid = user.uid,
+        });
 
     super.initState();
   }
@@ -73,15 +72,15 @@ class _HomeDrawerState extends State<HomeDrawer> {
     ];
   }
 
-  Widget userSnapshotBuilder(){
+  Widget userSnapshotBuilder() {
     String userName = "FreeUser";
     String avatarURL = "";
     return userWidget("FreeUser", "");
   }
 
-  Widget userWidget(userName, avatarURL){
+  Widget userWidget(userName, avatarURL) {
     Image avatar = Image.asset('assets/images/userImage.png');
-    if (avatarURL != ""){
+    if (avatarURL != "") {
       avatar = Image.network(avatarURL);
     }
 
@@ -96,13 +95,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
               scale: AlwaysStoppedAnimation<double>(
                   1.0 - (widget.iconAnimationController.value) * 0.2),
               child: RotationTransition(
-                turns: AlwaysStoppedAnimation<double>(Tween<double>(
-                    begin: 0.0, end: 24.0)
-                    .animate(CurvedAnimation(
-                    parent: widget.iconAnimationController,
-                    curve: Curves.fastOutSlowIn))
-                    .value /
-                    360),
+                turns: AlwaysStoppedAnimation<double>(
+                    Tween<double>(begin: 0.0, end: 24.0)
+                            .animate(CurvedAnimation(
+                                parent: widget.iconAnimationController,
+                                curve: Curves.fastOutSlowIn))
+                            .value /
+                        360),
                 child: Container(
                   height: 120,
                   width: 120,
@@ -116,8 +115,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius:
-                    const BorderRadius.all(Radius.circular(60.0)),
+                    borderRadius: const BorderRadius.all(Radius.circular(60.0)),
                     child: avatar,
                   ),
                 ),
@@ -181,8 +179,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
             children: <Widget>[
               BlocBuilder(
                 bloc: BlocProvider.of<AuthenticationBloc>(context),
-                builder: (BuildContext context, AuthenticationState state){
-                  if (state is Uninitialized || state is Unauthenticated){
+                builder: (BuildContext context, AuthenticationState state) {
+                  if (state is Uninitialized || state is Unauthenticated) {
                     return ListTile(
                       title: Text(
                         'Sign in',
@@ -203,12 +201,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             context,
                             MaterialPageRoute<dynamic>(
                               builder: (BuildContext context) => LoginScreen(),
-                            )
-                        );
+                            ));
                       },
                     );
-                  }
-                  else{
+                  } else {
                     return ListTile(
                       title: Text(
                         'Sign Out',
@@ -233,7 +229,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   }
                 },
               ),
-
               SizedBox(
                 height: MediaQuery.of(context).padding.bottom,
               )
@@ -279,17 +274,17 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   ),
                   listData.isAssetsImage
                       ? Container(
-                    width: 24,
-                    height: 24,
-                    child: Image.asset(listData.imageName,
-                        color: widget.screenIndex == listData.index
-                            ? Colors.grey
-                            : AppTheme.nearlyBlack),
-                  )
+                          width: 24,
+                          height: 24,
+                          child: Image.asset(listData.imageName,
+                              color: widget.screenIndex == listData.index
+                                  ? Colors.grey
+                                  : AppTheme.nearlyBlack),
+                        )
                       : Icon(listData.icon.icon,
-                      color: widget.screenIndex == listData.index
-                          ? Colors.grey
-                          : AppTheme.nearlyBlack),
+                          color: widget.screenIndex == listData.index
+                              ? Colors.grey
+                              : AppTheme.nearlyBlack),
                   const Padding(
                     padding: EdgeInsets.all(4.0),
                   ),
@@ -309,36 +304,36 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
             widget.screenIndex == listData.index
                 ? AnimatedBuilder(
-              animation: widget.iconAnimationController,
-              builder: (BuildContext context, Widget child) {
-                return Transform(
-                  transform: Matrix4.translationValues(
-                      (MediaQuery.of(context).size.width * 0.75 - 64) *
-                          (1.0 -
-                              widget.iconAnimationController.value -
-                              1.0),
-                      0.0,
-                      0.0),
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 8, bottom: 8),
-                    child: Container(
-                      width:
-                      MediaQuery.of(context).size.width * 0.75 - 64,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.2),
-                        borderRadius: new BorderRadius.only(
-                          topLeft: Radius.circular(0),
-                          topRight: Radius.circular(28),
-                          bottomLeft: Radius.circular(0),
-                          bottomRight: Radius.circular(28),
+                    animation: widget.iconAnimationController,
+                    builder: (BuildContext context, Widget child) {
+                      return Transform(
+                        transform: Matrix4.translationValues(
+                            (MediaQuery.of(context).size.width * 0.75 - 64) *
+                                (1.0 -
+                                    widget.iconAnimationController.value -
+                                    1.0),
+                            0.0,
+                            0.0),
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 8, bottom: 8),
+                          child: Container(
+                            width:
+                                MediaQuery.of(context).size.width * 0.75 - 64,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.2),
+                              borderRadius: new BorderRadius.only(
+                                topLeft: Radius.circular(0),
+                                topRight: Radius.circular(28),
+                                bottomLeft: Radius.circular(0),
+                                bottomRight: Radius.circular(28),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            )
+                      );
+                    },
+                  )
                 : const SizedBox()
           ],
         ),

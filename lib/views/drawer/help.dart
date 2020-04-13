@@ -1,5 +1,5 @@
-import 'package:freetitle/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:freetitle/app_theme.dart';
 
 class HelpScreen extends StatefulWidget {
   @override
@@ -59,7 +59,7 @@ class _HelpScreenState extends State<HelpScreen> {
                       decoration: BoxDecoration(
                         color: Colors.blue,
                         borderRadius:
-                        const BorderRadius.all(Radius.circular(4.0)),
+                            const BorderRadius.all(Radius.circular(4.0)),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
                               color: Colors.grey.withOpacity(0.6),

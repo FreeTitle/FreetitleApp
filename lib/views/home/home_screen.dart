@@ -66,6 +66,7 @@ class _Home extends State<Home> {
                           appBar: AppBar(
                             centerTitle: true,
                             brightness: Brightness.light,
+                            iconTheme: IconThemeData(color:  Colors.black),
                             title: Container(
                               width: 90,
                               child: InkWell(
@@ -95,6 +96,32 @@ class _Home extends State<Home> {
                                 Tab(child: Text('Blogs')),
                                 Tab(child: Text('Featured')),
                                 Tab(child: Text('Mission')),
+                              ],
+                            ),
+                          ),
+                          drawer: Drawer(
+                            child: ListView(
+                              // Important: Remove any padding from the ListView.
+                              padding: EdgeInsets.zero,
+                              children: <Widget>[
+                                DrawerHeader(
+                                  child: Text('Drawer Header'),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primary,
+                                  ),
+                                ),
+                                ListTile(
+                                  title: Text('item1'),
+                                  onTap: () {
+
+                                  },
+                                ),
+                                ListTile(
+                                  title: Text('item2'),
+                                  onTap: () {
+
+                                  },
+                                )
                               ],
                             ),
                           ),
@@ -166,7 +193,7 @@ class _Home extends State<Home> {
                                                 ),
                                                 Padding(
                                                     padding: const EdgeInsets.only(top: 0.0, left: 16, right: 16),
-                                                    child: VerticalMissionListView(missionList: missionList,),
+                                                    child: VerticalMissionListView(missionList: missionList, missionIDs: missionIDs,),
                                                 ),
                                               ],
                                             ),

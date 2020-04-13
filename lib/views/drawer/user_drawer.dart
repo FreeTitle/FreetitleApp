@@ -163,20 +163,20 @@ class _DrawerUserControllerState extends State<DrawerUserController>
                           ignoring: scrolloffset == 1 || false,
                           child: widget.screenView == null
                               ? Container(
-                            color: Colors.white,
-                          )
+                                  color: Colors.white,
+                                )
                               : widget.screenView,
                         ),
                         scrolloffset == 1.0
                             ? InkWell(
-                          onTap: () {
-                            onDrawerClick();
-                          },
-                        )
+                                onTap: () {
+                                  onDrawerClick();
+                                },
+                              )
                             : SizedBox(),
                         Padding(
                           padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top+4,
+                              top: MediaQuery.of(context).padding.top + 4,
                               left: 8),
                           child: SizedBox(
                             width: AppBar().preferredSize.height - 8,
@@ -190,10 +190,10 @@ class _DrawerUserControllerState extends State<DrawerUserController>
                                   child: widget.menuView != null
                                       ? widget.menuView
                                       : AnimatedIcon(
-                                      icon: widget.animatedIconData != null
-                                          ? widget.animatedIconData
-                                          : AnimatedIcons.arrow_menu,
-                                      progress: iconAnimationController),
+                                          icon: widget.animatedIconData != null
+                                              ? widget.animatedIconData
+                                              : AnimatedIcons.arrow_menu,
+                                          progress: iconAnimationController),
                                 ),
                                 onTap: () {
                                   FocusScope.of(context)

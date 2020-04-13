@@ -52,7 +52,7 @@ class _ProfileHorizontalMissionListViewState extends State<ProfileHorizontalMiss
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => MissionDetail(missionData: missionData, missionID: missionID,),
+          builder: (BuildContext context) => MissionDetail(missionID: missionID,),
         )
     );
   }

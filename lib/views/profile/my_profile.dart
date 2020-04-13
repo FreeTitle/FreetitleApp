@@ -38,12 +38,12 @@ class _MyProfile extends State<MyProfile> {
     List<Widget> profileWidget = List();
     profileWidget.add(UserCard(userData: userData, userID: userID,));
     profileWidget.add(TitleView(
-      titleTxt: 'Missions',
+      titleTxt: 'My Missions',
       subTxt: 'More',
     ));
     profileWidget.add(ProfileHorizontalMissionListView(ownerID: userID, missionIDs: userData['missions'],));
     profileWidget.add(TitleView(
-      titleTxt: 'Blogs',
+      titleTxt: 'My Blogs',
       subTxt: 'More',
     ));
     profileWidget.add(ProfileBlogListView(ownerID: userID,));

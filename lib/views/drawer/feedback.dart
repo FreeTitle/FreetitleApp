@@ -1,5 +1,5 @@
-import 'package:freetitle/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:freetitle/app_theme.dart';
 
 class FeedbackScreen extends StatefulWidget {
   @override
@@ -62,7 +62,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         decoration: BoxDecoration(
                           color: Colors.blue,
                           borderRadius:
-                          const BorderRadius.all(Radius.circular(4.0)),
+                              const BorderRadius.all(Radius.circular(4.0)),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
                                 color: Colors.grey.withOpacity(0.6),
@@ -124,7 +124,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             color: AppTheme.white,
             child: SingleChildScrollView(
               padding:
-              const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 0),
+                  const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 0),
               child: TextField(
                 maxLines: null,
                 onChanged: (String txt) {},

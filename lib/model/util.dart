@@ -150,7 +150,7 @@ class PlatformViewVerticalGestureRecognizer
 }
 
 
-void launchChat(context, userID, otherUserID, otherUsername, {sharedBlogID}) async {
+void launchChat(context, userID, otherUserID, otherUsername, {sharedBlogID, sharedMissionID}) async {
   List existingChats = List();
   await Firestore.instance.collection('chat')
       .where('users', arrayContains: userID)
@@ -177,7 +177,7 @@ void launchChat(context, userID, otherUserID, otherUsername, {sharedBlogID}) asy
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => ChatView(chatID: chatID, otherUsername: otherUsername, sharedBlogID: sharedBlogID,),
+          builder: (BuildContext context) => ChatView(chatID: chatID, otherUsername: otherUsername, sharedBlogID: sharedBlogID, sharedMissionID: sharedMissionID,),
         )
     );
   }
