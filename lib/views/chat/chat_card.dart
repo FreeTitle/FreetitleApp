@@ -34,17 +34,19 @@ class _ChatCard extends State<ChatCard>{
 
     await Firestore.instance.collection('chat').document(widget.chatID)
         .collection('messages').orderBy('createdAt', descending: true)
-        .getDocuments().then((snap) => {
+        .getDocuments().then((snap) {
        if(snap.documents.isNotEmpty){
-         latestMessage = snap.documents[0].data['text'],
-         latestTime = snap.documents[0].data['createdAt'],
+         latestMessage = snap.documents[0].data['text'];
+         latestTime = snap.documents[0].data['createdAt'];
          if(snap.documents[0].data['image'] != null)
-           latestMessage = '[图片]',
+           latestMessage = '[图片]';
          if(latestMessage.startsWith('shareblogid='))
-           latestMessage = '[Blog]',
+           latestMessage = '[Blog]';
+         if(latestMessage.startsWith('sharemissionid='))
+           latestMessage = '[Mission]';
          snap.documents.forEach((m) => {
-           messageList.add(m.data),
-         }),
+           messageList.add(m.data)
+         });
        }
     });
 

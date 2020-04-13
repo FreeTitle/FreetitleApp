@@ -11,9 +11,11 @@ class ContactListView extends StatefulWidget{
   const ContactListView(
   {Key key,
     this.sharedBlogID,
+    this.sharedMissionID,
   }) : super(key: key);
 
   final String sharedBlogID;
+  final String sharedMissionID;
 
   _ContactListView createState() => _ContactListView();
 }
@@ -80,7 +82,7 @@ class _ContactListView extends State<ContactListView>{
               child: Text('未找到用户'),
             ),
             onItemFound: (ContactSearchResult result, int index){
-              return ContactCard(otherAvatar: result.avatarUrl, otherUsername: result.name, otherUserID: result.uid, sharedBlogID: widget.sharedBlogID,);
+              return ContactCard(otherAvatar: result.avatarUrl, otherUsername: result.name, otherUserID: result.uid, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID,);
             },
           ),
         ),

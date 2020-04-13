@@ -32,14 +32,14 @@ class _ChatListView extends State<ChatListView>{
     var possibleChats = await Firestore.instance.collection('chat').where(
         'users', arrayContains: userID).getDocuments();
     if (possibleChats.documents.isNotEmpty) {
-      await Firestore.instance.collection('users').document(userID).get().then((snap) => {
+      await Firestore.instance.collection('users').document(userID).get().then((snap) {
         if(snap.data['chats'].isNotEmpty){
           for(var doc in possibleChats.documents){
             if(snap.data['chats'].contains(doc.documentID)){
-              messageIDs.add(doc.documentID),
+              messageIDs.add(doc.documentID);
               for(var id in doc.data['users']){
                 if(id != userID){
-                  otherUserIDs.add(id),
+                  otherUserIDs.add(id);
                 }
               }
             }

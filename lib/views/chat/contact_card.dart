@@ -11,11 +11,13 @@ class ContactCard extends StatefulWidget {
     this.otherUsername,
     this.otherUserID,
     this.sharedBlogID,
+    this.sharedMissionID,
   }) : super(key: key);
   final String otherAvatar;
   final String otherUsername;
   final String otherUserID;
   final String sharedBlogID;
+  final String sharedMissionID;
 
   _ContactCard createState() => _ContactCard();
 }
@@ -43,7 +45,7 @@ class _ContactCard extends State<ContactCard>{
           children: <Widget>[
             InkWell(
               onTap: () async {
-                launchChat(context, userID, widget.otherUserID, widget.otherUsername);
+                launchChat(context, userID, widget.otherUserID, widget.otherUsername, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID);
               },
               child: Padding(
                 padding: EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),

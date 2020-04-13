@@ -6,6 +6,7 @@ import 'package:dash_chat/dash_chat.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/blog/blog_card.dart';
+import 'package:freetitle/views/mission/mission_list_view.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,11 +19,13 @@ class ChatView extends StatefulWidget{
     @required this.chatID,
     @required this.otherUsername,
     this.sharedBlogID,
+    this.sharedMissionID,
   }):super(key:key);
   
   final String chatID;
   final String otherUsername;
   final String sharedBlogID;
+  final String sharedMissionID;
 
   @override
   State<StatefulWidget> createState() {
@@ -64,6 +67,14 @@ class _ChatView extends State<ChatView> {
     user = ChatUser(name: name, avatar: avatar, uid: uid);
     if(widget.sharedBlogID != null){
       ChatMessage message = ChatMessage(text: "shareblogid=${widget.sharedBlogID}", user: user);
+      Firestore.instance.runTransaction((transaction) async {
+        var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
+        await transaction.set(documentRef, message.toJson());
+      });
+    }
+
+    if(widget.sharedMissionID != null){
+      ChatMessage message = ChatMessage(text: "sharemissionid=${widget.sharedMissionID}", user: user);
       Firestore.instance.runTransaction((transaction) async {
         var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
         await transaction.set(documentRef, message.toJson());
@@ -255,7 +266,44 @@ class _Chat extends State<Chat>{
             }
             else{
               return ParsedText(
-                text: '用户分享的博客不存在',
+                text: '用户分享的Blog不存在',
+                style: TextStyle(
+                  color: Colors.black87,
+                ),
+              );
+            }
+          },
+        ),
+      );
+    }
+    else if(message.text.startsWith('sharemissionid=')) {
+      return Container(
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: Firestore.instance.collection('missions').document(message.text.substring(15)).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+
+            if(snapshot.hasData){
+              if(snapshot.data.data != null) {
+                return Container(
+                  height: 300,
+                  width: 318,
+                  child: VerticalMissionCard(
+                    missionData: snapshot.data.data,
+                    missionID: message.text.substring(15),
+                  ),
+                );
+              }
+              else{
+                return ParsedText(
+                  text: '用户分享的Mission不存在_',
+                  style: TextStyle(
+                    color: Colors.black87,
+                  ),
+                );
+              }
+            }else{
+              return ParsedText(
+                text: '用户分享的Mission不存在',
                 style: TextStyle(
                   color: Colors.black87,
                 ),
