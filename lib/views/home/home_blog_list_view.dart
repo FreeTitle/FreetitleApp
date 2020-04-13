@@ -4,18 +4,18 @@ import 'package:freetitle/app_theme.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class BlogListView extends StatefulWidget {
-  const BlogListView(
+class HomeBlogListView extends StatefulWidget {
+  const HomeBlogListView(
   {Key key,
     this.scrollController,
   }) : super(key: key);
 
   final scrollController;
-  _BlogListView createState() => _BlogListView();
+  _HomeBlogListView createState() => _HomeBlogListView();
 
 }
 
-class _BlogListView extends State<BlogListView> with TickerProviderStateMixin {
+class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderStateMixin {
 
   int perPage = 15;
   int pageCount = 1;

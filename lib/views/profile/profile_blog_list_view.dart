@@ -6,18 +6,19 @@ import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/blog/blog_card.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class MyBlogListView extends StatefulWidget {
+class ProfileBlogListView extends StatefulWidget {
 
-  const MyBlogListView({Key key,
-    this.ownerID
-
+  const ProfileBlogListView({Key key,
+    this.ownerID,
+    this.scrollController,
   }) : super(key: key);
 
   final ownerID;
-  _MyBlogListView createState() => _MyBlogListView();
+  final scrollController;
+  _ProfileBlogListView createState() => _ProfileBlogListView();
 }
 
-class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixin{
+class _ProfileBlogListView extends State<ProfileBlogListView> with TickerProviderStateMixin{
   AnimationController animationController;
 
   @override
@@ -105,17 +106,23 @@ class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixi
               return new Text('Error: ${snapshot.error}');
             switch (snapshot.connectionState){
               case ConnectionState.waiting:
-                return new Text('Loading');
+                return new SingleChildScrollView(
+                  controller: widget.scrollController,
+                  child: PlaceHolderCard(text: 'Loading...', height: 200.0,),
+                );
               default:
                 if (snapshot.hasData) {
                   blogList = List();
                   blogIDs = List();
-                  snapshot.data.documents.forEach((blog) => {
-                    blogList.add(blog.data),
-                    blogIDs.add(blog.documentID),
+                  snapshot.data.documents.forEach((blog) {
+                    blogList.add(blog.data);
+                    blogIDs.add(blog.documentID);
                   });
                   if(blogList.isEmpty){
-                    return PlaceHolderCard(text: 'No blogs yet', height: 200.0,);
+                    return SingleChildScrollView(
+                      controller: widget.scrollController,
+                      child: PlaceHolderCard(text: 'No blogs yet', height: 200.0,),
+                    );
                   }
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +131,10 @@ class _MyBlogListView extends State<MyBlogListView> with TickerProviderStateMixi
                   );
                 }
                 else{
-                  return PlaceHolderCard(text: 'No blogs yet', height: 200.0,);
+                  return SingleChildScrollView(
+                    controller: widget.scrollController,
+                    child: PlaceHolderCard(text: 'No blogs yet', height: 200.0,),
+                  );
                 }
             }
           },

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freetitle/views/chat/chat.dart';
 
 class LinkTextSpan extends TextSpan {
 
@@ -46,7 +48,8 @@ class PlaceHolderCard extends StatelessWidget {
           child: Center(
             child: Container(
               child: Text(
-                  text
+                  text,
+                  style: AppTheme.body1,
               ),
             ),
           ),
@@ -144,4 +147,66 @@ class PlatformViewVerticalGestureRecognizer
 
   @override
   void didStopTrackingLastPointer(int pointer) {}
+}
+
+
+void launchChat(context, userID, otherUserID, otherUsername, {sharedBlogID}) async {
+  List existingChats = List();
+  await Firestore.instance.collection('chat')
+      .where('users', arrayContains: userID)
+      .getDocuments().then((snap) {
+    if(snap.documents.isNotEmpty){
+      for(var doc in snap.documents){
+        if(doc.data['users'].contains(otherUserID)){
+          existingChats.add(doc);
+        }
+      }
+    }
+  });
+  if(existingChats.isNotEmpty){
+    assert (existingChats.length == 1);
+
+    var userRef = await Firestore.instance.collection('users').document(userID).get();
+    String chatID = existingChats[0].documentID;
+    if (userRef.data['chats'].contains(chatID) == false) {
+      await Firestore.instance.collection('users').document(userID).updateData({
+        'chats': FieldValue.arrayUnion([chatID])
+      });
+    }
+
+    Navigator.push<dynamic>(
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => ChatView(chatID: chatID, otherUsername: otherUsername, sharedBlogID: sharedBlogID,),
+        )
+    );
+  }
+  else{
+    String chatID;
+    await Firestore.instance.runTransaction((transaction) async {
+      var documentRef = Firestore.instance.collection('chat').document();
+      await transaction.set(documentRef, {
+        'users': [
+          userID,
+          otherUserID,
+        ]
+      });
+      chatID = documentRef.documentID;
+
+      await Firestore.instance.collection('users').document(userID).updateData({
+        'chats': FieldValue.arrayUnion([chatID]),
+      });
+
+      await Firestore.instance.collection('users').document(otherUserID).updateData({
+        'chats': FieldValue.arrayUnion([chatID]),
+      });
+    });
+
+    Navigator.push<dynamic>(
+        context,
+        MaterialPageRoute<dynamic>(
+          builder: (BuildContext context) => ChatView(chatID: chatID, sharedBlogID: sharedBlogID, otherUsername: otherUsername, ),
+        )
+    );
+  }
 }
