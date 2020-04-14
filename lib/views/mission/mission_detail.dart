@@ -42,7 +42,7 @@ class _MissionDetail extends State<MissionDetail>
   bool showFloatingAction = true;
 
   bool liked = false;
-  bool marked = false;
+  bool followed = false;
   String userID;
 
   @override
@@ -190,7 +190,6 @@ class _MissionDetail extends State<MissionDetail>
                   height: Platform.isAndroid ? 120 : 70,
                   padding: EdgeInsets.all(16.0),
                   child: WebView(
-                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
                     javascriptMode: JavascriptMode.unrestricted,
                   ),
                 )
@@ -203,7 +202,7 @@ class _MissionDetail extends State<MissionDetail>
                   height: 280,
                   padding: EdgeInsets.all(16.0),
                   child: WebView(
-                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
+                    initialUrl: Uri.dataFromString("<html><body>$code</body></html>", mimeType: 'text/html').toString(),
                     javascriptMode: JavascriptMode.unrestricted,
                   ),
                 )
@@ -409,9 +408,9 @@ class _MissionDetail extends State<MissionDetail>
                           icon: Icon(CupertinoIcons.share,),
                           iconSize: 50,
                           onPressed: () {
-                            Share.share('请看博客${mission['title']}，点击https://freetitle.us/blogdetail?id=${widget.missionID}', subject: 'Look at this')
-                                .catchError((e) => {
-                              print('sharing error ${e}')
+                            Share.share('请看Mission${mission['title']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
+                                .catchError((e) {
+                              print('sharing error $e');
                             });
                           },
                         ),
@@ -465,8 +464,8 @@ class _MissionDetail extends State<MissionDetail>
           default:
             if(snapshot.data.data != null){
               Map missionData = snapshot.data.data;
-              if(missionData['markedBy'] != null && missionData['markedBy'].contains(userID)){
-                marked = true;
+              if(missionData['followedBy'] != null && missionData['followedBy'].contains(userID)){
+                followed = true;
               }
               if(missionData['upvotedBy'] != null && missionData['upvotedBy'].contains(userID)){
                 liked = true;
@@ -477,7 +476,7 @@ class _MissionDetail extends State<MissionDetail>
                   backgroundColor: Colors.transparent,
                   floatingActionButton: showFloatingAction ? SpeedDial(
                     marginRight: 20,
-                    marginBottom: 20,
+                    marginBottom: 80,
                     animatedIcon: AnimatedIcons.menu_close,
                     animatedIconTheme: IconThemeData(size: 22.0),
                     closeManually: false,
@@ -496,7 +495,7 @@ class _MissionDetail extends State<MissionDetail>
                         backgroundColor: AppTheme.secondary,
                         label: "点赞 ${missionData['likes'].toString()}",
                         labelStyle: AppTheme.body1,
-                        onTap: () {
+                        onTap: () async {
                           if (userID==null){
                             Navigator.push<dynamic>(
                               context,
@@ -506,32 +505,32 @@ class _MissionDetail extends State<MissionDetail>
                             );
                             return;
                           }
-                          setState(() {
-                            liked = !liked;
-                          });
-                          Firestore.instance.collection('missions').document(widget.missionID).updateData({
+
+                          liked = !liked;
+
+                          await Firestore.instance.collection('missions').document(widget.missionID).updateData({
                             "likes": FieldValue.increment((liked ? (1) : (-1))),
-                          }).whenComplete(() => {
-                            print('succeeded'),
-                          }).catchError((e) => {
-                            print('get error ${e}'),
+                          }).whenComplete(() {
+                            print('succeeded');
+                          }).catchError((e) {
+                            print('get error $e');
                           });
                           if(liked){
-                            Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                            await Firestore.instance.collection('missions').document(widget.missionID).updateData({
                               "upvotedBy": FieldValue.arrayUnion([userID]),
-                            }).whenComplete(() => {
-                              print('like  succeeds'),
-                            }).catchError((e) => {
-                              print('like gets error ${e}'),
+                            }).whenComplete(() {
+                              print('like  succeeds');
+                            }).catchError((e) {
+                              print('like gets error $e');
                             });
                           }
                           else{
-                            Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                            await Firestore.instance.collection('missions').document(widget.missionID).updateData({
                               "upvotedBy": FieldValue.arrayRemove([userID]),
-                            }).whenComplete(() => {
-                              print('like  succeeds'),
-                            }).catchError((e) => {
-                              print('like gets error ${e}'),
+                            }).whenComplete(() {
+                              print('like  succeeds');
+                            }).catchError((e) {
+                              print('like gets error $e');
                             });
                           }
                         },
@@ -559,56 +558,56 @@ class _MissionDetail extends State<MissionDetail>
                           );
                         },
                       ),
-                      SpeedDialChild(
-                        child: marked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
-                        backgroundColor: AppTheme.secondary,
-                        label: "收藏 ${missionData['markedBy'] != null ? missionData['markedBy'].length.toString() : '0' }",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          if (userID == null){
-                            Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => LoginScreen(),
-                              ),
-                            );
-                            return;
-                          }
-                          setState(() {
-                            marked = !marked;
-                          });
-                          if(marked){
-                            Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
-                              if(snap.data.isNotEmpty){
-                                await _userRepository.getUser().then((snap) => {
-                                  userID = snap.uid,
-                                });
-                                await Firestore.instance.collection('missions').document(widget.missionID).updateData({
-                                  'markedBy': FieldValue.arrayUnion([userID])
-                                });
-                                await Firestore.instance.collection('users').document(userID).updateData({
-                                  'bookmarks': FieldValue.arrayUnion([widget.missionID])
-                                });
-                              }
-                            });
-                          }
-                          else{
-                            Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
-                              if(snap.data.isNotEmpty){
-                                await _userRepository.getUser().then((snap) => {
-                                  userID = snap.uid,
-                                });
-                                await Firestore.instance.collection('missions').document(widget.missionID).updateData({
-                                  'markedBy': FieldValue.arrayRemove([userID])
-                                });
-                                await Firestore.instance.collection('users').document(userID).updateData({
-                                  'bookmarks': FieldValue.arrayRemove([widget.missionID])
-                                });
-                              }
-                            });
-                          }
-                        },
-                      ),
+//                      SpeedDialChild(
+//                        child: marked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
+//                        backgroundColor: AppTheme.secondary,
+//                        label: "收藏 ${missionData['markedBy'] != null ? missionData['markedBy'].length.toString() : '0' }",
+//                        labelStyle: AppTheme.body1,
+//                        onTap: () {
+//                          if (userID == null){
+//                            Navigator.push<dynamic>(
+//                              context,
+//                              MaterialPageRoute<dynamic>(
+//                                builder: (BuildContext context) => LoginScreen(),
+//                              ),
+//                            );
+//                            return;
+//                          }
+//                          setState(() {
+//                            marked = !marked;
+//                          });
+//                          if(marked){
+//                            Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
+//                              if(snap.data.isNotEmpty){
+//                                await _userRepository.getUser().then((snap) => {
+//                                  userID = snap.uid,
+//                                });
+//                                await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+//                                  'markedBy': FieldValue.arrayUnion([userID])
+//                                });
+//                                await Firestore.instance.collection('users').document(userID).updateData({
+//                                  'bookmarks': FieldValue.arrayUnion([widget.missionID])
+//                                });
+//                              }
+//                            });
+//                          }
+//                          else{
+//                            Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
+//                              if(snap.data.isNotEmpty){
+//                                await _userRepository.getUser().then((snap) => {
+//                                  userID = snap.uid,
+//                                });
+//                                await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+//                                  'markedBy': FieldValue.arrayRemove([userID])
+//                                });
+//                                await Firestore.instance.collection('users').document(userID).updateData({
+//                                  'bookmarks': FieldValue.arrayRemove([widget.missionID])
+//                                });
+//                              }
+//                            });
+//                          }
+//                        },
+//                      ),
                       SpeedDialChild(
                         child: Icon(Icons.share),
                         backgroundColor: AppTheme.secondary,
@@ -726,81 +725,88 @@ class _MissionDetail extends State<MissionDetail>
                                             ),
                                           ),
                                         ),
-//                              Container(
-//                                child: Padding(
-//                                  padding: const EdgeInsets.only(top: 16,
-//                                      left: 16, bottom: 16, right: 16),
-//                                  child: Row(
-//                                    mainAxisAlignment: MainAxisAlignment.center,
-//                                    crossAxisAlignment: CrossAxisAlignment.center,
-//                                    children: <Widget>[
-//                                      Container(
-//                                        width: 48,
-//                                        height: 48,
-//                                        child: Container(
-//                                            decoration: BoxDecoration(
-//                                              color: AppTheme.nearlyWhite,
-//                                              borderRadius: const BorderRadius.all(
-//                                                Radius.circular(16.0),
-//                                              ),
-//                                              border: Border.all(
-//                                                  color: AppTheme.grey
-//                                                      .withOpacity(0.2)),
-//                                            ),
-//                                            child: IconButton(
-//                                              icon: Icon(
-//                                                Icons.share,
-//                                                color: AppTheme.primary,
-//                                                size: 28,
-//                                              ),
-//                                              onPressed: () {
-//                                                Share.share('请看Mission${missionData['name']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
-//                                                    .catchError((e) => {
-//                                                  print('sharing error ${e}')
-//                                                });
-//                                              },
-//                                            )
-//                                        ),
-//                                      ),
-//                                      const SizedBox(
-//                                        width: 16,
-//                                      ),
-//                                      Expanded(
-//                                        child: Container(
-//                                          height: 48,
-//                                          decoration: BoxDecoration(
-//                                            color: AppTheme.primary,
-//                                            borderRadius: const BorderRadius.all(
-//                                              Radius.circular(16.0),
-//                                            ),
-//                                            boxShadow: <BoxShadow>[
-//                                              BoxShadow(
-//                                                  color: AppTheme
-//                                                      .primary
-//                                                      .withOpacity(0.5),
-//                                                  offset: const Offset(1.1, 1.1),
-//                                                  blurRadius: 10.0),
-//                                            ],
-//                                          ),
-//                                          child: Center(
-//                                            child: Text(
-//                                              'Follow',
-//                                              textAlign: TextAlign.left,
-//                                              style: TextStyle(
-//                                                fontWeight: FontWeight.w600,
-//                                                fontSize: 18,
-//                                                letterSpacing: 0.0,
-//                                                color: AppTheme
-//                                                    .nearlyWhite,
-//                                              ),
-//                                            ),
-//                                          ),
-//                                        ),
-//                                      )
-//                                    ],
-//                                  ),
-//                                ),
-//                              ),
+                                        Container(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(top: 16,
+                                                left: 16, bottom: 24, right: 16),
+                                            child: InkWell(
+                                              onTap: () async {
+                                                if (userID == null){
+                                                  Navigator.push<dynamic>(
+                                                    context,
+                                                    MaterialPageRoute<dynamic>(
+                                                      builder: (BuildContext context) => LoginScreen(),
+                                                    ),
+                                                  );
+                                                  return;
+                                                }
+                                                followed = !followed;
+
+                                                if(followed){
+                                                  await Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
+                                                    if(snap.data.isNotEmpty){
+                                                      await _userRepository.getUser().then((snap) {
+                                                        userID = snap.uid;
+                                                      });
+                                                      await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                                                        'followedBy': FieldValue.arrayUnion([userID])
+                                                      });
+                                                      await Firestore.instance.collection('users').document(userID).updateData({
+                                                        'follows': FieldValue.arrayUnion([widget.missionID])
+                                                      });
+                                                    }
+                                                  });
+                                                }
+                                                else{
+                                                  await Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
+                                                    if(snap.data.isNotEmpty){
+                                                      await _userRepository.getUser().then((snap) {
+                                                        userID = snap.uid;
+                                                      });
+                                                      await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                                                        'followedBy': FieldValue.arrayRemove([userID])
+                                                      });
+                                                      await Firestore.instance.collection('users').document(userID).updateData({
+                                                        'follows': FieldValue.arrayRemove([widget.missionID])
+                                                      });
+                                                    }
+                                                  });
+                                                }
+                                              },
+                                              child: Container(
+                                                height: 48,
+                                                width: 250,
+                                                decoration: BoxDecoration(
+                                                  color: AppTheme.primary,
+                                                  borderRadius: const BorderRadius.all(
+                                                    Radius.circular(16.0),
+                                                  ),
+                                                  boxShadow: <BoxShadow>[
+                                                    BoxShadow(
+                                                        color: AppTheme
+                                                            .primary
+                                                            .withOpacity(0.5),
+                                                        offset: const Offset(1.1, 1.1),
+                                                        blurRadius: 10.0),
+                                                  ],
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    followed ? 'Unfollow' : 'Follow',
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 18,
+                                                      letterSpacing: 0.0,
+                                                      color: AppTheme
+                                                          .nearlyWhite,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     )
                                 ),

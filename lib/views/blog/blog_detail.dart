@@ -489,7 +489,7 @@ class _BlogDetail extends State<BlogDetail> {
                           backgroundColor: AppTheme.secondary,
                           label: "点赞 ${blog['likes'].toString()}",
                           labelStyle: AppTheme.body1,
-                          onTap: () {
+                          onTap: () async {
                             if (userID==null){
                               Navigator.push<dynamic>(
                                 context,
@@ -499,32 +499,32 @@ class _BlogDetail extends State<BlogDetail> {
                               );
                               return;
                             }
-                            setState(() {
-                              liked = !liked;
-                            });
-                            Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+
+                            liked = !liked;
+
+                            await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                               "likes": FieldValue.increment((liked ? (1) : (-1))),
-                            }).whenComplete(() => {
-                              print('succeeded'),
-                            }).catchError((e) => {
-                              print('get error ${e}'),
+                            }).whenComplete(() {
+                              print('succeeded');
+                            }).catchError((e) {
+                              print('get error $e');
                             });
                             if(liked){
-                              Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                              await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                 "upvotedBy": FieldValue.arrayUnion([userID]),
-                              }).whenComplete(() => {
-                                print('like  succeeds'),
-                              }).catchError((e) => {
-                                print('like gets error ${e}'),
+                              }).whenComplete(() {
+                                print('like  succeeds');
+                              }).catchError((e) {
+                                print('like gets error $e');
                               });
                             }
                             else{
-                              Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                              await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                 "upvotedBy": FieldValue.arrayRemove([userID]),
-                              }).whenComplete(() => {
-                                print('like  succeeds'),
-                              }).catchError((e) => {
-                                print('like gets error ${e}'),
+                              }).whenComplete(() {
+                                print('like  succeeds');
+                              }).catchError((e) {
+                                print('like gets error $e');
                               });
                             }
                           },
@@ -567,14 +567,12 @@ class _BlogDetail extends State<BlogDetail> {
                               );
                               return;
                             }
-                            setState(() {
-                              marked = !marked;
-                            });
+                            marked = !marked;
                             if(marked){
                               Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
                                 if(snap.data.isNotEmpty){
-                                  await _userRepository.getUser().then((snap) => {
-                                    userID = snap.uid,
+                                  await _userRepository.getUser().then((snap) {
+                                    userID = snap.uid;
                                   });
                                   await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                     'markedBy': FieldValue.arrayUnion([userID])
@@ -588,8 +586,8 @@ class _BlogDetail extends State<BlogDetail> {
                             else{
                               Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) async {
                                 if(snap.data.isNotEmpty){
-                                  await _userRepository.getUser().then((snap) => {
-                                    userID = snap.uid,
+                                  await _userRepository.getUser().then((snap) {
+                                    userID = snap.uid;
                                   });
                                   await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                     'markedBy': FieldValue.arrayRemove([userID])
