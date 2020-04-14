@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:freetitle/views/home/coin.dart';
 import 'package:freetitle/views/home/featured_home.dart';
+import 'package:freetitle/views/home/home_drawer.dart';
 import 'package:freetitle/views/mission/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -100,30 +102,7 @@ class _Home extends State<Home> {
                             ),
                           ),
                           drawer: Drawer(
-                            child: ListView(
-                              // Important: Remove any padding from the ListView.
-                              padding: EdgeInsets.zero,
-                              children: <Widget>[
-                                DrawerHeader(
-                                  child: Text('Drawer Header'),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primary,
-                                  ),
-                                ),
-                                ListTile(
-                                  title: Text('item1'),
-                                  onTap: () {
-
-                                  },
-                                ),
-                                ListTile(
-                                  title: Text('item2'),
-                                  onTap: () {
-
-                                  },
-                                )
-                              ],
-                            ),
+                            child: HomeDrawer(),
                           ),
                           body: TabBarView(
                             children: <Widget>[
