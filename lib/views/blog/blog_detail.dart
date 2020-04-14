@@ -268,18 +268,26 @@ class _BlogDetail extends State<BlogDetail> {
         )
     );
 
-//    if (blog['comments'] != null){
-//      List<String> commentIDs = new List();
-//      for(String commentID in blog['comments']){
-//        commentIDs.add(commentID);
-//      }
-//      if (commentIDs.isNotEmpty){
-//        blogWidget.add(CommentBottom(commentIDs: commentIDs,));
-//      }
-//    }
     List<String> commentIDs = getCommentIDs(blog);
     if (commentIDs.isNotEmpty){
       blogWidget.add(CommentBottom(commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs, pageID: widget.blogID, pageType: 'blog',));
+      if(commentIDs.length > 3){
+        blogWidget.add(
+            Center(
+              child: InkWell(
+                onTap: () {
+                  Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute<dynamic>(
+                          builder: (BuildContext context) => CommentPage(commentIDs: commentIDs, pageID: widget.blogID, pageType: 'blog',)
+                      )
+                  );
+                },
+                child: Text('更多评论...', style: AppTheme.link,),
+              ),
+            )
+        );
+      }
     }else{
       blogWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }

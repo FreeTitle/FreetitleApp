@@ -275,6 +275,23 @@ class _MissionDetail extends State<MissionDetail>
     List<String> commentIDs = getCommentIDs(mission);
     if (commentIDs.isNotEmpty){
       missionWidget.add(CommentBottom(commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs, pageID: widget.missionID, pageType: 'mission',));
+      if(commentIDs.length > 3){
+        missionWidget.add(
+            Center(
+              child: InkWell(
+                onTap: () {
+                  Navigator.push<dynamic>(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => CommentPage(commentIDs: commentIDs, pageID: widget.missionID, pageType: 'mission',)
+                    )
+                  );
+                },
+                child: Text('更多评论...', style: AppTheme.link,),
+              ),
+            )
+        );
+      }
     }else{
       missionWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }

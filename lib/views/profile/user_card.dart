@@ -87,8 +87,9 @@ class UserCard extends StatelessWidget{
                                           width: 20,
                                           height: 25,
                                           child: Icon(
-                                            Icons.attach_money,
+                                            Icons.stars,
                                             size: 17,
+                                            color: Color(0xffd3a641),
                                           ),
                                         ),
                                         Padding(

@@ -39,12 +39,13 @@ class _MyProfile extends State<MyProfile> {
     profileWidget.add(UserCard(userData: userData, userID: userID,));
     profileWidget.add(TitleView(
       titleTxt: 'My Missions',
-      subTxt: 'More',
+      subTxt: '',
     ));
     profileWidget.add(ProfileHorizontalMissionListView(ownerID: userID, missionIDs: userData['missions'],));
+    profileWidget.add(SizedBox(height: 10,));
     profileWidget.add(TitleView(
       titleTxt: 'My Blogs',
-      subTxt: 'More',
+      subTxt: '',
     ));
     profileWidget.add(ProfileBlogListView(ownerID: userID,));
     return SingleChildScrollView(

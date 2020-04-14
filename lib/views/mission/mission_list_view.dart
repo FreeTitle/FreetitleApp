@@ -263,8 +263,8 @@ class HorizontalMissionView extends StatelessWidget {
 class VerticalMissionListView extends StatefulWidget {
   const VerticalMissionListView(
       {Key key,
-        this.missionList,
-        this.missionIDs,
+        @required this.missionList,
+        @required this.missionIDs,
       }) : super(key: key);
 
   // callback passed downwards for handling tapping

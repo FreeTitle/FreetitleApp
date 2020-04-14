@@ -25,6 +25,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   List blogList;
   List blogIDs;
   List missionList;
+  List missionIDs;
   List bookmarkList;
   Map userData;
 
@@ -58,9 +59,11 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
     });
 
     missionList = List();
+    missionIDs = List();
     await Firestore.instance.collection('missions').where('ownerID', isEqualTo: widget.userID).getDocuments().then((snap) {
       snap.documents.forEach((doc) {
         missionList.add(doc.data);
+        missionIDs.add(doc.documentID);
       });
     });
 
@@ -102,6 +105,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                         blogList: blogList,
                         blogIDs: blogIDs,
                         missionList: missionList,
+                        missionIDs: missionIDs,
                         bookmarkIDs: userData['bookmarks'],
                         bookmarkList: bookmarkList,
                       );
@@ -479,13 +483,14 @@ class _UserInfoViewState extends State<UserInfoView> {
 
 class UserContentView extends StatelessWidget {
 
-  const UserContentView({Key key, this.scrollController, this.bookmarkList, this.bookmarkIDs, this.animationController, this.blogIDs, this.blogList, this.missionList}) : super(key : key);
+  const UserContentView({Key key, this.scrollController, this.bookmarkList, this.bookmarkIDs, this.animationController, this.blogIDs, this.blogList, this.missionList, this.missionIDs}) : super(key : key);
 
   final ScrollController scrollController;
   final AnimationController animationController;
   final List blogIDs;
   final List blogList;
   final List missionList;
+  final List missionIDs;
   final List bookmarkList;
   final List bookmarkIDs;
 
@@ -537,14 +542,18 @@ class UserContentView extends StatelessWidget {
                   blogIDs: blogIDs,
                   blogList: blogList,
                 ),
-                SingleChildScrollView(
+                missionIDs.length != 0 ? SingleChildScrollView(
                   controller: scrollController,
                   child: Padding(
                     padding: EdgeInsets.all(16),
                     child: VerticalMissionListView(
                       missionList: missionList,
+                      missionIDs: missionIDs,
                     ),
                   ),
+                ) : SingleChildScrollView(
+                  controller: scrollController,
+                  child: PlaceHolderCard(text: 'No missions yet', height: 200.0,)
                 ),
                 ProfileBlogList(
                   animationController: animationController,
