@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/home/coin.dart';
 import 'package:freetitle/views/profile/profile.dart';
+import 'package:freetitle/views/reset_profile/reset_profile.dart';
 
 class UserCard extends StatelessWidget{
   const UserCard(
@@ -40,79 +42,159 @@ class UserCard extends StatelessWidget{
             Padding(
               padding: EdgeInsets.only(top: 16, left: 16, right: 16),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(
                           left: 8, right: 8, top: 4),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8, right: 0, bottom: 8),
+                            child: Text(
+                              userData['displayName'].length > 15 ? userData['displayName'].substring(0,15)+'...' : userData['displayName'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.grey,
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push<dynamic>(
+                                context,
+                                MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) => CoinPage(),
+                                )
+                              );
+                            },
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  height: 48,
+                                  width: 2,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primary
+                                        .withOpacity(0.5),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(4.0)),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                                        child: Text(
+                                          'Coins',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: AppTheme.fontName,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            letterSpacing: -0.1,
+                                            color: AppTheme.grey.withOpacity(0.5),
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: <Widget>[
+                                          SizedBox(
+                                            width: 20,
+                                            height: 25,
+                                            child: Icon(
+                                              Icons.stars,
+                                              size: 17,
+                                              color: Color(0xffd3a641),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                            const EdgeInsets.only(
+                                                left: 0, bottom: 3),
+                                            child: Text(
+                                              userData['coins'] != null ? userData['coins'].toString() : '0',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontFamily: AppTheme.fontName,
+                                                fontWeight:
+                                                FontWeight.w600,
+                                                fontSize: 16,
+                                                color: AppTheme.darkerText,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Row(
                             children: <Widget>[
                               Container(
                                 height: 48,
                                 width: 2,
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primary
-                                      .withOpacity(0.5),
+                                  color: AppTheme.secondary,
                                   borderRadius: BorderRadius.all(
                                       Radius.circular(4.0)),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 4, bottom: 4),
-                                      child: Text(
-                                        'Coins',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontFamily: AppTheme.fontName,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16,
-                                          letterSpacing: -0.1,
-                                          color: AppTheme.grey.withOpacity(0.5),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                                        child: Text(
+                                          'Campus',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: AppTheme.fontName,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            letterSpacing: -0.1,
+                                            color: AppTheme.grey.withOpacity(0.5),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 20,
-                                          height: 25,
-                                          child: Icon(
-                                            Icons.stars,
-                                            size: 17,
-                                            color: Color(0xffd3a641),
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.only(
+                                            left: 3, bottom: 3),
+                                        child: Text(
+                                          userData['campus'] != null ? userData['campus'].toString() : '',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            fontFamily: AppTheme.fontName,
+                                            fontWeight:
+                                            FontWeight.w600,
+                                            fontSize: 16,
+                                            color: AppTheme.darkerText,
                                           ),
                                         ),
-                                        Padding(
-                                          padding:
-                                          const EdgeInsets.only(
-                                              left: 0, bottom: 3),
-                                          child: Text(
-                                            userData['coins'] != null ? userData['coins'].toString() : '0',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontFamily: AppTheme.fontName,
-                                              fontWeight:
-                                              FontWeight.w600,
-                                              fontSize: 16,
-                                              color: AppTheme.darkerText,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                           SizedBox(
@@ -124,11 +206,52 @@ class UserCard extends StatelessWidget{
                                 height: 48,
                                 width: 2,
                                 decoration: BoxDecoration(
-                                  color: Colors.transparent,
+                                  color: AppTheme.nearlyBlue,
                                   borderRadius: BorderRadius.all(
                                       Radius.circular(4.0)),
                                 ),
                               ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 4, bottom: 4),
+                                        child: Text(
+                                          'Info',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: AppTheme.fontName,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            letterSpacing: -0.1,
+                                            color: AppTheme.grey.withOpacity(0.5),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.only(
+                                            left: 3, bottom: 3),
+                                        child: Text(
+                                          userData['statement'] != null ? userData['statement'].toString() : 'Nothing',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            fontFamily: AppTheme.fontName,
+                                            fontWeight:
+                                            FontWeight.w600,
+                                            fontSize: 16,
+                                            color: AppTheme.darkerText,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
                             ],
                           )
                         ],
@@ -136,10 +259,9 @@ class UserCard extends StatelessWidget{
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Padding(
@@ -167,28 +289,46 @@ class UserCard extends StatelessWidget{
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8, right: 8, bottom: 8),
-                            child: Text(
-                              userData['displayName'].length > 15 ? userData['displayName'].substring(0,15)+'...' : userData['displayName'],
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.grey,
-                                fontSize: 18,
+                          SizedBox(
+                            height: 20,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push<dynamic>(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return ResetProfileScreen(
+                                    username: userData['displayName'],
+                                    statement: userData['statement'] != null ? userData['statement'].toString() : '',
+                                    campus: userData['campus'] != null ? userData['campus'] : '',
+                                  );
+                                }),
+                              );
+                            },
+                            child: Container(
+                              width: 60,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                color: AppTheme.primary,
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
+                          )
                         ],
                       )
-                    ),
                   ),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(
-                  left: 24, right: 24, top: 8, bottom: 8),
+                  left: 24, right: 24, top: 16, bottom: 16),
               child: Container(
                 height: 2,
                 decoration: BoxDecoration(

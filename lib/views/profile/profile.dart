@@ -117,7 +117,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
           );
         }else{
           return Scaffold(
-            body:  PlaceHolderCard(text: '加载中',),
+            body:  Center(
+              child: Text('加载中'),
+            ),
           );
         }
       },
@@ -174,6 +176,7 @@ class _UserInfoViewState extends State<UserInfoView> {
         future: getBackgroundColor(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
           if(snapshot.connectionState == ConnectionState.done){
+            print(backgroundColor.computeLuminance());
             Color color = backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
             // Change status bar brightness according to image
             SystemChrome.setSystemUIOverlayStyle(
@@ -254,29 +257,34 @@ class _UserInfoViewState extends State<UserInfoView> {
                                     ),
                                     SizedBox(width: 30,),
                                     Column(
-//                                mainAxisAlignment: MainAxisAlignment.start,
+//                                      mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
                                         // following
-                                        Row(
-                                          children: <Widget>[
-                                            Text(
-                                              userData['displayName'],
-                                              style: TextStyle(
-                                                fontFamily: 'WorkSans',
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 24,
-                                                letterSpacing: 0.27,
-                                                color: color,
+                                        Container(
+                                          width: MediaQuery.of(context).size.width/2,
+                                          child: Row(
+                                            children: <Widget>[
+                                              Expanded(
+                                                child: Text(
+                                                  userData['displayName'],
+                                                  style: TextStyle(
+                                                    fontFamily: 'WorkSans',
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                    letterSpacing: 0.27,
+                                                    color: color,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(
-                                              width: 10.0,
-                                            ),
-                                            Container(
-                                              child: Icon(Icons.mood),
-                                            )
-                                          ],
+                                              SizedBox(
+                                                width: 10.0,
+                                              ),
+                                              Container(
+                                                child: Icon(Icons.mood),
+                                              )
+                                            ],
+                                          ),
                                         ),
                                         SizedBox(
                                           height: 10.0,
@@ -297,18 +305,23 @@ class _UserInfoViewState extends State<UserInfoView> {
                                         SizedBox(
                                           height: 10.0,
                                         ),
-                                        Row(
-                                          children: <Widget>[
-                                            Text(
-                                              userData['campus'] != null ? userData['campus'] : '',
-                                              style: TextStyle(
-                                                color: color,
+                                        Container(
+                                          width: 150,
+                                          child: Row(
+                                            children: <Widget>[
+                                              Expanded(
+                                                child: Text(
+                                                  userData['campus'] != null ? userData['campus'] : '',
+                                                  style: TextStyle(
+                                                    color: color,
 //                                              fontFamily: 'Quicksand',
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18.0,
-                                              ),
-                                            ),
-                                          ],
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15.0,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         )
                                       ],
                                     ),
@@ -330,7 +343,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                                         userData['statement'] != null && userData['statement'] != "" ? userData['statement'].toString() : 'This user has no art statement yet',
                                         style: TextStyle(
                                           color: color,
-                                          fontSize: 18.0,
+                                          fontSize: 15.0,
                                         ),
                                       ),
                                     ),
@@ -446,7 +459,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                 !widget.isMyProfile ?
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 115,
-                  right: MediaQuery.of(context).padding.right + 50,
+                  right: MediaQuery.of(context).padding.right + 30,
                   child: InkWell(
                     onTap: () async {
                       UserRepository _userRepository = UserRepository();

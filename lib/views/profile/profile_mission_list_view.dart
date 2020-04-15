@@ -22,6 +22,7 @@ class _ProfileHorizontalMissionListViewState extends State<ProfileHorizontalMiss
   AnimationController animationController;
   ScrollController _scrollController;
   List missionList;
+  List missionIDs;
   @override
   void initState() {
     animationController = AnimationController(
@@ -33,11 +34,15 @@ class _ProfileHorizontalMissionListViewState extends State<ProfileHorizontalMiss
 
   Future<bool> getData() async {
 //    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
-    missionList.clear();
-    final snaphots = await Firestore.instance.collection('missions').where('ownerID', isEqualTo: widget.ownerID).getDocuments();
-    for(var snap in snaphots.documents){
-      missionList.add(snap.data);
-    }
+    missionList = List();
+    missionIDs = List();
+    await Firestore.instance.collection('missions').where('ownerID', isEqualTo: widget.ownerID).getDocuments().then((snap) {
+      snap.documents.forEach((doc) {
+        missionIDs.add(doc.documentID);
+        missionList.add(doc.data);
+      });
+    });
+
     return true;
   }
 
@@ -47,30 +52,6 @@ class _ProfileHorizontalMissionListViewState extends State<ProfileHorizontalMiss
     _scrollController.dispose();
     super.dispose();
   }
-
-  void getMission(missionData, missionID){
-    Navigator.push<dynamic>(
-        context,
-        MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => MissionDetail(missionID: missionID,),
-        )
-    );
-  }
-
-//  Widget noMissionWidget() {
-//    return Padding(
-//      padding: EdgeInsets.only(left: 24, right: 24),
-//      child: Card(
-//        child: Center(
-//          child: Container(
-//            child: Text(
-//                'No missions yet'
-//            ),
-//          ),
-//        ),
-//      ),
-//    );
-//  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,12 +88,10 @@ class _ProfileHorizontalMissionListViewState extends State<ProfileHorizontalMiss
                     animationController.forward();
 
                     return HorizontalMissionView(
-                      mission: missionList[index],
+                      missionData: missionList[index],
+                      missionID: missionIDs[index],
                       animation: animation,
                       animationController: animationController,
-                      callback: () {
-                        getMission(missionList[index], missionIDs[index]);
-                      },
                     );
                   },
                 );

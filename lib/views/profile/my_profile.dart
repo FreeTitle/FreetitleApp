@@ -62,7 +62,7 @@ class _MyProfile extends State<MyProfile> {
     );
   }
 
-  Widget BuildAppBarIconButton(){
+  Widget buildAppBarIconButton(){
     if(widget.isMyProfile){
       return Padding(
         padding: EdgeInsets.only(right: 16),
@@ -121,7 +121,7 @@ class _MyProfile extends State<MyProfile> {
             },
           ),
           actions: <Widget>[
-            BuildAppBarIconButton(),
+            buildAppBarIconButton(),
           ],
         ),
         body: StreamBuilder<DocumentSnapshot>(
@@ -145,7 +145,6 @@ class _MyProfile extends State<MyProfile> {
             }
           },
         ),
-//      body: buildProfileList(),
     );
   }
 }
@@ -167,8 +166,8 @@ class _GetMyProfile extends State<GetMyProfile>{
   }
 
   Future<bool> getData() async {
-    await _userRepository.getUser().then((snap) => {
-      userID = snap.uid,
+    await _userRepository.getUser().then((snap) {
+      userID = snap.uid;
     });
 
     return true;
