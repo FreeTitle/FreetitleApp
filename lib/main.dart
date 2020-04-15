@@ -9,6 +9,8 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/simple_bloc_delegate.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 void main(){
@@ -30,10 +32,28 @@ class _MyAppState extends State<MyApp> {
 
   AuthenticationBloc _authenticationBloc;
 
+  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+
   @override
   void initState() {
     super.initState();
     _authenticationBloc = AuthenticationBloc(userRepository: _userRepository);
+
+    firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        print('onMessage called: $message');
+      },
+      onResume: (Map<String, dynamic> message) {
+        print('onResume called: $message');
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        print('onLaunch called: $message');
+      },
+    );
+
+    firebaseMessaging.getToken().then((token){
+      print('FCM Token: $token');
+    });
   }
 
   @override
