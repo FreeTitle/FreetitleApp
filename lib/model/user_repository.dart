@@ -151,6 +151,7 @@ class UserRepository {
                       context,
                       MaterialPageRoute<dynamic>(
                         builder: (BuildContext context) => Profile(userID: uid, isMyProfile: false),
+//                        builder: (BuildContext context) => MyProfile(userID: uid, isMyProfile: false, userName: userName,),
                       ),
                     );
                   },

@@ -7,11 +7,11 @@ import 'package:freetitle/views/mission/mission_detail.dart';
 class HorizontalMissionListView extends StatefulWidget {
   const HorizontalMissionListView(
       {Key key, 
-        this.missionList,
-        this.missionID,
+        @required this.missionList,
+        @required this.missionIDs,
       }) : super(key: key);
   final List missionList;
-  final String missionID;
+  final List missionIDs;
   @override
   _HorizontalMissionListViewState createState() => _HorizontalMissionListViewState();
 }
@@ -40,19 +40,10 @@ with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void getMission(missionData, missionID){
-    Navigator.push<dynamic>(
-        context,
-        MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => MissionDetail(missionID: missionID,),
-        )
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     List missionList = widget.missionList;
-    String missionID = widget.missionID;
+    List missionIDs = widget.missionIDs;
     return Padding(
       padding: const EdgeInsets.only(top: 0, bottom: 0),
       child: Container(
@@ -84,12 +75,10 @@ with TickerProviderStateMixin {
                   animationController.forward();
 
                   return HorizontalMissionView(
-                      mission: missionList[index],
+                      missionData: missionList[index],
+                      missionID: missionIDs[index],
                       animation: animation,
                       animationController: animationController,
-                      callback: () {
-                        getMission(missionList[index], missionID);
-                    },
                   );
                 },
               );
@@ -104,22 +93,23 @@ with TickerProviderStateMixin {
 class HorizontalMissionView extends StatelessWidget {
   const HorizontalMissionView(
       {Key key,
-        this.mission,
+        @required this.missionData,
+        @required this.missionID,
         this.animationController,
-        this.animation,
-        this.callback})
+        this.animation
+      })
       : super(key: key);
-
-  final VoidCallback callback;
-  final Map mission;
+  
+  final Map missionData;
+  final String missionID;
   final AnimationController animationController;
   final Animation<dynamic> animation;
 
   Image getImage(){
     Image img;
     img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
-    if(mission['article'] != null){
-      for(var block in mission['article']['blocks']){
+    if(missionData['article'] != null){
+      for(var block in missionData['article']['blocks']){
         if(block['type'] == "image"){
           if(block['data']['file']['url'] != null){
             img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
@@ -144,7 +134,12 @@ class HorizontalMissionView extends StatelessWidget {
             child: InkWell(
               splashColor: Colors.transparent,
               onTap: () {
-                callback();
+                Navigator.push<dynamic>(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => MissionDetail(missionID: missionID,),
+                    )
+                );
               },
               child: SizedBox(
                 width: 240,
@@ -181,7 +176,7 @@ class HorizontalMissionView extends StatelessWidget {
                                         children: <Widget>[
                                           Text(
                                             //TODO this truncate is ugly... needs to be fixed taking into account different languages
-                                            mission['name'].length > 12 ? mission['name'].substring(0,12)+'...' : mission['name'],
+                                            missionData['name'].length > 12 ? missionData['name'].substring(0,12)+'...' : missionData['name'],
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,

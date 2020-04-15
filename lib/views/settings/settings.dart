@@ -4,7 +4,6 @@ import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/views/reset_email/reset_email.dart';
 import 'package:freetitle/views/reset_password/reset_password.dart';
-import 'package:freetitle/views/reset_username/reset_username.dart';
 
 class SettingTab extends StatelessWidget{
   const SettingTab(
@@ -66,29 +65,11 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
-  void getResetPassword() {
+  void getAccountSetting() {
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute(builder: (context) {
-        return ResetPasswordScreen();
-      }),
-    );
-  }
-
-  void getResetEmail() {
-    Navigator.push<dynamic>(
-      context,
-      MaterialPageRoute(builder: (context) {
-        return ResetEmailScreen();
-      }),
-    );
-  }
-
-  void getResetUsername() {
-    Navigator.push<dynamic>(
-      context,
-      MaterialPageRoute(builder: (context) {
-        return ResetUsernameScreen();
+        return AccountSettingPage();
       }),
     );
   }
@@ -97,9 +78,9 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> settingsList = List();
-    settingsList.add(SettingTab(text: "修改密码", callback: getResetPassword,));
-    settingsList.add(SettingTab(text: '修改邮箱', callback: getResetEmail));
-    settingsList.add(SettingTab(text: '修改用户名', callback: getResetUsername));
+    settingsList.add(SettingTab(text: "修改账号", callback: getAccountSetting,));
+    settingsList.add(SettingTab(text: '推送设置', callback: () {}));
+    settingsList.add(SettingTab(text: 'About Us', callback: () {}));
     settingsList.add(SizedBox(height: 30,));
     settingsList.add(Padding(
       padding: EdgeInsets.all(8),
@@ -130,7 +111,7 @@ class _SettingsPageState extends State<SettingsPage> {
               },
               child: Center(
                 child: Text(
-                  'Sign out',
+                  '登出',
                   style: TextStyle(
                       color: Colors.red
                   ),
@@ -153,6 +134,68 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         backgroundColor: AppTheme.white,
         title: Text('设置', style: TextStyle(color: Colors.black),),
+      ),
+      body: Container(
+        child: ListView.builder(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top,
+              bottom: 62 + MediaQuery.of(context).padding.bottom,
+            ),
+            itemCount: settingsList.length,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (BuildContext context, int index){
+              return settingsList[index];
+            }
+        ),
+      ),
+    );
+  }
+}
+
+class AccountSettingPage extends StatefulWidget {
+
+  _AccountSettingPageState createState() => _AccountSettingPageState();
+}
+
+class _AccountSettingPageState extends State<AccountSettingPage>{
+
+  void getResetPassword() {
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return ResetPasswordScreen();
+      }),
+    );
+  }
+
+  void getResetEmail() {
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return ResetEmailScreen();
+      }),
+    );
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> settingsList = List();
+    settingsList.add(SettingTab(text: "修改密码", callback: getResetPassword,));
+    settingsList.add(SettingTab(text: '修改邮箱', callback: getResetEmail));
+    
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        backgroundColor: AppTheme.white,
+        title: Text('账号设置', style: TextStyle(color: Colors.black),),
       ),
       body: Container(
         child: ListView.builder(

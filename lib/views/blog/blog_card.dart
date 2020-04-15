@@ -177,6 +177,15 @@ class _BlogCard extends State<BlogCard>{
                                                           color: Colors.grey
                                                       ));
                                                 }
+                                                else{
+                                                  return new Text(
+                                                      'FreeTitle Author',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors.grey
+                                                      )
+                                                  );
+                                                }
                                             }
                                           },
                                         ),

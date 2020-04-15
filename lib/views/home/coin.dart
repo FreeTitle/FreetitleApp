@@ -98,7 +98,7 @@ class _CoinPageState extends State<CoinPage> {
                       ),
                     );
                   }
-                  else if(DateTime.now().difference(lastClaimTime.toDate()).inDays > 1){
+                  else if(lastClaimTime.toDate().day < DateTime.now().day){
                     return Center(
                       child: InkWell(
                         onTap: () async {

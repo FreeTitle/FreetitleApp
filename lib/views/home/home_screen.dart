@@ -154,6 +154,7 @@ class _Home extends State<Home> {
                                                     ),
                                                     HorizontalMissionListView(
                                                       missionList: missionList,
+                                                      missionIDs: missionIDs,
                                                     ),
                                                   ],
                                                 ),

@@ -35,21 +35,20 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
   }
 
   Future<List<SearchResult>> search(String search) async {
-    await Future.delayed(Duration(seconds: 1));
     AlgoliaQuery query = algolia.instance.index('blogs').search(search);
     AlgoliaQuerySnapshot snap = await query.getObjects();
     List blogIDs = List();
-    snap.hits.forEach((h) => {
-      blogIDs.add(h.objectID),
+    snap.hits.forEach((h) {
+      blogIDs.add(h.objectID);
     });
-    String match_uid;
+    String matchUid;
     query = algolia.instance.instance.index('users').search(search);
     snap = await query.getObjects();
     List userIDs = List();
-    snap.hits.forEach((h) => {
-      userIDs.add(h.objectID),
+    snap.hits.forEach((h) {
+      userIDs.add(h.objectID);
       if(h.data['_fieldsProto']['displayName']['stringValue'].toLowerCase().contains(search.toLowerCase())){
-        match_uid = h.objectID
+        matchUid = h.objectID;
       }
     });
 
@@ -60,11 +59,11 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
       users.add(_userRepository.getUserWidget(uid, color: AppTheme.nearlyWhite));
     }
 
-    if(match_uid != null){
-      await Firestore.instance.collection('users').document(match_uid).get().then((snap) => {
+    if(matchUid != null){
+      await Firestore.instance.collection('users').document(matchUid).get().then((snap) {
         if(snap.data.containsKey('blogs')){
           for(var blogID in snap.data['blogs']){
-            blogIDs.add(blogID)
+            blogIDs.add(blogID);
           }
         }
       });
@@ -73,8 +72,8 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
     List blogList = List();
 
     for (var id in blogIDs){
-      await Firestore.instance.collection('blogs').document(id).get().then((snap) => {
-        blogList.add(snap.data)
+      await Firestore.instance.collection('blogs').document(id).get().then((snap) {
+        blogList.add(snap.data);
       });
     }
 
