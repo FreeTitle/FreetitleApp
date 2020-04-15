@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/views/reset_username/reset_username.dart';
+import 'package:freetitle/views/reset_profile/reset_profile.dart';
 import 'package:provider/provider.dart';
 
-class ResetUsernameScreen extends StatefulWidget {
+class ResetProfileScreen extends StatefulWidget {
+  ResetProfileScreen({Key key, this.username, this.statement, this.label, this.campus}) : super(key : key);
 
-  State<ResetUsernameScreen> createState() => _ResetUsernameScreenState();
+  final String username;
+  final String statement;
+  final String label;
+  final String campus;
+
+  State<ResetProfileScreen> createState() => _ResetProfileScreenState();
 }
 
-class _ResetUsernameScreenState extends State<ResetUsernameScreen> {
+class _ResetProfileScreenState extends State<ResetProfileScreen> {
   ModifyAccountBloc _modifyAccountBloc;
 
   @override
@@ -28,12 +34,12 @@ class _ResetUsernameScreenState extends State<ResetUsernameScreen> {
               Navigator.of(context).pop();
             },
           ),
-          title: Text('修改用户名', style: TextStyle(color: Colors.black),)
+          title: Text('修改账户', style: TextStyle(color: Colors.black),)
       ),
       body: Center(
         child: BlocProvider<ModifyAccountBloc>(
           bloc: _modifyAccountBloc,
-          child: ResetUsernameForm(),
+          child: ResetProfileForm(username: widget.username, statement: widget.statement, campus: widget.campus,),
         ),
       ),
     );

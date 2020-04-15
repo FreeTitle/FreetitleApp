@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ResetUsernameButton extends StatelessWidget {
+class ResetProfileButton extends StatelessWidget {
   final VoidCallback _onPressed;
 
-  ResetUsernameButton({Key key, VoidCallback onPressed})
+  ResetProfileButton({Key key, VoidCallback onPressed})
       : _onPressed = onPressed,
         super(key : key);
 

@@ -1,16 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
-import 'package:freetitle/views/reset_username/reset_username.dart';
+import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/views/reset_profile/reset_profile.dart';
 import 'package:flushbar/flushbar.dart';
 
-class ResetUsernameForm extends StatefulWidget {
-  State<ResetUsernameForm> createState() => _ResetPUsernameForm();
+class ResetProfileForm extends StatefulWidget {
+
+  ResetProfileForm({Key key, this.username, this.statement, this.campus}) : super(key : key);
+
+  final String username;
+  final String statement;
+  final String campus;
+
+  State<ResetProfileForm> createState() => _ResetPUsernameForm();
 }
 
-class _ResetPUsernameForm extends State<ResetUsernameForm> {
+class _ResetPUsernameForm extends State<ResetProfileForm> {
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _statementController = TextEditingController();
+  final TextEditingController _campusController = TextEditingController();
+  UserRepository _userRepository;
   ModifyAccountBloc _modifyAccountBloc;
 
   bool get isPopulated => _usernameController.text.isNotEmpty;
@@ -24,6 +36,10 @@ class _ResetPUsernameForm extends State<ResetUsernameForm> {
     super.initState();
     _modifyAccountBloc = BlocProvider.of<ModifyAccountBloc>(context);
     _usernameController.addListener(_onUsernameChanged);
+    _usernameController.text = widget.username;
+    _statementController.text = widget.statement;
+    _campusController.text = widget.campus;
+    _userRepository = UserRepository();
   }
 
   void returnDialog(String title, String message, int time) {
@@ -88,7 +104,35 @@ class _ResetPUsernameForm extends State<ResetUsernameForm> {
                       },
                     ),
                     SizedBox(height: 24.0),
-                    ResetUsernameButton(
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      controller: _statementController,
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.edit),
+                        contentPadding:
+                        EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                        labelText: 'Statement',
+                      ),
+                      autocorrect: false,
+                      autofocus: false,
+                      autovalidate: true,
+                    ),
+                    SizedBox(height: 24.0,),
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      controller: _campusController,
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.school),
+                        contentPadding:
+                        EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                        labelText: 'Campus',
+                      ),
+                      autocorrect: false,
+                      autofocus: false,
+                      autovalidate: true,
+                    ),
+                    SizedBox(height: 24.0,),
+                    ResetProfileButton(
                       onPressed: isResetUsernameButtonEnabled(state) ? _onFormSubmitted : null,
                     )
                   ],
@@ -113,7 +157,20 @@ class _ResetPUsernameForm extends State<ResetUsernameForm> {
     );
   }
 
-  void _onFormSubmitted() {
+  void _onFormSubmitted() async {
+    String userID;
+    await _userRepository.getUser().then((snap) {
+      userID = snap.uid;
+    });
+
+    await Firestore.instance.collection('users').document(userID).updateData({
+      'statement': _statementController.text,
+    });
+
+    await Firestore.instance.collection('users').document(userID).updateData({
+      'campus': _campusController.text,
+    });
+
     _modifyAccountBloc.dispatch(
       Submitted(
           username: _usernameController.text,
