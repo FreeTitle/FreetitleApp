@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dash_chat/dash_chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
@@ -16,12 +17,15 @@ class _ChatListView extends State<ChatListView>{
   List messageIDs = List();
   List otherUserIDs = List();
 
+  String officialUid = '87o7ry8nHAZa0g1m9h1Nbsb0NUN2';
+  String officialChatID;
+
   @override
   void initState(){
     _userRepository = UserRepository();
-    _userRepository.getUser().then((snap) => {
+    _userRepository.getUser().then((snap) {
       if(snap != null)
-        userID = snap.uid,
+        userID = snap.uid;
     });
     super.initState();
   }
@@ -29,8 +33,14 @@ class _ChatListView extends State<ChatListView>{
   Future<bool> getChatList() async {
     messageIDs.clear();
     otherUserIDs.clear();
-    var possibleChats = await Firestore.instance.collection('chat').where(
-        'users', arrayContains: userID).getDocuments();
+
+    var possibleChats = await Firestore.instance.collection('chat')
+        .orderBy('lastMessageTime', descending: true)
+//        .where('users', arrayContains: userID)
+        .getDocuments()
+        .catchError((e) {
+          print(e);
+        });
     if (possibleChats.documents.isNotEmpty) {
       await Firestore.instance.collection('users').document(userID).get().then((snap) {
         if(snap.data['chats'].isNotEmpty){
@@ -46,6 +56,46 @@ class _ChatListView extends State<ChatListView>{
           }
         }
       });
+      // Official Account uid
+      if(!otherUserIDs.contains(officialUid)){
+        await Firestore.instance.runTransaction((transaction) async {
+          var documentRef = Firestore.instance.collection('chat').document();
+          transaction.set(documentRef, {
+            'users': [
+              userID,
+              officialUid,
+            ],
+            'lastMessageTime': DateTime.now()
+          });
+          var chatID = documentRef.documentID;
+          officialChatID = chatID;
+
+          await Firestore.instance.collection('users').document(userID).updateData({
+            'chats': FieldValue.arrayUnion([chatID]),
+          });
+
+          await Firestore.instance.collection('users').document(officialUid).updateData({
+            'chats': FieldValue.arrayUnion([chatID]),
+          });
+
+          Map officialAccountData;
+          await Firestore.instance.collection('users').document(officialUid).get().then((snap) {
+            officialAccountData = snap.data;
+          });
+
+          ChatMessage message = ChatMessage(
+            text: '欢迎来到浮樂艺术FreeTitle',
+            user: ChatUser(uid: officialUid, name: officialAccountData['displayName'], avatar: officialAccountData['avatarUrl']),
+          );
+
+          await Firestore.instance.collection('chat').document(chatID).collection('messages').document().setData(message.toJson());
+        });
+      }
+      else {
+        int index = otherUserIDs.indexOf(officialUid);
+        officialChatID = messageIDs[index];
+      }
+
     }
     return true;
   }
@@ -76,6 +126,9 @@ class _ChatListView extends State<ChatListView>{
                 itemCount: messageIDs.length,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context, int index){
+                  if(index == 0){
+                    return ChatCard(chatID: officialChatID, otherUserID: officialUid,);
+                  }
                   var chat = ChatCard(chatID: messageIDs[index], otherUserID: otherUserIDs[index]);
                   return Dismissible(
                     key: ObjectKey(chat),
