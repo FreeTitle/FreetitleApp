@@ -189,7 +189,8 @@ void launchChat(context, userID, otherUserID, otherUsername, {sharedBlogID, shar
         'users': [
           userID,
           otherUserID,
-        ]
+        ],
+        'lastMessageTime': DateTime.now(),
       });
       chatID = documentRef.documentID;
 

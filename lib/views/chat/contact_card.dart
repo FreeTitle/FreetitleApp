@@ -29,8 +29,8 @@ class _ContactCard extends State<ContactCard>{
   @override
   void initState(){
     _userRepository = UserRepository();
-    _userRepository.getUser().then((snap) => {
-      userID = snap.uid,
+    _userRepository.getUser().then((snap) {
+      userID = snap.uid;
     });
     super.initState();
   }

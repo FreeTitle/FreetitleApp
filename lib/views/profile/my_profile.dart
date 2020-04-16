@@ -131,7 +131,9 @@ class _MyProfile extends State<MyProfile> {
               return new Text('Error: ${snapshot.error}');
             switch(snapshot.connectionState){
               case ConnectionState.waiting:
-                return new Text('Loading');
+                return Center(
+                  child: Text('Loading...'),
+                );
               default:
                 if(snapshot.data.data != null){
                   final userData = snapshot.data.data;

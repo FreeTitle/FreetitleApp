@@ -24,11 +24,10 @@ class _ChatCard extends State<ChatCard>{
   List messageList = List();
 
   Future<bool>getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
-    await Firestore.instance.collection('users').document(widget.otherUserID).get().then((snap) => {
+    await Firestore.instance.collection('users').document(widget.otherUserID).get().then((snap) {
       if(snap != null){
-        avatar = snap.data['avatarUrl'],
-        username = snap.data['displayName'],
+        avatar = snap.data['avatarUrl'];
+        username = snap.data['displayName'];
       }
     });
 
@@ -61,7 +60,7 @@ class _ChatCard extends State<ChatCard>{
         String minute = time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString();
         return Text(time.hour.toString()+':'+ minute, style: AppTheme.body1);
       }
-      else if (timeDiff.inDays > 1 && timeDiff.inDays < 2){
+      else if (DateTime.now().day - time.day == 1){
         return Text('昨天', style: AppTheme.body1,);
       }
       else{
