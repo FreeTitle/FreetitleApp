@@ -57,12 +57,12 @@ class _ChatView extends State<ChatView> {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));
 
     UserRepository _userRepository = UserRepository();
-    await _userRepository.getUser().then((snap) => {
-      uid = snap.uid,
+    await _userRepository.getUser().then((snap) {
+      uid = snap.uid;
     });
-    await Firestore.instance.collection('users').document(uid).get().then((snap) => {
-      name = snap.data['displayName'],
-      avatar = snap.data['avatarUrl'],
+    await Firestore.instance.collection('users').document(uid).get().then((snap) {
+      name = snap.data['displayName'];
+      avatar = snap.data['avatarUrl'];
     });
     user = ChatUser(name: name, avatar: avatar, uid: uid);
     if(widget.sharedBlogID != null){
@@ -128,16 +128,16 @@ class _ChatView extends State<ChatView> {
                       List<DocumentSnapshot> items = snapshot.data.documents;
                       List<ChatMessage> messages = List();
                       ChatMessage message;
-                      items.forEach((m) => {
+                      items.forEach((m) {
                         if(m.data['user']['uid'] == uid){
-                          message = ChatMessage.fromJson(m.data),
-                          message.user.containerColor = AppTheme.primary,
-                          messages.add(message),
+                          message = ChatMessage.fromJson(m.data);
+                          message.user.containerColor = AppTheme.primary;
+                          messages.add(message);
                         }
                         else{
-                          message = ChatMessage.fromJson(m.data),
-                          message.user.containerColor = AppTheme.secondary,
-                          messages.add(message),
+                          message = ChatMessage.fromJson(m.data);
+                          message.user.containerColor = AppTheme.secondary;
+                          messages.add(message);
                         }
                       });
                       messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
@@ -192,6 +192,14 @@ class _Chat extends State<Chat>{
         print(e);
       });
     });
+    Firestore.instance.runTransaction((transaction) async {
+      var documentRef = Firestore.instance.collection('chat').document(widget.chatID);
+      await transaction.update(documentRef, {
+        'lastMessageTime': message.createdAt,
+      }).catchError((e) {
+        print(e);
+      });
+    });
   }
 
   Widget buildMessage(ChatMessage message) {
@@ -203,7 +211,7 @@ class _Chat extends State<Chat>{
             if(snapshot.hasData){
               if(snapshot.data.data != null){
                 return Container(
-                  height: 300,
+                  height: 340,
                   width: 318,
                   child: BlogCard(
                     blogID: message.text.substring(12),
@@ -424,25 +432,48 @@ class _Chat extends State<Chat>{
               maxWidth: 400,
             );
 
-            if(result != null){
-              final FirebaseStorage _storage = FirebaseStorage(storageBucket: "gs://freetitle.appspot.com");
-              String filePath = 'chat_images/${DateTime.now()}.png';
-              final StorageReference storageRef = _storage.ref().child(filePath);
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('确认发送？'),
+                  content: Image.file(result),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('否'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('发送'),
+                      onPressed: () async {
+                        if(result != null){
+                          final FirebaseStorage _storage = FirebaseStorage(storageBucket: "gs://freetitle.appspot.com");
+                          String filePath = 'chat_images/${DateTime.now()}.png';
+                          final StorageReference storageRef = _storage.ref().child(filePath);
 
-              StorageUploadTask uploadTask = storageRef.putFile(result);
-              StorageTaskSnapshot download = await uploadTask.onComplete;
-              String url = await download.ref.getDownloadURL();
+                          StorageUploadTask uploadTask = storageRef.putFile(result);
+                          StorageTaskSnapshot download = await uploadTask.onComplete;
+                          String url = await download.ref.getDownloadURL();
 
-              ChatMessage message = ChatMessage(text: "", user: widget.user, image: url);
+                          ChatMessage message = ChatMessage(text: "", user: widget.user, image: url);
 
-              var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
-              Firestore.instance.runTransaction((transaction) async {
-                await transaction.set(
-                  documentRef,
-                  message.toJson(),
+                          var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
+                          Firestore.instance.runTransaction((transaction) async {
+                            await transaction.set(
+                              documentRef,
+                              message.toJson(),
+                            );
+                          });
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
                 );
-              });
-            }
+              }
+            );
           },
         )
       ],
