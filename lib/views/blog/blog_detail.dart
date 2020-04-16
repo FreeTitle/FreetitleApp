@@ -14,6 +14,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:freetitle/model/util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share/share.dart';
 import 'dart:io';
@@ -22,12 +23,14 @@ import 'package:fluwx/fluwx.dart';
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
       {Key key,
-        this.blogID,
+        @required this.blogID,
 //        this.blogData,
+        this.restorePosition,
       })
       : super(key: key);
   final String blogID;
 //  final Map blogData;
+  final double restorePosition;
 
   @override
   State<StatefulWidget> createState() {
@@ -52,11 +55,31 @@ class _BlogDetail extends State<BlogDetail> {
   void initState(){
     final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
     _userRepository = new UserRepository();
-    _userRepository.getUser().then((snap) => {
+    _userRepository.getUser().then((snap) {
       if(snap != null)
-        userID = snap.uid,
+        userID = snap.uid;
     });
-    _scrollController = new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
+
+    SharedPreferences sharedPref;
+    SharedPreferences.getInstance().then((pref) {
+      sharedPref = pref;
+    });
+
+    _scrollController = new ScrollController(initialScrollOffset: widget.restorePosition != null ? widget.restorePosition : 0.0, keepScrollOffset: true);
+//    if(widget.restorePosition != null){
+//      _scrollController.jumpTo(widget.restorePosition);
+//    }
+    _scrollController.addListener(() {
+      try{
+        List<String> blogStore = List();
+        blogStore.add('blog');
+        blogStore.add(widget.blogID);
+        blogStore.add(_scrollController.position.pixels.toString());
+        sharedPref.setStringList('article', blogStore);
+      }catch(e) {
+        print('store blog position failed $e');
+      }
+    });
     super.initState();
   }
 
@@ -509,6 +532,7 @@ class _BlogDetail extends State<BlogDetail> {
                             }).catchError((e) {
                               print('get error $e');
                             });
+
                             if(liked){
                               await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                 "upvotedBy": FieldValue.arrayUnion([userID]),
@@ -522,9 +546,9 @@ class _BlogDetail extends State<BlogDetail> {
                               await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                 "upvotedBy": FieldValue.arrayRemove([userID]),
                               }).whenComplete(() {
-                                print('like  succeeds');
+                                print('unlike  succeeds');
                               }).catchError((e) {
-                                print('like gets error $e');
+                                print('unlike gets error $e');
                               });
                             }
                           },

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/home/coin.dart';
 import 'package:freetitle/views/login/login.dart';
+import 'package:freetitle/views/mission/mission_detail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeDrawer extends StatefulWidget {
 
@@ -11,6 +14,31 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
+
+  void restorePage() async {
+    SharedPreferences sharedPref = await SharedPreferences.getInstance();
+    final articlePage = sharedPref.getStringList('article');
+    print(articlePage);
+    double offset = double.parse(articlePage[2]);
+    if(articlePage[0] == 'blog'){
+      Navigator.push<dynamic>(
+          context,
+          MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => BlogDetail(blogID: articlePage[1], restorePosition: offset,),
+          )
+      );
+    }
+    else if(articlePage[0] == 'mission'){
+      print('here');
+      Navigator.push<dynamic>(
+          context,
+          MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => MissionDetail(missionID: articlePage[1], restorePosition: offset,),
+          )
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
@@ -108,7 +136,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   ],
                 ),
                 onTap: () {
-
+                  restorePage();
                 },
               )
             ],

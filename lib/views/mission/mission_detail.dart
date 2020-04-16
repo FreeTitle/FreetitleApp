@@ -3,6 +3,7 @@ import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
 import 'dart:ui';
@@ -21,10 +22,12 @@ import 'package:freetitle/views/comment/commentInput.dart';
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
   { Key key,
-    this.missionID,
+    @required this.missionID,
+    this.restorePosition,
   }) : super(key: key);
 
   final String missionID;
+  final double restorePosition;
 
   @override
   _MissionDetail createState() => _MissionDetail();
@@ -44,6 +47,9 @@ class _MissionDetail extends State<MissionDetail>
   bool liked = false;
   bool followed = false;
   String userID;
+  bool jumped = false;
+
+  SharedPreferences sharedPref;
 
   @override
   void initState() {
@@ -54,10 +60,19 @@ class _MissionDetail extends State<MissionDetail>
         parent: animationController,
         curve: Interval(0, 1.0, curve: Curves.fastOutSlowIn)));
     _userRepository = new UserRepository();
-    _userRepository.getUser().then((snap) => {
+    _userRepository.getUser().then((snap) {
       if(snap != null)
-        userID = snap.uid,
+        userID = snap.uid;
     });
+
+
+    SharedPreferences.getInstance().then((pref) {
+      sharedPref = pref;
+    });
+
+//    _scrollController = new ScrollController(initialScrollOffset: widget.restorePosition != null ? widget.restorePosition : 0.0, keepScrollOffset: true);
+
+
     super.initState();
   }
 
@@ -528,9 +543,9 @@ class _MissionDetail extends State<MissionDetail>
                             await Firestore.instance.collection('missions').document(widget.missionID).updateData({
                               "upvotedBy": FieldValue.arrayRemove([userID]),
                             }).whenComplete(() {
-                              print('like  succeeds');
+                              print('unlike  succeeds');
                             }).catchError((e) {
-                              print('like gets error $e');
+                              print('unlike gets error $e');
                             });
                           }
                         },
@@ -634,6 +649,24 @@ class _MissionDetail extends State<MissionDetail>
                         minChildSize: 0.67,
                         maxChildSize: 0.89,
                         builder: (BuildContext context, ScrollController _scrollController) {
+
+
+//                          if(_scrollController.hasListeners && widget.restorePosition != null) {
+//                            _scrollController.jumpTo(widget.restorePosition);
+//                          }
+
+
+                          _scrollController.addListener(() {
+                            try{
+                              List<String> missionStore = List();
+                              missionStore.add('mission');
+                              missionStore.add(widget.missionID);
+                              missionStore.add(_scrollController.position.pixels.toString());
+                              sharedPref.setStringList('article', missionStore);
+                            }catch(e) {
+                              print('store mission position failed $e');
+                            }
+                          });
                           return Stack(
                             children: <Widget>[
                               Container(
@@ -657,11 +690,6 @@ class _MissionDetail extends State<MissionDetail>
                                           child: SingleChildScrollView(
                                             controller: _scrollController,
                                             child: Container(
-//                            constraints: BoxConstraints(
-//                                minHeight: infoHeight,
-//                                maxHeight: tempHeight > infoHeight
-//                                    ? tempHeight
-//                                    : infoHeight),
                                               child: Column(
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
