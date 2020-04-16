@@ -111,26 +111,26 @@ class _CommentInputPage extends State<CommentInputPage> {
 
                 data['userID'] = null;
                 final _userRepository = new UserRepository();
-                await _userRepository.getUser().then((user) => {
-                  data['userID'] = user.uid,
+                await _userRepository.getUser().then((user) {
+                  data['userID'] = user.uid;
                 });
 
-                print("Input comment content ${data}");
+                print("Input comment content $data");
                 String commentID;
                 String downLoadURL;
                 if (image != null){
-                  print('image');
+//                  print('image');
                   final FirebaseStorage _storage = FirebaseStorage(storageBucket: "gs://freetitle.appspot.com");
                   String filePath = '${DateTime.now()}.png';
-                  await _storage.ref().child(filePath).putFile(image).onComplete.then((snap) => {
-                    print("Upload succeeds: ${snap}, ${snap.storageMetadata}, ${snap.ref.getDownloadURL()}"),
-                    snap.ref.getDownloadURL().then((url) => {
-                      downLoadURL = url
-                    })
+                  await _storage.ref().child(filePath).putFile(image).onComplete.then((snap) {
+                    print("Upload succeeds: $snap, ${snap.storageMetadata}, $snap.ref.getDownloadURL()");
+                    snap.ref.getDownloadURL().then((url) {
+                      downLoadURL = url;
+                    });
                   });
 
-                  await _storage.ref().child(filePath).getDownloadURL().then((url) => {
-                    downLoadURL = url,
+                  await _storage.ref().child(filePath).getDownloadURL().then((url) {
+                    downLoadURL = url;
                   });
                 }
 
@@ -145,9 +145,9 @@ class _CommentInputPage extends State<CommentInputPage> {
                   'targetID': data['targetID'],
                   'time': Timestamp.fromDate(DateTime.now()),
                   'userID': data['userID']
-                }).then((snap) => {
-                  print(snap.documentID),
-                  commentID = snap.documentID,
+                }).then((snap) {
+                  print(snap.documentID);
+                  commentID = snap.documentID;
                 });
 
                 // Level 1 comment setup
@@ -155,9 +155,9 @@ class _CommentInputPage extends State<CommentInputPage> {
                   // Set target page's comments
                   List pageComments;
                   if(widget.pageType == 'blog') {
-                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) => {
-                      print(snap.data['comments']),
-                      pageComments = snap.data['comments'],
+                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) {
+                      print(snap.data['comments']);
+                      pageComments = snap.data['comments'];
                     });
                     if(pageComments == null){
                       pageComments = List();
@@ -168,9 +168,9 @@ class _CommentInputPage extends State<CommentInputPage> {
                     });
                   }
                   else if(widget.pageType == 'mission') {
-                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) => {
-                      print(snap.data['comments']),
-                      pageComments = snap.data['comments'],
+                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) {
+                      print(snap.data['comments']);
+                      pageComments = snap.data['comments'];
                     });
                     if(pageComments == null){
                       pageComments = List();
@@ -186,8 +186,8 @@ class _CommentInputPage extends State<CommentInputPage> {
 
                   // Set target comment's replies
                   List commentReplies;
-                  await Firestore.instance.collection('comments').document(data['parentID']).get().then((snap) => {
-                    commentReplies = snap.data['replies'],
+                  await Firestore.instance.collection('comments').document(data['parentID']).get().then((snap) {
+                    commentReplies = snap.data['replies'];
                   });
                   if(commentReplies == null){
                     commentReplies = List();
@@ -200,8 +200,8 @@ class _CommentInputPage extends State<CommentInputPage> {
                   // Set target page's subcomments
                   List pageSubcomments;
                   if(widget.pageType == 'blog'){
-                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) => {
-                      pageSubcomments = snap.data['subcomments']
+                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) {
+                      pageSubcomments = snap.data['subcomments'];
                     });
                     if(pageSubcomments == null){
                       pageSubcomments = List();
@@ -212,8 +212,8 @@ class _CommentInputPage extends State<CommentInputPage> {
                     });
                   }
                   else if(widget.pageType == 'mission') {
-                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) => {
-                      pageSubcomments = snap.data['subcomments']
+                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) {
+                      pageSubcomments = snap.data['subcomments'];
                     });
                     if(pageSubcomments == null){
                       pageSubcomments = List();

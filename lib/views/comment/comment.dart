@@ -6,6 +6,7 @@ import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
+import 'package:freetitle/views/login/login.dart';
 
 class CommentBottom extends StatefulWidget {
 
@@ -34,9 +35,9 @@ class _CommentBottom extends State<CommentBottom>{
   void initState(){
     _scrollController =  new ScrollController();
     _userRepository = UserRepository();
-    _userRepository.getUser().then((snap)=>{
+    _userRepository.getUser().then((snap) {
       if(snap != null)
-        userID = snap.uid,
+        userID = snap.uid;
     });
     super.initState();
   }
@@ -92,10 +93,9 @@ class _CommentBottom extends State<CommentBottom>{
   }
 }
 
-class CommentBox extends StatelessWidget {
+class CommentBox extends StatefulWidget {
 
-  const CommentBox(
-  {Key key,
+  const CommentBox({Key key,
     @required this.commentData,
     @required this.isSubCommentPage,
     @required this.pageID,
@@ -111,8 +111,16 @@ class CommentBox extends StatelessWidget {
   final bool isCurrentUserComment;
   final String pageType;
 
-  Widget getContent(){
-    final Map content = commentData['content'];
+  _CommentBoxState createState() => _CommentBoxState();
+}
+
+class _CommentBoxState extends State<CommentBox>{
+
+  bool liked = false;
+  String userID;
+
+  Widget buildContent(){
+    final Map content = widget.commentData['content'];
     if (content == null){
       return SizedBox(
 
@@ -135,14 +143,15 @@ class CommentBox extends StatelessWidget {
     }
   }
 
-  Widget getUser(){
+  Widget buildUser(){
     UserRepository _userRepository = new UserRepository();
-    return _userRepository.getUserWidget(commentData['userID'], color: AppTheme.white);
+    return _userRepository.getUserWidget(widget.commentData['userID'], color: AppTheme.white);
   }
 
-  Widget getSubComment(BuildContext context){
+  Widget buildSubComment(BuildContext context){
+    final commentData = widget.commentData;
     // Subcomment button only appears when it's not in subcomment page
-    if(commentData['replies'].length != 0 && commentData['level'] == 1 && !isSubCommentPage){
+    if(commentData['replies'].length != 0 && commentData['level'] == 1 && !widget.isSubCommentPage){
       return InkWell(
         child: Text("共${commentData['replies'].length}条回复>>", style: AppTheme.link,),
         splashColor: Colors.grey,
@@ -150,7 +159,7 @@ class CommentBox extends StatelessWidget {
           Navigator.push<dynamic>(
               context,
               MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => SubCommentPage(pageID: pageID, commentID: commentID, pageType: pageType,),
+                builder: (BuildContext context) => SubCommentPage(pageID: widget.pageID, commentID: widget.commentID, pageType: widget.pageType,),
               )
           );
         },
@@ -164,6 +173,7 @@ class CommentBox extends StatelessWidget {
   }
 
   Widget getTarget(){
+    final commentData = widget.commentData;
     if(commentData['level'] == 3){
       assert (commentData['targetID'] != null);
       return StreamBuilder<DocumentSnapshot>(
@@ -211,13 +221,17 @@ class CommentBox extends StatelessWidget {
     }
   }
 
-  Widget getDeleteButton(BuildContext context){
-    if (isCurrentUserComment == null){
+  Widget buildDeleteButton(BuildContext context){
+    if (widget.isCurrentUserComment == null){
       return SizedBox(
 
       );
     }
-    if(isCurrentUserComment){
+    if(widget.isCurrentUserComment){
+      final commentData = widget.commentData;
+      final pageType = widget.pageType;
+      final commentID =  widget.commentID;
+      final pageID = widget.pageID;
       return IconButton(
         icon: Icon(Icons.delete),
         onPressed: (){
@@ -228,12 +242,13 @@ class CommentBox extends StatelessWidget {
                   title: Text('是否删除评论？'),
                   actions: <Widget>[
                     FlatButton(
-                      child: Text('不'),
+                      child: Text('否'),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                     ),
                     FlatButton(
+                      color: Colors.red,
                       child: Text('是'),
                       onPressed: () async {
                         if(commentData['level'] == 1){
@@ -242,8 +257,8 @@ class CommentBox extends StatelessWidget {
                             // Level 1 comment
                             List subCommentIDs = List();
                             for(var id in commentData['replies']){
-                              await Firestore.instance.collection('comments').document(id).get().then((snap) => {
-                                subCommentIDs.add(snap.documentID),
+                              await Firestore.instance.collection('comments').document(id).get().then((snap) {
+                                subCommentIDs.add(snap.documentID);
                               });
                               await Firestore.instance.collection('comments').document(id).delete();
                             }
@@ -252,9 +267,9 @@ class CommentBox extends StatelessWidget {
                             List subcomments;
 
                             if(pageType == 'blog') {
-                              await Firestore.instance.collection('blogs').document(pageID).get().then((snap) => {
-                                comments = snap.data['comments'],
-                                subcomments = snap.data['subcomments'],
+                              await Firestore.instance.collection('blogs').document(pageID).get().then((snap) {
+                                comments = snap.data['comments'];
+                                subcomments = snap.data['subcomments'];
                               });
                               comments.remove(commentID);
                               for(var id in subCommentIDs){
@@ -266,9 +281,9 @@ class CommentBox extends StatelessWidget {
                               });
                             }
                             else if(pageType == 'mission') {
-                              await Firestore.instance.collection('missions').document(pageID).get().then((snap) => {
-                                comments = snap.data['comments'],
-                                subcomments = snap.data['subcomments'],
+                              await Firestore.instance.collection('missions').document(pageID).get().then((snap) {
+                                comments = snap.data['comments'];
+                                subcomments = snap.data['subcomments'];
                               });
                               comments.remove(commentID);
                               for(var id in subCommentIDs){
@@ -281,8 +296,8 @@ class CommentBox extends StatelessWidget {
                             }
 
 
-                          }).catchError((e) => {
-                            print("Level 1 Comment deletion error ${e}"),
+                          }).catchError((e) {
+                            print("Level 1 Comment deletion error $e");
                           });
                         }
                         else if(commentData['level'] == 2){
@@ -294,8 +309,8 @@ class CommentBox extends StatelessWidget {
                             },
                           }).whenComplete(() {
                             print("Level 2 Comment deleted");
-                          }).catchError((e) => {
-                            print("Level 2 Comment deletion error ${e}"),
+                          }).catchError((e) {
+                            print("Level 2 Comment deletion error $e");
                           });
                         }
                         else if (commentData['level'] == 3){
@@ -307,8 +322,8 @@ class CommentBox extends StatelessWidget {
                             },
                           }).whenComplete(() {
                             print("Level 3 Comment deleted");
-                          }).catchError((e) => {
-                            print("Level 3 Comment deletion error ${e}"),
+                          }).catchError((e) {
+                            print("Level 3 Comment deletion error $e");
                           });
                         }
                         else{
@@ -331,13 +346,92 @@ class CommentBox extends StatelessWidget {
     }
   }
 
+  Future<bool> getLke() async {
+    UserRepository _userRepository = UserRepository();
+
+    var user = await _userRepository.getUser();
+    userID = user.uid;
+
+    if(widget.commentData['upvotedBy'].contains(userID)){
+      liked = true;
+    }else {
+      liked = false;
+    }
+
+    return true;
+  }
+
+  Widget buildLikeButton() {
+    return FutureBuilder<bool>(
+      future: getLke(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if(snapshot.connectionState == ConnectionState.done){
+          return IconButton(
+            icon: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+            onPressed: () async {
+              if (userID==null){
+                Navigator.push<dynamic>(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => LoginScreen(),
+                  ),
+                );
+                return;
+              }
+
+              // toggle like
+              liked = !liked;
+
+              // modify comment document in database
+              await Firestore.instance.collection('comments').document(widget.commentID).updateData({
+                "likes": FieldValue.increment((liked ? (1) : (-1))),
+              }).whenComplete(() {
+                print('succeeded');
+              }).catchError((e) {
+                print('get error $e');
+              });
+
+              // toggle user like status in database
+              if(liked){
+                await Firestore.instance.collection('comments').document(widget.commentID).updateData({
+                  "upvotedBy": FieldValue.arrayUnion([userID]),
+                }).whenComplete(() {
+                  print('like  succeeds');
+                }).catchError((e) {
+                  print('like gets error $e');
+                });
+              }
+              else{
+                await Firestore.instance.collection('comments').document(widget.commentID).updateData({
+                  "upvotedBy": FieldValue.arrayRemove([userID]),
+                }).whenComplete(() {
+                  print('unlike  succeeds');
+                }).catchError((e) {
+                  print('unlike gets error $e');
+                });
+              }
+            },
+          );
+        }
+        else{
+          return SizedBox();
+        }
+      },
+    );
+  }
+  
+
   @override
   Widget build(BuildContext context) {
-    if(commentData == null){
+    if(widget.commentData == null){
       return SizedBox(
 
       );
     }
+    final commentData = widget.commentData;
+    final commentID = widget.commentID;
+    final pageID = widget.pageID;
+    final pageType = widget.pageType;
     return Center(
       child: Card(
         child: Column(
@@ -348,11 +442,13 @@ class CommentBox extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 16),
-                  child: getUser(),
+                  child: buildUser(),
                 ),
                 ButtonBar(
+                  buttonPadding: EdgeInsets.all(0),
                   children: <Widget>[
-                    getDeleteButton(context),
+                    buildLikeButton(),
+                    buildDeleteButton(context),
                     IconButton(
                       icon: Icon(Icons.comment),
                       onPressed: () {
@@ -379,11 +475,11 @@ class CommentBox extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.only(left: 24, right: 24),
-              child: getContent(),
+              child: buildContent(),
             ),
             Padding(
               padding: EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 8),
-              child: getSubComment(context),
+              child: buildSubComment(context),
             ),
             Padding(
               padding: EdgeInsets.only(left: 24, bottom: 16),
@@ -422,8 +518,8 @@ class _CommentPage extends State<CommentPage>{
   void initState(){
     _scrollController =  new ScrollController();
     _userRepository = UserRepository();
-    _userRepository.getUser().then((snap) => {
-      userID = snap.uid,
+    _userRepository.getUser().then((snap) {
+      userID = snap.uid;
     });
     super.initState();
   }
@@ -539,8 +635,8 @@ class _SubCommentPage extends State<SubCommentPage>{
   void initState(){
     _scrollController =  new ScrollController();
     _userRepository = UserRepository();
-    _userRepository.getUser().then((snap) => {
-      userID = snap.uid,
+    _userRepository.getUser().then((snap) {
+      userID = snap.uid;
     });
 
     super.initState();
