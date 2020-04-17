@@ -34,10 +34,19 @@ class _MyAppState extends State<MyApp> {
 
   FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
 
+  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+    print("onBackgroundMessage: $message");
+    //_showBigPictureNotification(message);
+    return Future<void>.value();
+  }
+
   @override
   void initState() {
     super.initState();
     _authenticationBloc = AuthenticationBloc(userRepository: _userRepository);
+
+    firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(
+        sound: true, badge: true, alert: true, provisional: true));
 
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {
@@ -49,6 +58,7 @@ class _MyAppState extends State<MyApp> {
       onLaunch: (Map<String, dynamic> message) {
         print('onLaunch called: $message');
       },
+      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
     );
 
     firebaseMessaging.getToken().then((token){

@@ -1,4 +1,4 @@
-package com.mobile.freetitle
+package com.android.freetitle
 
 import android.os.Bundle
 
