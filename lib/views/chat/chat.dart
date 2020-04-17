@@ -20,7 +20,7 @@ class ChatView extends StatefulWidget{
     @required this.otherUsername,
     this.sharedBlogID,
     this.sharedMissionID,
-  }):super(key:key);
+  }): assert(chatID != null), super(key:key);
   
   final String chatID;
   final String otherUsername;
@@ -211,8 +211,8 @@ class _Chat extends State<Chat>{
             if(snapshot.hasData){
               if(snapshot.data.data != null){
                 return Container(
-                  height: 340,
-                  width: 318,
+                  height: 330,
+                  width: 305,
                   child: BlogCard(
                     blogID: message.text.substring(12),
                     blogData: snapshot.data.data,

@@ -207,7 +207,7 @@ class _UserInfoViewState extends State<UserInfoView> {
 //            ),
 //          ),
                 Padding(
-                  padding: EdgeInsets.only(top: 70.0),
+                  padding: EdgeInsets.only(top: AppBar().preferredSize.height),
                   child: Container(
                     color: Colors.transparent,
                     height: MediaQuery.of(context).size.height,
@@ -262,7 +262,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                                       children: <Widget>[
                                         // following
                                         Container(
-                                          width: MediaQuery.of(context).size.width/2,
+                                          width: MediaQuery.of(context).size.width/2-5,
                                           child: Row(
                                             children: <Widget>[
                                               Expanded(
@@ -412,7 +412,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                 ),
                 Positioned(
                   top: MediaQuery.of(context).padding.top,
-                  left: MediaQuery.of(context).padding.left + 20,
+                  left: MediaQuery.of(context).padding.left + 10,
                   child: SizedBox(
                     width: AppBar().preferredSize.height-8,
                     height: AppBar().preferredSize.height-8,
@@ -435,7 +435,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                 ),
                 Positioned(
                   top: MediaQuery.of(context).padding.top,
-                  right: MediaQuery.of(context).padding.right + 20,
+                  right: MediaQuery.of(context).padding.right + 10,
                   child: SizedBox(
                     width: AppBar().preferredSize.height-8,
                     height: AppBar().preferredSize.height-8,

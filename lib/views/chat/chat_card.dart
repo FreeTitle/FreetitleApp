@@ -55,8 +55,8 @@ class _ChatCard extends State<ChatCard>{
   Widget buildTime(){
     if(latestTime != null){
       var time = DateTime.fromMillisecondsSinceEpoch(latestTime);
-      var timeDiff = DateTime.now().difference(time);
-      if(timeDiff.inDays < 1){
+//      var timeDiff = DateTime.now().difference(time);
+      if(DateTime.now().day == time.day){
         String minute = time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString();
         return Text(time.hour.toString()+':'+ minute, style: AppTheme.body1);
       }

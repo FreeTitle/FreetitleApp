@@ -93,7 +93,11 @@ class _ChatListView extends State<ChatListView>{
       }
       else {
         int index = otherUserIDs.indexOf(officialUid);
+        otherUserIDs.remove(officialUid);
+        otherUserIDs.insert(0, officialUid);
         officialChatID = messageIDs[index];
+        messageIDs.removeAt(index);
+        messageIDs.insert(0, officialChatID);
       }
 
     }
