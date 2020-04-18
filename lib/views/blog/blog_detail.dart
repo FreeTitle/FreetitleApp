@@ -461,10 +461,13 @@ class _BlogDetail extends State<BlogDetail> {
                 if(blog['upvotedBy'] != null && blog['upvotedBy'].contains(userID)){
                   liked = true;
                 }
+                if(wechatThumbailUrl == null && blog.containsKey('cover')){
+                  wechatThumbailUrl = blog['cover'];
+                }
                 return Scaffold(
                     backgroundColor: AppTheme.nearlyWhite,
                     appBar: AppBar(
-                      brightness: Brightness.light,
+                      brightness: Brightness.dark,
                       leading: IconButton(
                         icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
                         onPressed: () {
@@ -512,7 +515,7 @@ class _BlogDetail extends State<BlogDetail> {
                           backgroundColor: AppTheme.secondary,
                           label: "点赞 ${blog['likes'].toString()}",
                           labelStyle: AppTheme.body1,
-                          onTap: () async {
+                          onTap: () {
                             if (userID==null){
                               Navigator.push<dynamic>(
                                 context,
@@ -524,8 +527,11 @@ class _BlogDetail extends State<BlogDetail> {
                             }
 
                             liked = !liked;
+                            setState(() {
 
-                            await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                            });
+
+                            Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                               "likes": FieldValue.increment((liked ? (1) : (-1))),
                             }).whenComplete(() {
                               print('succeeded');
@@ -534,7 +540,7 @@ class _BlogDetail extends State<BlogDetail> {
                             });
 
                             if(liked){
-                              await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                              Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                 "upvotedBy": FieldValue.arrayUnion([userID]),
                               }).whenComplete(() {
                                 print('like  succeeds');
@@ -543,7 +549,7 @@ class _BlogDetail extends State<BlogDetail> {
                               });
                             }
                             else{
-                              await Firestore.instance.collection('blogs').document(widget.blogID).updateData({
+                              Firestore.instance.collection('blogs').document(widget.blogID).updateData({
                                 "upvotedBy": FieldValue.arrayRemove([userID]),
                               }).whenComplete(() {
                                 print('unlike  succeeds');

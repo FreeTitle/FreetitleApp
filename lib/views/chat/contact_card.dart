@@ -69,7 +69,7 @@ class _ContactCard extends State<ContactCard>{
                     SizedBox(width: 10,),
                     Column(
                       children: <Widget>[
-                        Text(widget.otherUsername),
+                        widget.otherUsername.length < 20 ? Text(widget.otherUsername) : Text(widget.otherUsername.substring(0,19)+'...'),
                       ],
                     )
                   ],

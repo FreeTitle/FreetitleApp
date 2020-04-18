@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/chat/chat_list_view.dart';
+import 'package:freetitle/views/mission/mission_detail.dart';
 import 'package:freetitle/views/profile/my_profile.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
@@ -7,6 +10,12 @@ import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/home/home_screen.dart';
 import 'package:freetitle/views/search/search.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:freetitle/views/blog/blog_detail.dart';
+import 'package:freetitle/views/notification.dart';
+import 'package:badges/badges.dart';
+import 'package:flutter/services.dart';
+import 'dart:io';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -18,12 +27,7 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   int _pageIndex = 0;
-  final List<Widget> _children = [
-    Home(),
-    ChatListView(),
-    SearchView(),
-    GetMyProfile(),
-  ];
+  List<Widget> _children;
 
   onTabTapped(int index) {
     setState(() {
@@ -31,13 +35,185 @@ class _IndexPageState extends State<IndexPage> {
     });
   }
 
+  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+
+  Map<String, int> unreadMessages;
+
+  UserRepository _userRepository;
+
+  void readChat(chatID){
+    unreadMessages[chatID] = 0;
+  }
+
+  String getNumUnread() {
+    if(unreadMessages.values.length == 0){
+      return '0';
+    }
+    return unreadMessages.values.reduce((sum, element) => sum+element).toString();
+  }
+
+  @override
+  void initState(){
+    unreadMessages = Map();
+    _userRepository = UserRepository();
+//    unreadMessages['ImDgoO7r63XVZCrhuxKU'] =  1;
+    _children = [
+      Home(),
+      ChatListView(unreadMessages: unreadMessages, callback: readChat,),
+      SearchView(),
+      GetMyProfile(),
+    ];
+
+
+    firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(
+            sound: true, badge: true, alert: true, provisional: true
+        )
+    );
+
+    firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        print('onMessage called: $message');
+        if(message['blog'] != null){
+          try{
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
+                )
+            );
+          } catch(e) {
+            print('Error open blog from notification due to: $e');
+          }
+        }
+        else if (message['mission'] != null){
+          try{
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
+                )
+            );
+          } catch(e) {
+            print('Error open mission from notification due to: $e');
+          }
+        }
+        else if (message['chat'] != null) {
+          if(unreadMessages.containsKey(message['chat'])){
+            unreadMessages[message['chat']] += 1;
+          }
+          else{
+            unreadMessages[message['chat']] = 1;
+          }
+          setState(() {
+
+          });
+        }
+        return;
+      },
+      onResume: (Map<String, dynamic> message) {
+        print('onResume called: $message');
+        if(message['blog'] != null){
+          try{
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
+                )
+            );
+          } catch(e) {
+            print('Error open blog from notification due to: $e');
+          }
+        }
+        else if (message['mission'] != null){
+          try{
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
+                )
+            );
+          } catch(e) {
+            print('Error open mission from notification due to: $e');
+          }
+        }
+        else if (message['chat'] != null) {
+          if(unreadMessages.containsKey(message['chat'])){
+            unreadMessages[message['chat']] += 1;
+          }
+          else{
+            unreadMessages[message['chat']] = 1;
+          }
+          setState(() {
+
+          });
+        }
+        return;
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        print('onLaunch called: $message');
+        if(message['blog'] != null){
+          try{
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
+                )
+            );
+          } catch(e) {
+            print('Error open blog from notification due to: $e');
+          }
+        }
+        else if (message['mission'] != null){
+          try{
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
+                )
+            );
+          } catch(e) {
+            print('Error open mission from notification due to: $e');
+          }
+        }
+        else if (message['chat'] != null) {
+          if(unreadMessages.containsKey(message['chat'])){
+            unreadMessages[message['chat']] += 1;
+          }
+          else{
+            unreadMessages[message['chat']] = 1;
+          }
+          setState(() {
+
+          });
+        }
+        return;
+      },
+      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
+    );
+
+    firebaseMessaging.getToken().then((token) async {
+      print('FCM Token: $token');
+      await _userRepository.getUser().then((snap) {
+        String uid = snap.uid;
+        Firestore.instance.collection('users').document(uid).updateData({
+          'notificationToken': FieldValue.arrayUnion([token])
+        });
+      });
+    });
+
+
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 //    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-//      statusBarColor: Colors.transparent,
+//      statusBarColor: Colors.black,
 //      statusBarIconBrightness: Brightness.dark,
-//      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
-//      systemNavigationBarColor: Colors.white,
+//      statusBarBrightness: Brightness.dark,
+//      systemNavigationBarColor: Colors.black,
 //      systemNavigationBarDividerColor: Colors.grey,
 //      systemNavigationBarIconBrightness: Brightness.dark,
 //    ));
@@ -73,7 +249,10 @@ class _IndexPageState extends State<IndexPage> {
                     title: Text('主页'),
                   ),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.chat),
+                      icon: getNumUnread() != '0' ? Badge(
+                        badgeContent: Text(getNumUnread(), style: TextStyle(color: Colors.white, fontSize: 12),),
+                        child: Icon(Icons.chat),
+                      ) :  Icon(Icons.chat),
                       title: Text('私信'),
                   ),
 //            BottomNavyBarItem(

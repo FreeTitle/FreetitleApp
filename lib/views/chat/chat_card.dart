@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
@@ -6,11 +7,15 @@ import 'package:freetitle/views/chat/chat.dart';
 class ChatCard extends StatefulWidget {
   const ChatCard(
       {Key key,
-        this.chatID,
-        this.otherUserID,
+        @required this.chatID,
+        @required this.otherUserID,
+        this.unreadNum,
+        this.callback,
       }) : super(key: key);
   final String chatID;
   final String otherUserID;
+  final int unreadNum;
+  final callback;
 
   _ChatCard createState() => _ChatCard();
 }
@@ -43,8 +48,8 @@ class _ChatCard extends State<ChatCard>{
            latestMessage = '[Blog]';
          if(latestMessage.startsWith('sharemissionid='))
            latestMessage = '[Mission]';
-         snap.documents.forEach((m) => {
-           messageList.add(m.data)
+         snap.documents.forEach((m) {
+           messageList.add(m.data);
          });
        }
     });
@@ -86,6 +91,7 @@ class _ChatCard extends State<ChatCard>{
               children: <Widget>[
                 InkWell(
                   onTap: () {
+                    widget.callback(widget.chatID);
                     Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
@@ -118,13 +124,20 @@ class _ChatCard extends State<ChatCard>{
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(username, style: AppTheme.body1,),
+                            Text(username, style: AppTheme.body2,),
                             SizedBox(height: 10,),
                             Text(latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
                           ],
                         ),
                         Spacer(),
-                        buildTime(),
+                        Column(
+                          children: <Widget>[
+                            buildTime(),
+                            widget.unreadNum != null && widget.unreadNum != 0 ? Badge(
+                              badgeContent: Text(widget.unreadNum.toString(), style: TextStyle(color: Colors.white, fontSize: 12),),
+                            ) : SizedBox(),
+                          ],
+                        ),
                         SizedBox(width: 20,)
                       ],
                     ),

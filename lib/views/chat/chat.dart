@@ -89,7 +89,7 @@ class _ChatView extends State<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         centerTitle: true,
         backgroundColor: AppTheme.white,
         title: Text(widget.otherUsername, style: TextStyle(color: Colors.black),),
@@ -196,6 +196,8 @@ class _Chat extends State<Chat>{
       var documentRef = Firestore.instance.collection('chat').document(widget.chatID);
       await transaction.update(documentRef, {
         'lastMessageTime': message.createdAt,
+        'lastSenderId': widget.user.uid,
+        'lastMessageContent': message.text,
       }).catchError((e) {
         print(e);
       });
@@ -211,8 +213,8 @@ class _Chat extends State<Chat>{
             if(snapshot.hasData){
               if(snapshot.data.data != null){
                 return Container(
-                  height: 330,
-                  width: 305,
+                  height: 288,
+                  width: 255,
                   child: BlogCard(
                     blogID: message.text.substring(12),
                     blogData: snapshot.data.data,
@@ -293,8 +295,8 @@ class _Chat extends State<Chat>{
             if(snapshot.hasData){
               if(snapshot.data.data != null) {
                 return Container(
-                  height: 300,
-                  width: 318,
+                  height: 280,
+                  width: 255,
                   child: VerticalMissionCard(
                     missionData: snapshot.data.data,
                     missionID: message.text.substring(15),
@@ -382,7 +384,7 @@ class _Chat extends State<Chat>{
       inverted: false,
       onSend: onSend,
       user: widget.user,
-      height: Platform.isIOS ? MediaQuery.of(context).size.height - AppBar().preferredSize.height*2.5 : MediaQuery.of(context).size.height - AppBar().preferredSize.height*1.5,
+      height: Platform.isIOS ? MediaQuery.of(context).size.height - AppBar().preferredSize.height*2.0 : MediaQuery.of(context).size.height - AppBar().preferredSize.height*1.5,
       inputDecoration: InputDecoration.collapsed(hintText: "Add message here..."),
       dateFormat: DateFormat('yyyy-MMM-dd'),
       timeFormat: DateFormat('HH:mm'),
@@ -431,6 +433,10 @@ class _Chat extends State<Chat>{
               maxHeight: 400,
               maxWidth: 400,
             );
+
+            if(result == null){
+              return;
+            }
 
             showDialog(
               context: context,

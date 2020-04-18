@@ -7,6 +7,12 @@ import 'package:freetitle/views/chat/chat_card.dart';
 import 'package:freetitle/views/chat/contact_list_view.dart';
 
 class ChatListView extends StatefulWidget{
+
+  ChatListView({Key key, @required this.unreadMessages, this.callback}) : super(key : key);
+
+  final unreadMessages;
+  final callback;
+
   _ChatListView createState() => _ChatListView();
 }
 
@@ -120,7 +126,7 @@ class _ChatListView extends State<ChatListView>{
           SizedBox(width: 10,),
         ],
         backgroundColor: Colors.white,
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
       ),
       body: FutureBuilder(
         future: getChatList(),
@@ -130,10 +136,19 @@ class _ChatListView extends State<ChatListView>{
                 itemCount: messageIDs.length,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context, int index){
+                  Map unreadMessages = widget.unreadMessages;
+                  print(unreadMessages);
+                  int unreadNum = 0;
                   if(index == 0){
-                    return ChatCard(chatID: officialChatID, otherUserID: officialUid,);
+                    if(unreadMessages.containsKey(officialChatID)){
+                      unreadNum = unreadMessages[officialChatID];
+                    }
+                    return ChatCard(chatID: officialChatID, otherUserID: officialUid, unreadNum: unreadNum, callback: widget.callback,);
                   }
-                  var chat = ChatCard(chatID: messageIDs[index], otherUserID: otherUserIDs[index]);
+                  if(unreadMessages.containsKey(messageIDs[index])){
+                    unreadNum = unreadMessages[messageIDs[index]];
+                  }
+                  var chat = ChatCard(chatID: messageIDs[index], otherUserID: otherUserIDs[index], unreadNum: unreadNum, callback: widget.callback,);
                   return Dismissible(
                     key: ObjectKey(chat),
                     onDismissed: (direction) async {

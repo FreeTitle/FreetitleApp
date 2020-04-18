@@ -57,7 +57,7 @@ class _ContactListView extends State<ContactListView>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         backgroundColor: AppTheme.appbarColor,
         title: Text('搜索用户', style: TextStyle(color: Colors.black)),
         leading: IconButton(
