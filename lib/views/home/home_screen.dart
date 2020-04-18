@@ -8,6 +8,7 @@ import 'package:freetitle/views/mission/mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freetitle/views/home/home_blog_list_view.dart';
+import 'package:flutter/services.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -46,6 +47,12 @@ class _Home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.black,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.dark,
+    ));
+//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return Theme(
       data: AppTheme.buildLightTheme(),
       child: Container(
@@ -67,7 +74,7 @@ class _Home extends State<Home> {
                       child: Scaffold(
                           appBar: AppBar(
                             centerTitle: true,
-                            brightness: Brightness.light,
+//                            brightness: Brightness.dark,
                             iconTheme: IconThemeData(color:  Colors.black),
                             title: Container(
                               width: 90,

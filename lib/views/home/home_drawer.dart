@@ -19,6 +19,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
     SharedPreferences sharedPref = await SharedPreferences.getInstance();
     final articlePage = sharedPref.getStringList('article');
     print(articlePage);
+    if(articlePage == null){
+      return;
+    }
     double offset = double.parse(articlePage[2]);
     if(articlePage[0] == 'blog'){
       Navigator.push<dynamic>(
