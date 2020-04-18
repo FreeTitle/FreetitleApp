@@ -1,6 +1,22 @@
-# freetitle
+# FreeTitle
 
 FreeTitle Mobile App
+
+Written using Flutter 
+
+Backend using Firebase SDK
+
+## Version 0.0.1
+### This is the Alpha 0.0.1 version of FreeTitle App
+It supports the following capabilities: 
+* View blogs, missions, publications
+* Like, bookmark, comment, and share the above articles. 
+    * Sharing including share to other users, WeChat, and other apps
+* Chat with other uses
+* Search within the app
+* User profile 
+* Modify account
+* View other user's profile
 
 ## Getting Started
 
