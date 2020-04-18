@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/splash_screen.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
 
   AuthenticationBloc _authenticationBloc;
 
-  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+
 
   Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
     print("onBackgroundMessage: $message");
@@ -44,26 +45,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _authenticationBloc = AuthenticationBloc(userRepository: _userRepository);
-
-    firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(
-        sound: true, badge: true, alert: true, provisional: true));
-
-    firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
-        print('onMessage called: $message');
-      },
-      onResume: (Map<String, dynamic> message) {
-        print('onResume called: $message');
-      },
-      onLaunch: (Map<String, dynamic> message) {
-        print('onLaunch called: $message');
-      },
-      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
-    );
-
-    firebaseMessaging.getToken().then((token){
-      print('FCM Token: $token');
-    });
   }
 
   @override

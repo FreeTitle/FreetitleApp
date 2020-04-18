@@ -138,8 +138,8 @@ class UserRepository {
             if (snapshot.hasData) {
               final userData = snapshot.data;
               String userName = userData['displayName'];
-              if(userName.length > 20){
-                userName = userName.substring(0,20) + "...";
+              if(userName.length > 15){
+                userName = userName.substring(0,15) + "...";
               }
               String avatarURL = userData['avatarUrl'];
               Image avatar = Image.network(avatarURL, fit: BoxFit.fill,);
