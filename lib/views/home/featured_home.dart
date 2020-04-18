@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/home/publication.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class FeaturedHome extends StatefulWidget {
 
   const FeaturedHome(
   {Key key,
+    this.scrollController,
   }) : super(key : key);
+
+  final scrollController;
 
   _FeaturedHome createState() => _FeaturedHome();
 }
@@ -35,12 +39,12 @@ class _FeaturedHome extends State<FeaturedHome> with TickerProviderStateMixin {
 
   Future<bool> getPublications() async {
     publications.clear();
-    await Firestore.instance.collection('publications').orderBy('pubDate', descending: true).getDocuments().then((snap) => {
+    await Firestore.instance.collection('publications').orderBy('pubDate', descending: true).getDocuments().then((snap) {
       if(snap.documents.isNotEmpty){
-        snap.documents.forEach((p) => {
+        snap.documents.forEach((p) {
           if(p.data['ready'] == true)
-            publications.add(p.data),
-        })
+            publications.add(p.data);
+        });
       }
     });
     return true;
@@ -52,9 +56,22 @@ class _FeaturedHome extends State<FeaturedHome> with TickerProviderStateMixin {
       future: getPublications(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
         if(snapshot.connectionState == ConnectionState.done){
-          return Padding(
-            padding: EdgeInsets.all(16),
-            child:StaggeredGridView.countBuilder(
+          return LiquidPullToRefresh(
+            scrollController: widget.scrollController,
+            color: AppTheme.primary,
+            showChildOpacityTransition: false,
+            onRefresh: () async {
+              publications.clear();
+              await Firestore.instance.collection('publications').orderBy('pubDate', descending: true).getDocuments().then((snap) {
+                if(snap.documents.isNotEmpty){
+                  snap.documents.forEach((p) {
+                    if(p.data['ready'] == true)
+                      publications.add(p.data);
+                  });
+                }
+              });
+            },
+            child: StaggeredGridView.countBuilder(
               key: PageStorageKey('Featured'),
               itemCount: publications.length,
               crossAxisCount: 4,

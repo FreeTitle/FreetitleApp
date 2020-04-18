@@ -51,9 +51,9 @@ class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderState
               if (snapshot.hasData) {
                 blogList = new List();
                 blogIDs = new List();
-                snapshot.data.documents.forEach((blog) => {
-                  blogList.add(blog.data),
-                  blogIDs.add(blog.documentID),
+                snapshot.data.documents.forEach((blog) {
+                  blogList.add(blog.data);
+                  blogIDs.add(blog.documentID);
                 });
                 int present = blogList.length;
                 return LiquidPullToRefresh(
@@ -65,13 +65,13 @@ class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderState
                       blogList.clear();
                       blogIDs.clear();
 
-                      await Firestore.instance.collection('blogs').limit(15).orderBy('time', descending: true).getDocuments().then((snap)=>{
-                        snap.documents.forEach((blog) => {
-                          blogList.add(blog.data),
-                          blogIDs.add(blog.documentID),
-                        }),
-                        present = blogList.length,
-                        pageCount = 1,
+                      await Firestore.instance.collection('blogs').limit(15).orderBy('time', descending: true).getDocuments().then((snap) {
+                        snap.documents.forEach((blog) {
+                          blogList.add(blog.data);
+                          blogIDs.add(blog.documentID);
+                        });
+                        present = blogList.length;
+                        pageCount = 1;
                       });
                       setState(() {
 
@@ -104,12 +104,12 @@ class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderState
                                 pageCount += 1;
                                 blogList.clear();
                                 blogIDs.clear();
-                                await Firestore.instance.collection('blogs').limit(pageCount*perPage).orderBy('time', descending: true).getDocuments().then((snap) => {
-                                  snap.documents.forEach((blog) => {
-                                    blogList.add(blog.data),
-                                    blogIDs.add(blog.documentID),
-                                  }),
-                                  present = blogList.length,
+                                await Firestore.instance.collection('blogs').limit(pageCount*perPage).orderBy('time', descending: true).getDocuments().then((snap) {
+                                  snap.documents.forEach((blog) {
+                                    blogList.add(blog.data);
+                                    blogIDs.add(blog.documentID);
+                                  });
+                                  present = blogList.length;
                                 });
                                 setState(() {
 

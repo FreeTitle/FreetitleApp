@@ -76,26 +76,27 @@ class _Home extends State<Home> {
                             centerTitle: true,
 //                            brightness: Brightness.dark,
                             iconTheme: IconThemeData(color:  Colors.black),
-                            title: Container(
-                              width: 90,
-                              child: InkWell(
-                                child: Center(child: Text('FreeTitle', style: TextStyle(color: Colors.black),) ),
-                                onDoubleTap: () {
-                                  _scrollController.jumpTo(0);
-                                },
+                            title: InkWell(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                alignment: Alignment.center,
+                                child: Text('FreeTitle', style: TextStyle(color: Colors.black),),
                               ),
+                              onTap: () {
+                                _scrollController.jumpTo(0);
+                              },
                             ),
-//                            actions: <Widget>[
-//                              Container(
-//                                  padding: EdgeInsets.only(right: 16),
-//                                  child: IconButton(
-//                                    icon: Icon(Icons.camera_alt, color: Colors.black,),
-//                                    onPressed: () {
-//
-//                                    }
-//                                  )
-//                              ),
-//                            ],
+                            actions: <Widget>[
+                              Container(
+                                  padding: EdgeInsets.only(right: 16),
+                                  child: IconButton(
+                                    icon: Icon(Icons.camera_alt, color: Colors.white,),
+                                    onPressed: () {
+
+                                    }
+                                  )
+                              ),
+                            ],
                             backgroundColor: AppTheme.white,
                             bottom: TabBar(
                               labelColor: AppTheme.primary,
@@ -114,7 +115,7 @@ class _Home extends State<Home> {
                           body: TabBarView(
                             children: <Widget>[
                               HomeBlogListView(scrollController: _scrollController,),
-                              FeaturedHome(),
+                              FeaturedHome(scrollController: _scrollController,),
                               StreamBuilder<QuerySnapshot>(
                                 key: PageStorageKey('Missions'),
                                 stream: Firestore.instance.collection('missions').orderBy('time', descending: true).snapshots(),
@@ -130,9 +131,9 @@ class _Home extends State<Home> {
                                       if(snapshot.hasData){
                                         missionList = List();
                                         missionIDs = List();
-                                        snapshot.data.documents.forEach((mission) => {
-                                          missionList.add(mission.data),
-                                          missionIDs.add(mission.documentID),
+                                        snapshot.data.documents.forEach((mission) {
+                                          missionList.add(mission.data);
+                                          missionIDs.add(mission.documentID);
                                         });
                                         return SingleChildScrollView(
                                           controller: _scrollController,
