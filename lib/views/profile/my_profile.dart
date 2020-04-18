@@ -106,7 +106,7 @@ class _MyProfile extends State<MyProfile> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: AppTheme.white,
-          brightness: Brightness.light,
+          brightness: Brightness.dark,
           title: Text(
             widget.isMyProfile ? '我' : widget.userName,
             style: TextStyle(

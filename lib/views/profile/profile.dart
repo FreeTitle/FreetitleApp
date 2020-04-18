@@ -95,8 +95,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                 children: <Widget>[
                   UserInfoView(userData: userData, isMyProfile: widget.isMyProfile, userID: widget.userID,),
                   DraggableScrollableSheet(
-                    initialChildSize: 0.65,
-                    minChildSize: 0.65,
+                    initialChildSize: 0.60,
+                    minChildSize: 0.53,
                     maxChildSize: 0.9,
                     builder: (BuildContext context, ScrollController _scrollController) {
                       return UserContentView(
@@ -232,7 +232,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                                         child: Row(
                                           children: <Widget>[
                                             SizedBox(
-                                              width: 20.0,
+                                              width: 10.0,
                                             ),
                                             Container(
                                               width: 100.0,
@@ -255,14 +255,14 @@ class _UserInfoViewState extends State<UserInfoView> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: 30,),
+                                    SizedBox(width: 20,),
                                     Column(
 //                                      mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
                                         // following
                                         Container(
-                                          width: MediaQuery.of(context).size.width/2-5,
+                                          width: MediaQuery.of(context).size.width/2-25,
                                           child: Row(
                                             children: <Widget>[
                                               Expanded(
@@ -278,7 +278,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                                                 ),
                                               ),
                                               SizedBox(
-                                                width: 10.0,
+                                                width: 5.0,
                                               ),
                                               Container(
                                                 child: Icon(Icons.mood),

@@ -352,7 +352,7 @@ class UserCard extends StatelessWidget{
                           style: TextStyle(
                             fontFamily: AppTheme.fontName,
                             fontWeight: FontWeight.w500,
-                            fontSize: 16,
+                            fontSize: 14,
                             letterSpacing: -0.2,
                             color: AppTheme.darkText,
                           ),
@@ -417,7 +417,7 @@ class UserCard extends StatelessWidget{
                               style: TextStyle(
                                 fontFamily: AppTheme.fontName,
                                 fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                                fontSize: 14,
                                 letterSpacing: -0.2,
                                 color: AppTheme.darkText,
                               ),
@@ -484,7 +484,7 @@ class UserCard extends StatelessWidget{
                               style: TextStyle(
                                 fontFamily: AppTheme.fontName,
                                 fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                                fontSize: 14,
                                 letterSpacing: -0.2,
                                 color: AppTheme.darkText,
                               ),
