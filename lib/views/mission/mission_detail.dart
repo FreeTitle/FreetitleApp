@@ -485,6 +485,7 @@ class _MissionDetail extends State<MissionDetail>
               if(missionData['upvotedBy'] != null && missionData['upvotedBy'].contains(userID)){
                 liked = true;
               }
+
               return Container(
                 color: AppTheme.nearlyWhite,
                 child: Scaffold(
@@ -510,7 +511,7 @@ class _MissionDetail extends State<MissionDetail>
                         backgroundColor: AppTheme.secondary,
                         label: "点赞 ${missionData['likes'].toString()}",
                         labelStyle: AppTheme.body1,
-                        onTap: () async {
+                        onTap: () {
                           if (userID==null){
                             Navigator.push<dynamic>(
                               context,
@@ -521,17 +522,19 @@ class _MissionDetail extends State<MissionDetail>
                             return;
                           }
 
+
                           liked = !liked;
 
-                          await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                          Firestore.instance.collection('missions').document(widget.missionID).updateData({
                             "likes": FieldValue.increment((liked ? (1) : (-1))),
                           }).whenComplete(() {
                             print('succeeded');
                           }).catchError((e) {
                             print('get error $e');
                           });
+
                           if(liked){
-                            await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                            Firestore.instance.collection('missions').document(widget.missionID).updateData({
                               "upvotedBy": FieldValue.arrayUnion([userID]),
                             }).whenComplete(() {
                               print('like  succeeds');
@@ -540,7 +543,7 @@ class _MissionDetail extends State<MissionDetail>
                             });
                           }
                           else{
-                            await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                            Firestore.instance.collection('missions').document(widget.missionID).updateData({
                               "upvotedBy": FieldValue.arrayRemove([userID]),
                             }).whenComplete(() {
                               print('unlike  succeeds');

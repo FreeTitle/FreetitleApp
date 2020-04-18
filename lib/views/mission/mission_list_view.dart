@@ -348,7 +348,6 @@ class _VerticalMissionListViewState extends State<VerticalMissionListView>
         ),
       );
       animationController.forward();
-      print(MediaQuery.of(context).size);
       missionGrid.add(Row(
         children: <Widget>[
           Container(
