@@ -84,7 +84,7 @@ class _CommentInputPage extends State<CommentInputPage> {
           },
         ),
         backgroundColor: AppTheme.white,
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         actions: <Widget>[
           Padding(
             padding: EdgeInsets.only(right: 5),

@@ -368,7 +368,7 @@ class _CommentBoxState extends State<CommentBox>{
         if(snapshot.connectionState == ConnectionState.done){
           return IconButton(
             icon: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
-            onPressed: () async {
+            onPressed: () {
               if (userID==null){
                 Navigator.push<dynamic>(
                   context,
@@ -381,9 +381,12 @@ class _CommentBoxState extends State<CommentBox>{
 
               // toggle like
               liked = !liked;
+              setState(() {
+
+              });
 
               // modify comment document in database
-              await Firestore.instance.collection('comments').document(widget.commentID).updateData({
+              Firestore.instance.collection('comments').document(widget.commentID).updateData({
                 "likes": FieldValue.increment((liked ? (1) : (-1))),
               }).whenComplete(() {
                 print('succeeded');
@@ -393,7 +396,7 @@ class _CommentBoxState extends State<CommentBox>{
 
               // toggle user like status in database
               if(liked){
-                await Firestore.instance.collection('comments').document(widget.commentID).updateData({
+                Firestore.instance.collection('comments').document(widget.commentID).updateData({
                   "upvotedBy": FieldValue.arrayUnion([userID]),
                 }).whenComplete(() {
                   print('like  succeeds');
@@ -402,7 +405,7 @@ class _CommentBoxState extends State<CommentBox>{
                 });
               }
               else{
-                await Firestore.instance.collection('comments').document(widget.commentID).updateData({
+                Firestore.instance.collection('comments').document(widget.commentID).updateData({
                   "upvotedBy": FieldValue.arrayRemove([userID]),
                 }).whenComplete(() {
                   print('unlike  succeeds');
@@ -541,7 +544,7 @@ class _CommentPage extends State<CommentPage>{
               _scrollController.jumpTo(0.0);
             },
           ),
-          brightness: Brightness.light,
+          brightness: Brightness.dark,
           backgroundColor: AppTheme.white,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -652,7 +655,7 @@ class _SubCommentPage extends State<SubCommentPage>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         title: Text('回复', style: TextStyle(color: Colors.black),),
         backgroundColor: AppTheme.white,
         leading: IconButton(
