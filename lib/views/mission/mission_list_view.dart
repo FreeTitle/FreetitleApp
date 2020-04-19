@@ -59,7 +59,7 @@ with TickerProviderStateMixin {
               return ListView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.only(
-                    top: 0, bottom: 0, right: 16, left: 16),
+                    top: 0, bottom: 0, right: 16, left: 0),
                 itemCount: missionList.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (BuildContext context, int index){
@@ -105,6 +105,7 @@ class HorizontalMissionView extends StatelessWidget {
   final AnimationController animationController;
   final Animation<dynamic> animation;
 
+
   Image getImage(){
     Image img;
     img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
@@ -123,6 +124,7 @@ class HorizontalMissionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PageStorageKey keyMissionDetail = PageStorageKey('blogDetail');
     return AnimatedBuilder(
       animation: animationController,
       builder: (BuildContext context, Widget child){
@@ -137,7 +139,7 @@ class HorizontalMissionView extends StatelessWidget {
                 Navigator.push<dynamic>(
                     context,
                     MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) => MissionDetail(missionID: missionID,),
+                      builder: (BuildContext context) => MissionDetail(key: keyMissionDetail, missionID: missionID,),
                     )
                 );
               },
@@ -447,13 +449,14 @@ class VerticalMissionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PageStorageKey keyMissionDetail = PageStorageKey('blogDetail');
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () {
         Navigator.push<dynamic>(
             context,
             MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => MissionDetail(missionID: missionID,),
+              builder: (BuildContext context) => MissionDetail(key: keyMissionDetail, missionID: missionID,),
             )
         );
       },

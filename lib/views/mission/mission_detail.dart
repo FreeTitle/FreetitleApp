@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
+import 'package:freetitle/views/comment/comment_bottom.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -40,16 +41,17 @@ class _MissionDetail extends State<MissionDetail>
   Animation<double> animation;
   UserRepository _userRepository;
 
-  String wechatThumbailUrl;
+  String wechatThumbnailUrl;
   String wechatDescription;
   bool showFloatingAction = true;
 
   bool liked = false;
   bool followed = false;
   String userID;
-  bool jumped = false;
 
   SharedPreferences sharedPref;
+  Map missionData;
+  Map authorData;
 
   @override
   void initState() {
@@ -60,10 +62,7 @@ class _MissionDetail extends State<MissionDetail>
         parent: animationController,
         curve: Interval(0, 1.0, curve: Curves.fastOutSlowIn)));
     _userRepository = new UserRepository();
-    _userRepository.getUser().then((snap) {
-      if(snap != null)
-        userID = snap.uid;
-    });
+
 
 
     SharedPreferences.getInstance().then((pref) {
@@ -171,8 +170,8 @@ class _MissionDetail extends State<MissionDetail>
           if(block['data']['file']['url'] == null){
             continue;
           }
-          if(wechatThumbailUrl == null){
-            wechatThumbailUrl = block['data']['file']['url'];
+          if(wechatThumbnailUrl == null){
+            wechatThumbnailUrl = block['data']['file']['url'];
           }
           missionWidget.add(
               Padding(
@@ -288,24 +287,30 @@ class _MissionDetail extends State<MissionDetail>
 
     List<String> commentIDs = getCommentIDs(mission);
     if (commentIDs.isNotEmpty){
-      missionWidget.add(CommentBottom(commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs, pageID: widget.missionID, pageType: 'mission',));
-      if(commentIDs.length > 3){
-        missionWidget.add(
-            Center(
-              child: InkWell(
-                onTap: () {
-                  Navigator.push<dynamic>(
-                    context,
-                    MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) => CommentPage(commentIDs: commentIDs, pageID: widget.missionID, pageType: 'mission',)
-                    )
-                  );
-                },
-                child: Text('更多评论...', style: AppTheme.link,),
-              ),
-            )
-        );
-      }
+      missionWidget.add(
+          NewCommentBottom(
+//            commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs,
+            pageID: widget.missionID,
+            pageType: 'mission',
+          )
+      );
+//      if(commentIDs.length > 3){
+//        missionWidget.add(
+//            Center(
+//              child: InkWell(
+//                onTap: () {
+//                  Navigator.push<dynamic>(
+//                    context,
+//                    MaterialPageRoute<dynamic>(
+//                      builder: (BuildContext context) => CommentPage(pageID: widget.missionID, pageType: 'mission',)
+//                    )
+//                  );
+//                },
+//                child: Text('更多评论...', style: AppTheme.link,),
+//              ),
+//            )
+//        );
+//      }
     }else{
       missionWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }
@@ -343,6 +348,385 @@ class _MissionDetail extends State<MissionDetail>
     }
     return labels;
   }
+
+  
+
+  void showFloatingActionButton(bool value){
+    setState(() {
+      showFloatingAction = value;
+    });
+  }
+
+  Future<bool> getMissionData() async {
+    await _userRepository.getUser().then((snap) {
+      if(snap != null)
+        userID = snap.uid;
+    });
+
+    missionData = Map();
+    await Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) {
+      missionData = snap.data;
+    });
+
+    authorData = Map();
+    await Firestore.instance.collection('users').document(missionData['ownerID']).get().then((snap) {
+      authorData = snap.data;
+    });
+
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: getMissionData(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if(snapshot.connectionState == ConnectionState.done) {
+          if(missionData['followedBy'] != null && missionData['followedBy'].contains(userID)){
+            followed = true;
+          }
+          if(missionData['upvotedBy'] != null && missionData['upvotedBy'].contains(userID)){
+            liked = true;
+          }
+
+          return Container(
+            color: AppTheme.nearlyWhite,
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              floatingActionButton: showFloatingAction
+                  ? MissionFloatingButton(
+                      state: this,
+                      userID: userID,
+                      missionID: widget.missionID,
+                      wechatDescription: wechatDescription,
+                      wechatThumbnailUrl: wechatThumbnailUrl,
+                    )
+                  : Container(),
+              body: Stack(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      AspectRatio(
+                        aspectRatio: 1.2,
+                        child: getImage(missionData),
+                      ),
+                    ],
+                  ),
+                  DraggableScrollableSheet(
+                    initialChildSize: 0.67,
+                    minChildSize: 0.67,
+                    maxChildSize: 0.89,
+                    builder: (BuildContext context, ScrollController _scrollController) {
+                      _scrollController.addListener(() {
+                        try{
+                          List<String> missionStore = List();
+                          missionStore.add('mission');
+                          missionStore.add(widget.missionID);
+                          missionStore.add(_scrollController.position.pixels.toString());
+                          sharedPref.setStringList('article', missionStore);
+                        }catch(e) {
+                          print('store mission position failed $e');
+                        }
+                      });
+                      return Stack(
+                        children: <Widget>[
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppTheme.nearlyWhite,
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(32.0),
+                                  topRight: Radius.circular(32.0)),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                    color: AppTheme.grey.withOpacity(0.2),
+                                    offset: const Offset(1.1, 1.1),
+                                    blurRadius: 10.0),
+                              ],
+                            ),
+                            child: Padding(
+                                padding: const EdgeInsets.only(left: 8, right: 8, top: 22),
+                                child: Column(
+                                  children: <Widget>[
+                                    Flexible(
+                                      child: SingleChildScrollView(
+                                        controller: _scrollController,
+                                        child: Container(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 32.0, left: 18, right: 18),
+                                                child: Text(
+                                                  missionData['name'],
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 22,
+                                                    letterSpacing: 0.27,
+                                                    color: AppTheme.darkerText,
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 18, right: 18, bottom: 8, top: 16),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    _userRepository.getUserWidget(context, missionData['ownerID'], authorData),
+                                                  ],
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.only(top: 8, bottom: 0, left: 16, right: 16),
+                                                child: Text(
+                                                  'We are looking for: ',
+                                                  style: AppTheme.body1,
+                                                ),
+                                              ),
+                                              SingleChildScrollView(
+                                                child: Container(
+                                                  height: 75,
+                                                  child: Padding(
+                                                      padding: const EdgeInsets.all(4),
+                                                      child: ListView.builder(
+                                                          itemCount: missionData['needs'].length,
+                                                          scrollDirection: Axis.horizontal,
+                                                          itemBuilder: (BuildContext context, int index){
+                                                            return getRoleBoxUI('0', missionData['needs'][index]);
+                                                          }
+                                                      )
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 8, right: 8, top: 0, bottom: 0),
+                                                child: Column(
+                                                  children: buildMissionContent(missionData, context),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 16,
+                                            left: 16, bottom: 24, right: 16),
+                                        child: InkWell(
+                                          onTap: () async {
+                                            if (userID == null){
+                                              Navigator.push<dynamic>(
+                                                context,
+                                                MaterialPageRoute<dynamic>(
+                                                  builder: (BuildContext context) => LoginScreen(),
+                                                ),
+                                              );
+                                              return;
+                                            }
+                                            followed = !followed;
+                                            setState(() {
+
+                                            });
+
+                                            if(followed){
+                                              await Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
+                                                if(snap.data.isNotEmpty){
+                                                  await _userRepository.getUser().then((snap) {
+                                                    userID = snap.uid;
+                                                  });
+                                                  await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                                                    'followedBy': FieldValue.arrayUnion([userID])
+                                                  });
+                                                  await Firestore.instance.collection('users').document(userID).updateData({
+                                                    'follows': FieldValue.arrayUnion([widget.missionID])
+                                                  });
+                                                }
+                                              });
+                                            }
+                                            else{
+                                              await Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
+                                                if(snap.data.isNotEmpty){
+                                                  await _userRepository.getUser().then((snap) {
+                                                    userID = snap.uid;
+                                                  });
+                                                  await Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                                                    'followedBy': FieldValue.arrayRemove([userID])
+                                                  });
+                                                  await Firestore.instance.collection('users').document(userID).updateData({
+                                                    'follows': FieldValue.arrayRemove([widget.missionID])
+                                                  });
+                                                }
+                                              });
+                                            }
+                                          },
+                                          child: Container(
+                                            height: 48,
+                                            width: 250,
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primary,
+                                              borderRadius: const BorderRadius.all(
+                                                Radius.circular(16.0),
+                                              ),
+                                              boxShadow: <BoxShadow>[
+                                                BoxShadow(
+                                                    color: AppTheme
+                                                        .primary
+                                                        .withOpacity(0.5),
+                                                    offset: const Offset(1.1, 1.1),
+                                                    blurRadius: 10.0),
+                                              ],
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                followed ? 'Unfollow' : 'Follow',
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                  letterSpacing: 0.0,
+                                                  color: AppTheme
+                                                      .nearlyWhite,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                            ),
+                          ),
+                          Positioned(
+                              top: 0,
+                              right: 10,
+                              child: Row(
+                                  children: getLabels(missionData)
+                              )
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  Positioned(
+                    top: MediaQuery.of(context).padding.top,
+                    left: MediaQuery.of(context).padding.left + 20,
+                    child: SizedBox(
+                      width: AppBar().preferredSize.height-8,
+                      height: AppBar().preferredSize.height-8,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
+                          child: Container(
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        else {
+          return Scaffold(
+              appBar: AppBar(
+                backgroundColor: AppTheme.white,
+              ),
+              body: Center(
+                child: Text('Loadding mission'),
+              )
+          );
+        }
+      },
+    );
+  }
+
+  Widget getRoleBoxUI(String text1, String text2) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.nearlyWhite,
+          borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+                color: AppTheme.grey.withOpacity(0.2),
+                offset: const Offset(1.1, 1.1),
+                blurRadius: 4.0),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+              left: 18.0, right: 18.0, top: 12.0, bottom: 12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              // 预留位
+//              Text(
+//                text1,
+//                textAlign: TextAlign.center,
+//                style: TextStyle(
+//                  fontWeight: FontWeight.w600,
+//                  fontSize: 14,
+//                  letterSpacing: 0.27,
+//                  color: AppTheme.nearlyBlue,
+//                ),
+//              ),
+              Text(
+                text2,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  letterSpacing: 0.27,
+                  color: AppTheme.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class MissionFloatingButton extends StatefulWidget {
+  MissionFloatingButton(
+  {Key key,
+    @required this.state,
+    @required this.userID,
+    @required this.missionID,
+    @required this.wechatThumbnailUrl,
+    @required this.wechatDescription
+  }) : super(key : key);
+
+  final _MissionDetail state;
+  final String userID;
+  final String missionID;
+  final String wechatThumbnailUrl;
+  final String wechatDescription;
+  
+  _MissionFloatingButtonState createState() => _MissionFloatingButtonState();
+}
+
+class _MissionFloatingButtonState extends State<MissionFloatingButton> {
 
   void buildShareSheet(BuildContext context, Map mission){
     var shareSheetController = showModalBottomSheet(
@@ -402,8 +786,8 @@ class _MissionDetail extends State<MissionDetail>
                               shareToWeChat(WeChatShareWebPageModel(
                                 "https://freetitle.us/missiondetail?id=${widget.missionID}",
                                 title: mission['title'],
-                                description: wechatDescription != null ? wechatDescription : "点击阅读全文",
-                                thumbnail: wechatThumbailUrl != null ? WeChatImage.network(wechatThumbailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
+                                thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
                               ));
                             },
                           )
@@ -449,500 +833,111 @@ class _MissionDetail extends State<MissionDetail>
     );
 
   }
-
-  void showFloatingActionButton(bool value){
-    setState(() {
-      showFloatingAction = value;
-    });
-  }
-
+  
   @override
   Widget build(BuildContext context) {
-//    final double tempHeight = MediaQuery.of(context).size.height -
-//        (MediaQuery.of(context).size.width / 1.2) +
-//        24.0;
-    
-//    String missionID = widget.missionID;
-    return StreamBuilder<DocumentSnapshot>(
-      stream: Firestore.instance.collection('missions').document(widget.missionID).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Scaffold(
-                appBar: AppBar(
-                  backgroundColor: AppTheme.primary,
-                ),
-                body: PlaceHolderCard(
-                  text: 'Loadding mission',
-                )
-            );
-          default:
-            if(snapshot.data.data != null){
-              Map missionData = snapshot.data.data;
-              if(missionData['followedBy'] != null && missionData['followedBy'].contains(userID)){
-                followed = true;
-              }
-              if(missionData['upvotedBy'] != null && missionData['upvotedBy'].contains(userID)){
-                liked = true;
-              }
-
-              return Container(
-                color: AppTheme.nearlyWhite,
-                child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  floatingActionButton: showFloatingAction ? SpeedDial(
-                    marginRight: 20,
-                    marginBottom: 80,
-                    animatedIcon: AnimatedIcons.menu_close,
-                    animatedIconTheme: IconThemeData(size: 22.0),
-                    closeManually: false,
-                    curve: Curves.bounceIn,
-                    overlayColor: Colors.black,
-                    overlayOpacity: 0.5,
-                    tooltip: 'Speed Dial',
-                    heroTag: 'speed-dial-hero-tag',
-                    backgroundColor: AppTheme.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 8.0,
-                    shape: CircleBorder(),
-                    children: [
-                      SpeedDialChild(
-                        child: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
-                        backgroundColor: AppTheme.secondary,
-                        label: "点赞 ${missionData['likes'].toString()}",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          if (userID==null){
-                            Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => LoginScreen(),
-                              ),
-                            );
-                            return;
-                          }
-
-
-                          liked = !liked;
-
-                          Firestore.instance.collection('missions').document(widget.missionID).updateData({
-                            "likes": FieldValue.increment((liked ? (1) : (-1))),
-                          }).whenComplete(() {
-                            print('succeeded');
-                          }).catchError((e) {
-                            print('get error $e');
-                          });
-
-                          if(liked){
-                            Firestore.instance.collection('missions').document(widget.missionID).updateData({
-                              "upvotedBy": FieldValue.arrayUnion([userID]),
-                            }).whenComplete(() {
-                              print('like  succeeds');
-                            }).catchError((e) {
-                              print('like gets error $e');
-                            });
-                          }
-                          else{
-                            Firestore.instance.collection('missions').document(widget.missionID).updateData({
-                              "upvotedBy": FieldValue.arrayRemove([userID]),
-                            }).whenComplete(() {
-                              print('unlike  succeeds');
-                            }).catchError((e) {
-                              print('unlike gets error $e');
-                            });
-                          }
-                        },
-                      ),
-                      SpeedDialChild(
-                        child: Icon(Icons.comment),
-                        backgroundColor: AppTheme.secondary,
-                        label: "评论 ${missionData['comments'] != null ? missionData['comments'].length.toString() : '0' }",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          if (userID == null){
-                            Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                builder: (BuildContext context) => LoginScreen(),
-                              ),
-                            );
-                            return;
-                          }
-                          Navigator.push<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) => CommentInputPage(pageID: widget.missionID, parentLevel: 0, parentID: widget.missionID, parentType: 'mission', pageType: 'mission', targetID: widget.missionID,)
-                              )
-                          );
-                        },
-                      ),
-//                      SpeedDialChild(
-//                        child: marked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
-//                        backgroundColor: AppTheme.secondary,
-//                        label: "收藏 ${missionData['markedBy'] != null ? missionData['markedBy'].length.toString() : '0' }",
-//                        labelStyle: AppTheme.body1,
-//                        onTap: () {
-//                          if (userID == null){
-//                            Navigator.push<dynamic>(
-//                              context,
-//                              MaterialPageRoute<dynamic>(
-//                                builder: (BuildContext context) => LoginScreen(),
-//                              ),
-//                            );
-//                            return;
-//                          }
-//                          setState(() {
-//                            marked = !marked;
-//                          });
-//                          if(marked){
-//                            Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
-//                              if(snap.data.isNotEmpty){
-//                                await _userRepository.getUser().then((snap) => {
-//                                  userID = snap.uid,
-//                                });
-//                                await Firestore.instance.collection('missions').document(widget.missionID).updateData({
-//                                  'markedBy': FieldValue.arrayUnion([userID])
-//                                });
-//                                await Firestore.instance.collection('users').document(userID).updateData({
-//                                  'bookmarks': FieldValue.arrayUnion([widget.missionID])
-//                                });
-//                              }
-//                            });
-//                          }
-//                          else{
-//                            Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
-//                              if(snap.data.isNotEmpty){
-//                                await _userRepository.getUser().then((snap) => {
-//                                  userID = snap.uid,
-//                                });
-//                                await Firestore.instance.collection('missions').document(widget.missionID).updateData({
-//                                  'markedBy': FieldValue.arrayRemove([userID])
-//                                });
-//                                await Firestore.instance.collection('users').document(userID).updateData({
-//                                  'bookmarks': FieldValue.arrayRemove([widget.missionID])
-//                                });
-//                              }
-//                            });
-//                          }
-//                        },
-//                      ),
-                      SpeedDialChild(
-                        child: Icon(Icons.share),
-                        backgroundColor: AppTheme.secondary,
-                        label: "分享",
-                        labelStyle: AppTheme.body1,
-                        onTap: () {
-                          buildShareSheet(context, missionData);
-                        },
-                      ),
-                    ],
-                  ) : Container(),
-                  body: Stack(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          AspectRatio(
-                            aspectRatio: 1.2,
-                            child: getImage(missionData),
-                          ),
-                        ],
-                      ),
-                      DraggableScrollableSheet(
-                        initialChildSize: 0.67,
-                        minChildSize: 0.67,
-                        maxChildSize: 0.89,
-                        builder: (BuildContext context, ScrollController _scrollController) {
-
-
-//                          if(_scrollController.hasListeners && widget.restorePosition != null) {
-//                            _scrollController.jumpTo(widget.restorePosition);
-//                          }
-
-
-                          _scrollController.addListener(() {
-                            try{
-                              List<String> missionStore = List();
-                              missionStore.add('mission');
-                              missionStore.add(widget.missionID);
-                              missionStore.add(_scrollController.position.pixels.toString());
-                              sharedPref.setStringList('article', missionStore);
-                            }catch(e) {
-                              print('store mission position failed $e');
-                            }
-                          });
-                          return Stack(
-                            children: <Widget>[
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: AppTheme.nearlyWhite,
-                                  borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(32.0),
-                                      topRight: Radius.circular(32.0)),
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                        color: AppTheme.grey.withOpacity(0.2),
-                                        offset: const Offset(1.1, 1.1),
-                                        blurRadius: 10.0),
-                                  ],
-                                ),
-                                child: Padding(
-                                    padding: const EdgeInsets.only(left: 8, right: 8, top: 22),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Flexible(
-                                          child: SingleChildScrollView(
-                                            controller: _scrollController,
-                                            child: Container(
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        top: 32.0, left: 18, right: 18),
-                                                    child: Text(
-                                                      missionData['name'],
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.w600,
-                                                        fontSize: 22,
-                                                        letterSpacing: 0.27,
-                                                        color: AppTheme.darkerText,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        left: 18, right: 18, bottom: 8, top: 16),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: <Widget>[
-                                                        _userRepository.getUserWidget(missionData['ownerID']),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(top: 8, bottom: 0, left: 16, right: 16),
-                                                    child: Text(
-                                                      'We are looking for: ',
-                                                      style: AppTheme.body1,
-                                                    ),
-                                                  ),
-                                                  SingleChildScrollView(
-                                                    child: Container(
-                                                      height: 75,
-                                                      child: Padding(
-                                                          padding: const EdgeInsets.all(4),
-                                                          child: ListView.builder(
-                                                              itemCount: missionData['needs'].length,
-                                                              scrollDirection: Axis.horizontal,
-                                                              itemBuilder: (BuildContext context, int index){
-                                                                return getRoleBoxUI('0', missionData['needs'][index]);
-                                                              }
-                                                          )
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        left: 8, right: 8, top: 0, bottom: 0),
-                                                    child: Column(
-                                                      children: buildMissionContent(missionData, context),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(top: 16,
-                                                left: 16, bottom: 24, right: 16),
-                                            child: InkWell(
-                                              onTap: () async {
-                                                if (userID == null){
-                                                  Navigator.push<dynamic>(
-                                                    context,
-                                                    MaterialPageRoute<dynamic>(
-                                                      builder: (BuildContext context) => LoginScreen(),
-                                                    ),
-                                                  );
-                                                  return;
-                                                }
-                                                followed = !followed;
-
-                                                if(followed){
-                                                  await Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
-                                                    if(snap.data.isNotEmpty){
-                                                      await _userRepository.getUser().then((snap) {
-                                                        userID = snap.uid;
-                                                      });
-                                                      await Firestore.instance.collection('missions').document(widget.missionID).updateData({
-                                                        'followedBy': FieldValue.arrayUnion([userID])
-                                                      });
-                                                      await Firestore.instance.collection('users').document(userID).updateData({
-                                                        'follows': FieldValue.arrayUnion([widget.missionID])
-                                                      });
-                                                    }
-                                                  });
-                                                }
-                                                else{
-                                                  await Firestore.instance.collection('missions').document(widget.missionID).get().then((snap) async {
-                                                    if(snap.data.isNotEmpty){
-                                                      await _userRepository.getUser().then((snap) {
-                                                        userID = snap.uid;
-                                                      });
-                                                      await Firestore.instance.collection('missions').document(widget.missionID).updateData({
-                                                        'followedBy': FieldValue.arrayRemove([userID])
-                                                      });
-                                                      await Firestore.instance.collection('users').document(userID).updateData({
-                                                        'follows': FieldValue.arrayRemove([widget.missionID])
-                                                      });
-                                                    }
-                                                  });
-                                                }
-                                              },
-                                              child: Container(
-                                                height: 48,
-                                                width: 250,
-                                                decoration: BoxDecoration(
-                                                  color: AppTheme.primary,
-                                                  borderRadius: const BorderRadius.all(
-                                                    Radius.circular(16.0),
-                                                  ),
-                                                  boxShadow: <BoxShadow>[
-                                                    BoxShadow(
-                                                        color: AppTheme
-                                                            .primary
-                                                            .withOpacity(0.5),
-                                                        offset: const Offset(1.1, 1.1),
-                                                        blurRadius: 10.0),
-                                                  ],
-                                                ),
-                                                child: Center(
-                                                  child: Text(
-                                                    followed ? 'Unfollow' : 'Follow',
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: 18,
-                                                      letterSpacing: 0.0,
-                                                      color: AppTheme
-                                                          .nearlyWhite,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                ),
-                              ),
-                              Positioned(
-                                  top: 0,
-                                  right: 10,
-                                  child: Row(
-                                      children: getLabels(missionData)
-                                  )
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      Positioned(
-                        top: MediaQuery.of(context).padding.top,
-                        left: MediaQuery.of(context).padding.left + 20,
-                        child: SizedBox(
-                          width: AppBar().preferredSize.height-8,
-                          height: AppBar().preferredSize.height-8,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
-                              child: Container(
-                                child: Icon(
-                                  Icons.arrow_back_ios,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+    final userID = widget.userID;
+    return SpeedDial(
+      marginRight: 20,
+      marginBottom: 80,
+      animatedIcon: AnimatedIcons.menu_close,
+      animatedIconTheme: IconThemeData(size: 22.0),
+      closeManually: false,
+      curve: Curves.bounceIn,
+      overlayColor: Colors.black,
+      overlayOpacity: 0.5,
+      tooltip: 'Speed Dial',
+      heroTag: 'speed-dial-hero-tag',
+      backgroundColor: AppTheme.primary,
+      foregroundColor: Colors.white,
+      elevation: 8.0,
+      shape: CircleBorder(),
+      children: [
+        SpeedDialChild(
+          child: widget.state.liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+          backgroundColor: AppTheme.secondary,
+          label: "点赞 ${widget.state.missionData['likes'].toString()}",
+          labelStyle: AppTheme.body1,
+          onTap: () {
+            if (widget.state.userID==null){
+              Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                  builder: (BuildContext context) => LoginScreen(),
                 ),
               );
+              return;
+            }
+
+
+            widget.state.liked = !widget.state.liked;
+            setState(() {
+
+            });
+
+            Firestore.instance.collection('missions').document(widget.missionID).updateData({
+              "likes": FieldValue.increment((widget.state.liked ? (1) : (-1))),
+            }).whenComplete(() {
+              print('succeeded');
+            }).catchError((e) {
+              print('get error $e');
+            });
+
+            if(widget.state.liked){
+              Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                "upvotedBy": FieldValue.arrayUnion([userID]),
+              }).whenComplete(() {
+                print('like  succeeds');
+              }).catchError((e) {
+                print('like gets error $e');
+              });
+              widget.state.missionData['likes'] += 1;
             }
             else{
-              return Scaffold(
-                  appBar: AppBar(
-                    backgroundColor: AppTheme.primary,
-                  ),
-                  body: PlaceHolderCard(
-                    text: 'Loadding mission',
-                  )
-              );
+              Firestore.instance.collection('missions').document(widget.missionID).updateData({
+                "upvotedBy": FieldValue.arrayRemove([userID]),
+              }).whenComplete(() {
+                print('unlike  succeeds');
+              }).catchError((e) {
+                print('unlike gets error $e');
+              });
+              widget.state.missionData['likes'] -= 1;
             }
-        }
-
-      },
-    );
-  }
-
-  Widget getRoleBoxUI(String text1, String text2) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.nearlyWhite,
-          borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: AppTheme.grey.withOpacity(0.2),
-                offset: const Offset(1.1, 1.1),
-                blurRadius: 4.0),
-          ],
+          },
         ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-              left: 18.0, right: 18.0, top: 12.0, bottom: 12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              // 预留位
-//              Text(
-//                text1,
-//                textAlign: TextAlign.center,
-//                style: TextStyle(
-//                  fontWeight: FontWeight.w600,
-//                  fontSize: 14,
-//                  letterSpacing: 0.27,
-//                  color: AppTheme.nearlyBlue,
-//                ),
-//              ),
-              Text(
-                text2,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  letterSpacing: 0.27,
-                  color: AppTheme.grey,
+        SpeedDialChild(
+          child: Icon(Icons.comment),
+          backgroundColor: AppTheme.secondary,
+          label: "评论 ${widget.state.missionData['comments'] != null ? widget.state.missionData['comments'].length.toString() : '0' }",
+          labelStyle: AppTheme.body1,
+          onTap: () {
+            if (userID == null){
+              Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                  builder: (BuildContext context) => LoginScreen(),
                 ),
-              ),
-            ],
-          ),
+              );
+              return;
+            }
+            Navigator.push<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) => CommentInputPage(pageID: widget.missionID, parentLevel: 0, parentID: widget.missionID, parentType: 'mission', pageType: 'mission', targetID: widget.missionID,)
+                )
+            );
+          },
         ),
-      ),
+        SpeedDialChild(
+          child: Icon(Icons.share),
+          backgroundColor: AppTheme.secondary,
+          label: "分享",
+          labelStyle: AppTheme.body1,
+          onTap: () {
+            buildShareSheet(context, widget.state.missionData);
+          },
+        ),
+      ],
     );
   }
 }
