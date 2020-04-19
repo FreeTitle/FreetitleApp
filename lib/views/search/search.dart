@@ -56,7 +56,9 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
     List users = List();
 
     for(final uid in userIDs){
-      users.add(_userRepository.getUserWidget(uid, color: AppTheme.nearlyWhite));
+      var userSnap = await Firestore.instance.collection('users').document(uid).get();
+      Map userData = userSnap.data;
+      users.add(_userRepository.getUserWidget(context, uid, userData, color: AppTheme.nearlyWhite));
     }
 
     if(matchUid != null){

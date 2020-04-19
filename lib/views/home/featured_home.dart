@@ -52,45 +52,48 @@ class _FeaturedHome extends State<FeaturedHome> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: getPublications(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
-        if(snapshot.connectionState == ConnectionState.done){
-          return LiquidPullToRefresh(
-            scrollController: widget.scrollController,
-            color: AppTheme.primary,
-            showChildOpacityTransition: false,
-            onRefresh: () async {
-              publications.clear();
-              await Firestore.instance.collection('publications').orderBy('pubDate', descending: true).getDocuments().then((snap) {
-                if(snap.documents.isNotEmpty){
-                  snap.documents.forEach((p) {
-                    if(p.data['ready'] == true)
-                      publications.add(p.data);
-                  });
-                }
-              });
-            },
-            child: StaggeredGridView.countBuilder(
-              key: PageStorageKey('Featured'),
-              itemCount: publications.length,
-              crossAxisCount: 4,
-              itemBuilder: (BuildContext context, int index) {
-                return PublicationTile(publication: publications[index],);
+    return Padding(
+      padding: EdgeInsets.only(top: 12, left: 12, right: 12),
+      child: FutureBuilder<bool>(
+        future: getPublications(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+          if(snapshot.connectionState == ConnectionState.done){
+            return LiquidPullToRefresh(
+              scrollController: widget.scrollController,
+              color: AppTheme.primary,
+              showChildOpacityTransition: false,
+              onRefresh: () async {
+                publications.clear();
+                await Firestore.instance.collection('publications').orderBy('pubDate', descending: true).getDocuments().then((snap) {
+                  if(snap.documents.isNotEmpty){
+                    snap.documents.forEach((p) {
+                      if(p.data['ready'] == true)
+                        publications.add(p.data);
+                    });
+                  }
+                });
               },
-              staggeredTileBuilder: (int index) =>
-                  StaggeredTile.fit(2),
-              mainAxisSpacing: 16.0,
-              crossAxisSpacing: 16.0,
-            ),
-          );
-        }
-        else {
-          return Center(
-            child: Text('Loading'),
-          );
-        }
-      },
+              child: StaggeredGridView.countBuilder(
+                key: PageStorageKey('Featured'),
+                itemCount: publications.length,
+                crossAxisCount: 4,
+                itemBuilder: (BuildContext context, int index) {
+                  return PublicationTile(publication: publications[index],);
+                },
+                staggeredTileBuilder: (int index) =>
+                    StaggeredTile.fit(2),
+                mainAxisSpacing: 16.0,
+                crossAxisSpacing: 16.0,
+              ),
+            );
+          }
+          else {
+            return Center(
+              child: Text('Loading'),
+            );
+          }
+        },
+      ),
     );
   }
 }
