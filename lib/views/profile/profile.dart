@@ -248,7 +248,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                                               ),
                                               child: ClipRRect(
                                                 borderRadius: BorderRadius.all(Radius.circular(80.0)),
-                                                child: userData['avatarUrl'] != null ? Image.network(userData['avatarUrl'], fit: BoxFit.fill,) : Image.asset('assets/logo.png', fit: BoxFit.fill),
+                                                child: userData['avatarUrl'] != null ? Image.network(userData['avatarUrl'], fit: BoxFit.cover,) : Image.asset('assets/logo.png', fit: BoxFit.fill),
                                               ),
                                             ),
                                           ],
