@@ -235,6 +235,7 @@ class _CommentInputPage extends State<CommentInputPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppTheme.primary,
         child: buildButtonIcon(),
         onPressed: () async {
           var _image = await ImagePicker.pickImage(source: ImageSource.gallery);
