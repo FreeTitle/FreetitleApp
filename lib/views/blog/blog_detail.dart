@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/model/photo.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/chat/contact_list_view.dart';
 import 'package:freetitle/views/comment/comment.dart';
@@ -21,6 +22,8 @@ import 'package:share/share.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
 import 'package:pinch_zoom_image/pinch_zoom_image.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -53,10 +56,11 @@ class _BlogDetail extends State<BlogDetail> {
   final commentBottomKey = PageStorageKey('CommentBottom');
   String wechatThumbnailUrl;
   String wechatDescription;
+  Future<bool> _getBlogData;
 
   Map blogData;
   Map authorData;
-
+  String htmlBody;
 
   @override
   void initState(){
@@ -83,6 +87,8 @@ class _BlogDetail extends State<BlogDetail> {
         print('store blog position failed $e');
       }
     });
+
+    _getBlogData = getBlogData();
     super.initState();
   }
 
@@ -95,30 +101,30 @@ class _BlogDetail extends State<BlogDetail> {
 
 
 
-  List<Widget> buildBlogContent(blog, context){
+  List<Widget> buildBlogContent(content, context){
     List<Widget> blogWidget = new List<Widget>();
-    if(blog == null){
+    if(content == null){
       blogWidget.add(Text('Loading blog'));
       return blogWidget;
     }
     Padding title = new Padding(
       padding: EdgeInsets.only(top: 8.0, left: 24.0, right: 24.0),
-      child: Text(blog['title'], style: AppTheme.headline,),
+      child: Text(content['title'], style: AppTheme.headline,),
     );
     // Add title
     blogWidget.add(title);
     // Add author
-    Widget author = _userRepository.getUserWidget(context, blog['user'], authorData);
+    Widget author = _userRepository.getUserWidget(context, content['user'], authorData);
     blogWidget.add(Padding(
       padding: EdgeInsets.only(top: 8, left: 24, right: 24),
       child: author,
     ));
     // Add time
-    var date = blog['time'].toDate();
+    var date = content['time'].toDate();
 
     // Process contents
-    if(blog['article'] != null){
-      for(var block in blog['article']['blocks']){
+    if(content['article'] != null){
+      for(var block in content['article']['blocks']){
         String blockText = block['data']['text'];
         if(block['type'] == 'paragraph'){
           blockText = blockText.replaceAll('&nbsp;', ' ');
@@ -243,9 +249,9 @@ class _BlogDetail extends State<BlogDetail> {
           }
         }
       }
-    }
-    else if (blog.containsKey('blocks')){
-      for(var block in blog['blocks']){
+    } // Handle old style content
+    else if (content.containsKey('blocks')){
+      for(var block in content['blocks']){
         if(block.contains('https')){
           blogWidget.add(
               Padding(
@@ -265,7 +271,7 @@ class _BlogDetail extends State<BlogDetail> {
       }
     }
 
-    if(blog.containsKey('RSSarticle')){
+    if(content.containsKey('RSSarticle')){
       blogWidget.add(
         SizedBox(
           height: 20,
@@ -273,18 +279,25 @@ class _BlogDetail extends State<BlogDetail> {
       );
 
       blogWidget.add(
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height-350,
-          child: WebView(
-            initialUrl: Uri.dataFromString("<html><body>${blog['RSSarticle']}</body></html>",
-            mimeType: "text/html",
-            encoding: Encoding.getByName('utf-8')).toString(),
-            javascriptMode: JavascriptMode.unrestricted,
-            gestureRecognizers: [Factory(() => PlatformViewVerticalGestureRecognizer())].toSet(),
-          ),
+        Html(
+          data: content['RSSarticle'],
+          padding: EdgeInsets.all(16.0),
+          defaultTextStyle: TextStyle(fontFamily: 'serif'),
+          onLinkTap: (url) {
+            launch(url, forceSafariVC: false);
+          },
+          onImageTap: (src) {
+            Navigator.push<dynamic>(
+              context,
+              MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => PhotoScreen(photoUrl: src, photoType: 'network',)
+              )
+            );
+          },
         )
       );
+
+
     }
 
     blogWidget.add(
@@ -303,7 +316,7 @@ class _BlogDetail extends State<BlogDetail> {
         )
     );
 
-    List<String> commentIDs = getCommentIDs(blog);
+    List<String> commentIDs = getCommentIDs(content);
     if (commentIDs.isNotEmpty){
       blogWidget.add(CommentBottom(key: commentBottomKey,pageID: widget.blogID, pageType: 'blog',));
 //      if(commentIDs.length > 3){
@@ -364,7 +377,7 @@ class _BlogDetail extends State<BlogDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<bool>(
-        future: getBlogData(),
+        future: _getBlogData,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
           if(snapshot.connectionState == ConnectionState.done) {
             if(blogData['markedBy'] != null && blogData['markedBy'].contains(userID)){
@@ -432,8 +445,8 @@ class _BlogDetail extends State<BlogDetail> {
                 appBar: AppBar(
                   backgroundColor: AppTheme.white,
                 ),
-                body: PlaceHolderCard(
-                  text: 'Loadding Blog',
+                body: Center(
+                  child: Text('Loadding Blog'),
                 )
             );
           }

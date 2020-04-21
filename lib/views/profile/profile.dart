@@ -28,13 +28,14 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   List missionIDs;
   List bookmarkList;
   Map userData;
-
+  Future<bool> _getUserStuff;
   AnimationController animationController;
 
   @override void initState() {
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this
     );
+    _getUserStuff = getUserStuff();
     super.initState();
   }
 
@@ -85,7 +86,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: getUserStuff(),
+      future: _getUserStuff,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
         if(snapshot.connectionState == ConnectionState.done){
           return Container(
@@ -95,7 +96,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                 children: <Widget>[
                   UserInfoView(userData: userData, isMyProfile: widget.isMyProfile, userID: widget.userID,),
                   DraggableScrollableSheet(
-                    initialChildSize: 0.60,
+                    initialChildSize: 0.65,
                     minChildSize: 0.53,
                     maxChildSize: 0.9,
                     builder: (BuildContext context, ScrollController _scrollController) {
