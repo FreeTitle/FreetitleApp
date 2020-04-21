@@ -11,6 +11,7 @@ import 'package:freetitle/views/profile/profile.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:pinch_zoom_image/pinch_zoom_image.dart';
 
 class ChatView extends StatefulWidget{
 
@@ -141,7 +142,13 @@ class _ChatView extends State<ChatView> {
                         }
                       });
                       messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-                      return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                      return GestureDetector(
+                        onVerticalDragDown: (details) {
+                          print('vertical drag dowm');
+                          print(details);
+                        },
+                        child: Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,),
+                      );
                     }
                     else{
                       return new Center(
@@ -186,18 +193,17 @@ class _Chat extends State<Chat>{
 
   void onSend(ChatMessage message){
     message.user.avatar = widget.avatar;
+
+    var chatRef = Firestore.instance.collection('chat').document(widget.chatID);
+    var messageRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
     Firestore.instance.runTransaction((transaction) async {
-      var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
-      await transaction.set(documentRef, message.toJson()).catchError((e){
+      await transaction.set(messageRef, message.toJson()).catchError((e){
         print(e);
       });
-    });
-    Firestore.instance.runTransaction((transaction) async {
-      var documentRef = Firestore.instance.collection('chat').document(widget.chatID);
-      await transaction.update(documentRef, {
+      await transaction.update(chatRef, {
         'lastMessageTime': message.createdAt,
         'lastSenderId': widget.user.uid,
-        'lastMessageContent': message.text,
+        'lastMessageContent': message.image != null ? '[图片]' : message.text,
       }).catchError((e) {
         print(e);
       });
@@ -350,15 +356,15 @@ class _Chat extends State<Chat>{
                 ),
               ),
               if (message.image != null)
-                Padding(
-                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: FadeInImage.memoryNetwork(
+                PinchZoomImage(
+                  image: FadeInImage.memoryNetwork(
                     height: MediaQuery.of(context).size.height * 0.3,
                     width: MediaQuery.of(context).size.width * 0.7,
                     fit: BoxFit.contain,
                     image: message.image,
                     placeholder: kTransparentImage,
                   ),
+                  zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
                 ),
               Padding(
                 padding: EdgeInsets.only(top: 5.0),

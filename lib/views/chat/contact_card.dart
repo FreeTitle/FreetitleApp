@@ -26,9 +26,11 @@ class _ContactCard extends State<ContactCard>{
 
   UserRepository _userRepository;
   String userID;
+  bool isLaunchButtonEnabled;
   @override
   void initState(){
     _userRepository = UserRepository();
+    isLaunchButtonEnabled = true;
     _userRepository.getUser().then((snap) {
       userID = snap.uid;
     });
@@ -45,7 +47,14 @@ class _ContactCard extends State<ContactCard>{
           children: <Widget>[
             InkWell(
               onTap: () async {
-                launchChat(context, userID, widget.otherUserID, widget.otherUsername, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID);
+                if(!isLaunchButtonEnabled){
+                  return;
+                }
+                isLaunchButtonEnabled = false;
+                setState(() {
+
+                });
+                launchChat(context, userID, widget.otherUserID, widget.otherUsername, widget.otherAvatar, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID);
               },
               child: Padding(
                 padding: EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),

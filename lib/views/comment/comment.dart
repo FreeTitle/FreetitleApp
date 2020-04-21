@@ -7,7 +7,7 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:freetitle/views/login/login.dart';
-import 'package:synchronized/synchronized.dart';
+import 'package:pinch_zoom_image/pinch_zoom_image.dart';
 
 class CommentBox extends StatefulWidget {
 
@@ -53,14 +53,26 @@ class _CommentBoxState extends State<CommentBox>{
 
       );
     }
-    Image img;
+    Widget img;
     if (content['image'] != null){
-      img = Image.network(content['image']);
+      img =  PinchZoomImage(
+        image: Image.network(content['image'], fit: BoxFit.contain),
+        zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
+        onZoomStart: () {
+          print('Zoom started');
+        },
+        onZoomEnd: () {
+          print('Zoom finished');
+        },
+      );
     }
     if (img != null){
       return Column(
         children: <Widget>[
           img,
+          SizedBox(
+            height: 15,
+          ),
           Text(content['text']),
         ],
       );

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/gestures.dart';
+import 'package:freetitle/model/user_repository.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freetitle/views/chat/chat.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class LinkTextSpan extends TextSpan {
 
@@ -150,29 +154,35 @@ class PlatformViewVerticalGestureRecognizer
 }
 
 
-void launchChat(context, userID, otherUserID, otherUsername, {sharedBlogID, sharedMissionID}) async {
+void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {sharedBlogID, sharedMissionID}) async {
   List existingChats = List();
-  await Firestore.instance.collection('chat')
-      .where('users', arrayContains: userID)
-      .getDocuments().then((snap) {
-    if(snap.documents.isNotEmpty){
-      for(var doc in snap.documents){
-        if(doc.data['users'].contains(otherUserID)){
-          existingChats.add(doc);
-        }
-      }
-    }
+  SharedPreferences sharedPref;
+  await SharedPreferences.getInstance().then((pref) {
+    sharedPref = pref;
   });
+
+  List<String> chatJson = List();
+  chatJson = sharedPref.getStringList('chatlist');
+  int index;
+  for(index = 0;index < chatJson.length;index++) {
+    Map chat = json.decode(chatJson[index]);
+    if(chat["otherUserID"] == otherUserID){
+      existingChats.add(chat);
+      break;
+    }
+  }
   if(existingChats.isNotEmpty){
     assert (existingChats.length == 1);
+    // When this chat exists
+    Map chat = existingChats[0];
+    String chatID = chat['id'];
 
-    var userRef = await Firestore.instance.collection('users').document(userID).get();
-    String chatID = existingChats[0].documentID;
-    if (userRef.data['chats'].contains(chatID) == false) {
-      await Firestore.instance.collection('users').document(userID).updateData({
-        'chats': FieldValue.arrayUnion([chatID])
-      });
-    }
+    chat['avatar'] = otherUserAvatar;
+    chat['displayName'] = otherUsername;
+    chat['delete'] = false;
+
+    chatJson[index] = json.encode(chat);
+    sharedPref.setStringList('chatlist', chatJson);
 
     Navigator.push<dynamic>(
         context,
@@ -191,17 +201,24 @@ void launchChat(context, userID, otherUserID, otherUsername, {sharedBlogID, shar
           otherUserID,
         ],
         'lastMessageTime': DateTime.now(),
+        'lastMessageContent': '',
       });
       chatID = documentRef.documentID;
-
-      await Firestore.instance.collection('users').document(userID).updateData({
-        'chats': FieldValue.arrayUnion([chatID]),
-      });
-
-      await Firestore.instance.collection('users').document(otherUserID).updateData({
-        'chats': FieldValue.arrayUnion([chatID]),
-      });
     });
+
+    List<String> chatJson;
+    chatJson = sharedPref.getStringList('chatlist');
+
+    chatJson.add(json.encode({
+      'id': chatID,
+      'otherUserID': otherUserID,
+      'lastMessageContent': '',
+      'lastMessageTime': DateTime.now().millisecondsSinceEpoch,
+      'avatar': otherUserAvatar,
+      'displayName': otherUsername,
+      'delete': false,
+    }));
+    sharedPref.setStringList('chatlist', chatJson);
 
     Navigator.push<dynamic>(
         context,

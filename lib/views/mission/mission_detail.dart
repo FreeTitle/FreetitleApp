@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/model/photo.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/comment/comment_bottom.dart';
@@ -19,6 +20,7 @@ import 'package:freetitle/views/chat/contact_list_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
+import 'package:pinch_zoom_image/pinch_zoom_image.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -81,14 +83,35 @@ class _MissionDetail extends State<MissionDetail>
     super.dispose();
   }
 
-  Image getImage(missionData){
-    Image img;
-    img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
+  Widget getImage(missionData){
+    Widget img;
+    img = InkWell(
+      child: Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,),
+      onTap: () {
+        Navigator.push<dynamic>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PhotoScreen(photoType: 'asset', photoUrl: 'assets/images/blog_placeholder.png',)
+          )
+        );
+      },
+    );
     if(missionData['article'] != null){
       for(var block in missionData['article']['blocks']){
         if(block['type'] == "image"){
           if(block['data']['file']['url'] != null){
-            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
+//            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
+            img = InkWell(
+              child: Image.network(block['data']['file']['url'], fit: BoxFit.cover,),
+              onTap: () {
+                Navigator.push<dynamic>(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PhotoScreen(photoType: 'network', photoUrl: block['data']['file']['url'],)
+                    )
+                );
+              },
+            );
             break;
           }
         }
@@ -176,7 +199,16 @@ class _MissionDetail extends State<MissionDetail>
           missionWidget.add(
               Padding(
                 padding: EdgeInsets.all(20.0),
-                child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+                child: PinchZoomImage(
+                  image: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+                  zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
+                  onZoomStart: () {
+                    print('Zoom started');
+                  },
+                  onZoomEnd: () {
+                    print('Zoom finished');
+                  },
+                ),
               )
           );
         }
@@ -289,28 +321,10 @@ class _MissionDetail extends State<MissionDetail>
     if (commentIDs.isNotEmpty){
       missionWidget.add(
           NewCommentBottom(
-//            commentIDs: commentIDs.length > 3 ? commentIDs.sublist(commentIDs.length-3) : commentIDs,
             pageID: widget.missionID,
             pageType: 'mission',
           )
       );
-//      if(commentIDs.length > 3){
-//        missionWidget.add(
-//            Center(
-//              child: InkWell(
-//                onTap: () {
-//                  Navigator.push<dynamic>(
-//                    context,
-//                    MaterialPageRoute<dynamic>(
-//                      builder: (BuildContext context) => CommentPage(pageID: widget.missionID, pageType: 'mission',)
-//                    )
-//                  );
-//                },
-//                child: Text('更多评论...', style: AppTheme.link,),
-//              ),
-//            )
-//        );
-//      }
     }else{
       missionWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }
@@ -332,7 +346,7 @@ class _MissionDetail extends State<MissionDetail>
           color: AppTheme.primary,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0)),
-          elevation: 10.0,
+          elevation: 3.0,
           child: Container(
             width: 100,
             height: 40,
@@ -444,7 +458,7 @@ class _MissionDetail extends State<MissionDetail>
                               ],
                             ),
                             child: Padding(
-                                padding: const EdgeInsets.only(left: 8, right: 8, top: 22),
+                                padding: const EdgeInsets.only(left: 8, right: 8, top: 44),
                                 child: Column(
                                   children: <Widget>[
                                     Flexible(
@@ -455,6 +469,9 @@ class _MissionDetail extends State<MissionDetail>
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
+                                              Row(
+                                                  children: getLabels(missionData)
+                                              ),
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 32.0, left: 18, right: 18),
@@ -603,12 +620,31 @@ class _MissionDetail extends State<MissionDetail>
                                 )
                             ),
                           ),
+//                          Positioned(
+//                              top: 0,
+//                              left: MediaQuery.of(context).size.width/2,
+//                              child: IconButton(
+//                                icon: Icon(Icons.keyboard_arrow_up),
+//                                onPressed: () {
+//
+//                                },
+//                              )
+//                          ),
                           Positioned(
-                              top: 0,
-                              right: 10,
-                              child: Row(
-                                  children: getLabels(missionData)
-                              )
+                            top: 0,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Center(
+                                child: Container(
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_upward),
+                                    onPressed: () {
+                                      _scrollController.jumpTo(0.0);
+                                    },
+                                  ),
+                                )
+                              ),
+                            ),
                           ),
                         ],
                       );

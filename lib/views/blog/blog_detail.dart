@@ -20,6 +20,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share/share.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
+import 'package:pinch_zoom_image/pinch_zoom_image.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -184,7 +185,16 @@ class _BlogDetail extends State<BlogDetail> {
           blogWidget.add(
             Padding(
               padding: EdgeInsets.all(20.0),
-              child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+              child: PinchZoomImage(
+                image: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+                zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
+                onZoomStart: () {
+                  print('Zoom started');
+                },
+                onZoomEnd: () {
+                  print('Zoom finished');
+                },
+              ),
             )
           );
         }
