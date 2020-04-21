@@ -279,6 +279,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  flutter_slidable:
+    dependency: "direct main"
+    description:
+      name: flutter_slidable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.4"
   flutter_speed_dial:
     dependency: "direct main"
     description:
@@ -443,6 +450,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.0"
+  photo_view:
+    dependency: "direct main"
+    description:
+      name: photo_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.2"
+  pinch_zoom_image:
+    dependency: "direct main"
+    description:
+      name: pinch_zoom_image
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.5"
   platform:
     dependency: transitive
     description:
@@ -464,6 +485,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.5"
+  pull_to_refresh:
+    dependency: "direct main"
+    description:
+      name: pull_to_refresh
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.8"
   quiver:
     dependency: transitive
     description:
@@ -644,6 +672,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  webfeed:
+    dependency: "direct main"
+    description:
+      name: webfeed
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.2"
   webview_flutter:
     dependency: "direct main"
     description:

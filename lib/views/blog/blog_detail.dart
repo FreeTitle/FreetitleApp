@@ -305,7 +305,7 @@ class _BlogDetail extends State<BlogDetail> {
 
     List<String> commentIDs = getCommentIDs(blog);
     if (commentIDs.isNotEmpty){
-      blogWidget.add(NewCommentBottom(key: commentBottomKey,pageID: widget.blogID, pageType: 'blog',));
+      blogWidget.add(CommentBottom(key: commentBottomKey,pageID: widget.blogID, pageType: 'blog',));
 //      if(commentIDs.length > 3){
 //        blogWidget.add(
 //            Center(

@@ -320,7 +320,7 @@ class _MissionDetail extends State<MissionDetail>
     List<String> commentIDs = getCommentIDs(mission);
     if (commentIDs.isNotEmpty){
       missionWidget.add(
-          NewCommentBottom(
+          CommentBottom(
             pageID: widget.missionID,
             pageType: 'mission',
           )

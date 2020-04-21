@@ -465,7 +465,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                       UserRepository _userRepository = UserRepository();
                       final thisUser = await _userRepository.getUser();
                       final uid = thisUser.uid;
-                      launchChat(context, uid, widget.userID, userData['displayName']);
+                      launchChat(context, uid, widget.userID, userData['avatarUrl'], userData['displayName']);
                     },
                     child: Container(
                       width: 60,

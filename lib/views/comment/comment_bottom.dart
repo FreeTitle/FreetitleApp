@@ -7,9 +7,9 @@ import 'package:freetitle/views/comment/comment.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:freetitle/app_theme.dart';
 
-class NewCommentBottom extends StatefulWidget {
+class CommentBottom extends StatefulWidget {
 
-  const NewCommentBottom(
+  const CommentBottom(
       {Key key,
         @required this.pageID,
         @required this.pageType,
@@ -19,10 +19,10 @@ class NewCommentBottom extends StatefulWidget {
   final String pageType;
 
   @override
-  _NewCommentBottomState createState() => _NewCommentBottomState();
+  _CommentBottomState createState() => _CommentBottomState();
 }
 
-class _NewCommentBottomState extends State<NewCommentBottom>{
+class _CommentBottomState extends State<CommentBottom>{
 
   ScrollController _scrollController;
   UserRepository _userRepository;

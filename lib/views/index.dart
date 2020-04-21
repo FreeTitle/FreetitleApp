@@ -59,7 +59,7 @@ class _IndexPageState extends State<IndexPage> {
 //    unreadMessages['ImDgoO7r63XVZCrhuxKU'] =  1;
     _children = [
       Home(),
-      ChatListView(unreadMessages: unreadMessages, callback: readChat,),
+      ChatListScreen(unreadMessages: unreadMessages, callback: readChat,),
       SearchView(),
       GetMyProfile(),
     ];
