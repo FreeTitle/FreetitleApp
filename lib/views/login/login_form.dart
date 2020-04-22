@@ -5,6 +5,7 @@ import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
+import 'package:freetitle/model/util.dart';
 
 class LoginForm extends StatefulWidget {
 
@@ -56,6 +57,8 @@ class _LoginFormState extends State<LoginForm> {
     )..show(context);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return BlocListener(
@@ -78,6 +81,7 @@ class _LoginFormState extends State<LoginForm> {
           returnDialog('登录', '谷歌登录失败,请重试', 5);
         if (state.isSuccess) {
           BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
+          saveCurrentUser();
           if(Navigator.canPop(context)){
             Navigator.of(context).pop();
           }

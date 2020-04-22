@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/register/register.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:freetitle/model/util.dart';
 
 class RegisterForm extends StatefulWidget {
   State<RegisterForm> createState() => _RegisterFormState();
@@ -57,12 +58,14 @@ class _RegisterFormState extends State<RegisterForm> {
     )..show(context);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BlocListener(
       bloc: _registerBloc,
       listener: (BuildContext context, RegisterState state) {
         if (state.isSuccess) {
+          saveCurrentUser();
           BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
           Navigator.of(context).pop();
         }

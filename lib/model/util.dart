@@ -153,6 +153,28 @@ class PlatformViewVerticalGestureRecognizer
   void didStopTrackingLastPointer(int pointer) {}
 }
 
+void saveCurrentUser() async {
+  SharedPreferences sharedPref;
+  await SharedPreferences.getInstance().then((pref) {
+    sharedPref = pref;
+  });
+  UserRepository _userRepository = UserRepository();
+  var userRef = await _userRepository.getUser();
+  print('userRef: $userRef');
+  if(userRef != null && userRef.uid != null){
+    var userDataRef = await Firestore.instance.collection('users').document(userRef.uid).get();
+    print('userDataRef $userDataRef');
+    if(userDataRef != null){
+      Map userData = userDataRef.data;
+      print('userData $userData');
+      assert(userRef.uid == userDataRef.documentID);
+      userData['uid'] = userRef.uid;
+      userData['lastClaimTime'] = null;
+      sharedPref.setString('currentUser', json.encode(userData));
+    }
+  }
+}
+
 
 void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {sharedBlogID, sharedMissionID}) async {
   List existingChats = List();
@@ -187,7 +209,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => ChatView(chatID: chatID, otherUsername: otherUsername, sharedBlogID: sharedBlogID, sharedMissionID: sharedMissionID,),
+          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername, sharedBlogID: sharedBlogID, sharedMissionID: sharedMissionID,),
         )
     );
   }
@@ -223,7 +245,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => ChatView(chatID: chatID, sharedBlogID: sharedBlogID, otherUsername: otherUsername, ),
+          builder: (BuildContext context) => Chat(chatID: chatID, sharedBlogID: sharedBlogID, otherUsername: otherUsername, ),
         )
     );
   }
