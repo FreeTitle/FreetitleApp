@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:ui';
+import 'dart:io';
+import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/model/full_pdf_screen.dart';
 import 'package:freetitle/model/photo.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/chat/contact_list_view.dart';
@@ -21,9 +24,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share/share.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
-import 'package:pinch_zoom_image/pinch_zoom_image.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:native_pdf_view/native_pdf_view.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -61,6 +66,7 @@ class _BlogDetail extends State<BlogDetail> {
   Map blogData;
   Map authorData;
   String htmlBody;
+  String pdfPath;
 
   @override
   void initState(){
@@ -73,9 +79,6 @@ class _BlogDetail extends State<BlogDetail> {
     });
 
     _scrollController = new ScrollController(initialScrollOffset: widget.restorePosition != null ? widget.restorePosition : 0.0, keepScrollOffset: true);
-//    if(widget.restorePosition != null){
-//      _scrollController.jumpTo(widget.restorePosition);
-//    }
     _scrollController.addListener(() {
       try{
         List<String> blogStore = List();
@@ -191,62 +194,109 @@ class _BlogDetail extends State<BlogDetail> {
           blogWidget.add(
             Padding(
               padding: EdgeInsets.all(20.0),
-              child: PinchZoomImage(
-                image: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
-                zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
-                onZoomStart: () {
-                  print('Zoom started');
-                },
-                onZoomEnd: () {
-                  print('Zoom finished');
-                },
-              ),
+              child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
             )
           );
         }
         else if(block['type'] == 'embed'){
           String code = block['data']['code'];
-          int end = code.indexOf('>');
-          String pre = code.substring(0, end);
-          pre += " allowfullscreen ";
-          if(Platform.isIOS){
-            pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
-          }
-          else{
-            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
-          }
-          code = pre + code.substring(end);
+//          int end = code.indexOf('>');
+//          String pre = code.substring(0, end);
+//          pre += " allowfullscreen ";
+//          if(Platform.isIOS){
+//            pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
+//          }
+//          else{
+//            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
+//          }
+//          code = pre + code.substring(end);
 
           if(code.contains('163')){
+            int end = code.indexOf('>');
+            String pre = code.substring(0, end-3);
+            if(Platform.isIOS){
+              pre += "20\"";
+            }
+            else{
+              pre += "20\" height=\"230\"";
+            }
+            code = pre + code.substring(end);
             end = code.indexOf('//');
             pre = code.substring(0, end);
             pre += 'https:';
             code = pre + code.substring(end);
+            print(code);
             blogWidget.add(
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: Platform.isAndroid ? 120 : 70,
-                  padding: EdgeInsets.all(16.0),
-                  child: WebView(
-                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
-                    javascriptMode: JavascriptMode.unrestricted,
-                  ),
-                )
+              HtmlWidget(
+                code,
+                webView: true,
+              )
             );
           }
           else{
+            if(code.contains('bilibili')){
+              int end = code.indexOf('>');
+
+              String pre = code.substring(0, end);
+//              pre += " allowfullscreen ";
+              if(Platform.isIOS){
+//                pre += " width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"300\"";
+              }
+              else{
+                pre += " width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
+              }
+              code = pre + code.substring(end);
+              print(code);
+              end = code.indexOf('//');
+              pre = code.substring(0, end);
+              pre += 'https:';
+              code = pre + code.substring(end);
+              print(code);
+              code = '<iframe src="https://player.bilibili.com/player.html?bvid=BV1gs411v735&amp;cid=171271807"></iframe>';
+            }
             blogWidget.add(
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 280,
-                  padding: EdgeInsets.all(16.0),
-                  child: WebView(
-                    initialUrl: Uri.dataFromString("<html><body>${code}</body></html>", mimeType: 'text/html').toString(),
-                    javascriptMode: JavascriptMode.unrestricted,
-                  ),
-                )
+              HtmlWidget(
+                code,
+                webView: true,
+              )
             );
           }
+        }
+        else if(block['type'] == 'attaches' && block['data']['file']['extension'] == 'pdf') {
+          blogWidget.add(
+            FutureBuilder<PDFDocument>(
+              future: getPDF(block['data']['file']['url'], block['data']['file']['name']),
+              builder: (BuildContext context, AsyncSnapshot<PDFDocument> snapshot) {
+                if(snapshot.connectionState == ConnectionState.done){
+                  return Container(
+                    padding: EdgeInsets.all(16.0),
+                    height: 300,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push<dynamic>(
+                          context,
+                          MaterialPageRoute<dynamic>(builder: (context) => FullPDFScreen(pdfPath: pdfPath, filename: block['data']['file']['name'],))
+                        );
+                      },
+                      child: PDFView(
+                        document: snapshot.data,
+                      ),
+                    )
+                  );
+                }
+                else {
+                  return SizedBox(
+                    height: 300,
+                    width: MediaQuery.of(context).size.width,
+                    child: PlaceHolderCard(
+                      text: 'Loading pdf...',
+                      height: 200.0,
+                    ),
+                  );
+                }
+              },
+            )
+          );
         }
       }
     } // Handle old style content
@@ -353,6 +403,27 @@ class _BlogDetail extends State<BlogDetail> {
     setState(() {
       showFloatingAction = value;
     });
+  }
+
+  Future<PDFDocument> getPDF(url, filename) async {
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    String filePath = dir+'/'+filename;
+    bool fileExisted = await File(filePath).exists();
+    File file;
+    if(!fileExisted){
+      var request = await HttpClient().getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+
+      file = new File(filePath);
+      await file.writeAsBytes(bytes);
+    }
+    else {
+      file = new File(filePath);
+    }
+    pdfPath = file.path;
+    PDFDocument document = await PDFDocument.openFile(file.path);
+    return document;
   }
 
   Future<bool> getBlogData() async {

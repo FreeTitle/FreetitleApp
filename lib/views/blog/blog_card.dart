@@ -59,10 +59,12 @@ class BlogCard extends StatefulWidget {
 
 class _BlogCard extends State<BlogCard>{
   final keyBlogDetail = PageStorageKey('blogDetail');
-  String author = 'FreeTitle Author';
+  String author;
+  Future<bool> _getAuthor;
 
   @override
   void initState(){
+    _getAuthor = getAuthor();
     super.initState();
   }
 
@@ -89,6 +91,11 @@ class _BlogCard extends State<BlogCard>{
     return img;
   }
 
+  Future<bool> getAuthor() async {
+    var authorRef = await Firestore.instance.collection('users').document(widget.blogData['user']).get();
+    author = authorRef.data['displayName'];
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,38 +161,25 @@ class _BlogCard extends State<BlogCard>{
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: <Widget>[
-                                        StreamBuilder<DocumentSnapshot>(
-                                          stream: Firestore.instance.collection('users').document(blogData['user']).snapshots(),
-                                          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                                            if (snapshot.hasError)
-                                              return new Text('Error: ${snapshot.error}');
-                                            switch(snapshot.connectionState){
-                                              case ConnectionState.waiting:
-                                                return new Text(
-                                                    'FreeTitle Author',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.grey
-                                                    )
-                                                );
-                                              default:
-                                                if(snapshot.data.data != null){
-                                                  return Text(
-                                                      snapshot.data.data['displayName'],
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          color: Colors.grey
-                                                      ));
-                                                }
-                                                else{
-                                                  return new Text(
-                                                      'FreeTitle Author',
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          color: Colors.grey
-                                                      )
-                                                  );
-                                                }
+                                        FutureBuilder<bool>(
+                                          future: _getAuthor,
+                                          builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+                                            if(snapshot.connectionState == ConnectionState.done){
+                                              return Text(
+                                                  author,
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.grey
+                                                  ));
+                                            }
+                                            else{
+                                              return new Text(
+                                                  'FreeTitle Author',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.grey
+                                                  )
+                                              );
                                             }
                                           },
                                         ),
