@@ -29,21 +29,20 @@ class _ContactListView extends State<ContactListView>{
   ///  Return: Future<List<ContactSearchResult>> that will be used to build
   ///    contact list
   Future<List<ContactSearchResult>> searchContact(String search) async {
-    await Future.delayed(Duration(seconds: 1));
     // Query Algolia to get matched users
     AlgoliaQuery query = algolia.instance.instance.index('users').search(search);
     AlgoliaQuerySnapshot snap = await query.getObjects();
     List userIDs = List();
-    snap.hits.forEach((h) => {
-      userIDs.add(h.objectID),
+    snap.hits.forEach((h) {
+      userIDs.add(h.objectID);
     });
 
     List users = List();
     
     for(var uid in userIDs){
-      await Firestore.instance.collection('users').document(uid).get().then((snap) => {
+      await Firestore.instance.collection('users').document(uid).get().then((snap) {
         if(snap.data.isNotEmpty) {
-          users.add([snap.data['avatarUrl'], snap.data['displayName']]),
+          users.add([snap.data['avatarUrl'], snap.data['displayName']]);
         }
       });
     }

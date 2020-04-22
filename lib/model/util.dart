@@ -177,6 +177,27 @@ void saveCurrentUser() async {
 
 
 void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {sharedBlogID, sharedMissionID}) async {
+
+  if(userID == otherUserID){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('请不要发送消息给自己哦'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('好'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
+    return;
+  }
+
   List existingChats = List();
   SharedPreferences sharedPref;
   await SharedPreferences.getInstance().then((pref) {
@@ -245,7 +266,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => Chat(chatID: chatID, sharedBlogID: sharedBlogID, otherUsername: otherUsername, ),
+          builder: (BuildContext context) => Chat(chatID: chatID, sharedBlogID: sharedBlogID, otherUsername: otherUsername, sharedMissionID: sharedMissionID,),
         )
     );
   }

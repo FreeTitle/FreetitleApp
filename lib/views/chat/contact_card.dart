@@ -31,9 +31,7 @@ class _ContactCard extends State<ContactCard>{
   void initState(){
     _userRepository = UserRepository();
     isLaunchButtonEnabled = true;
-    _userRepository.getUser().then((snap) {
-      userID = snap.uid;
-    });
+
     super.initState();
   }
 
@@ -47,14 +45,46 @@ class _ContactCard extends State<ContactCard>{
           children: <Widget>[
             InkWell(
               onTap: () async {
+                await _userRepository.getUser().then((snap) {
+                  userID = snap.uid;
+                });
+
                 if(!isLaunchButtonEnabled){
                   return;
                 }
                 isLaunchButtonEnabled = false;
-                setState(() {
+                if(widget.sharedBlogID != null || widget.sharedMissionID != null){
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('是否发送内容？'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('否'),
+                            onPressed: () {
+                              isLaunchButtonEnabled = true;
+                              setState(() {
 
-                });
-                launchChat(context, userID, widget.otherUserID, widget.otherUsername, widget.otherAvatar, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID);
+                              });
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('是'),
+                            onPressed: () {
+                              launchChat(context, userID, widget.otherUserID, widget.otherUsername, widget.otherAvatar, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID);
+                            },
+                          )
+                        ],
+                      );
+                    }
+                  );
+                }
+                else{
+                  launchChat(context, userID, widget.otherUserID, widget.otherUsername, widget.otherAvatar);
+                }
+                isLaunchButtonEnabled = true;
               },
               child: Padding(
                 padding: EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),
