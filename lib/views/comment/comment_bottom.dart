@@ -36,11 +36,13 @@ class _CommentBottomState extends State<CommentBottom>{
 
   var lock;
 
+  Future<bool> _getComments;
+
   @override
   void initState(){
     _scrollController =  new ScrollController();
     _userRepository = UserRepository();
-
+    _getComments = getComments();
     commentList = List();
     lock = new Lock();
     super.initState();
@@ -100,7 +102,7 @@ class _CommentBottomState extends State<CommentBottom>{
 //    List<Widget> commentWidgets = List();
 //    Map commentData = Map();
     return FutureBuilder<bool>(
-      future: getComments(),
+      future: _getComments,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
         if(snapshot.connectionState == ConnectionState.done){
           return CommentsList(
@@ -156,6 +158,7 @@ class _CommentListState extends State<CommentsList> {
     final commentIDs = widget.commentIDs;
     final userID = widget.userID;
     if(pageCount == 1){
+      commentWidgets.clear();
       for(var index = 0; index <  commentList.length; index ++){
         bool isCurrentUserComment = false;
         commentData = commentList[index];
@@ -187,43 +190,57 @@ class _CommentListState extends State<CommentsList> {
 
     if(commentWidgets.length < commentIDs.length){
       commentWidgets.add(
-        Container(
-          color: AppTheme.grey,
-          child: FlatButton(
-            child: Text("Load More", style: TextStyle(color: AppTheme.primary),),
-            onPressed: () async {
-              pageCount += 1;
-              commentWidgets.removeLast();
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.white,
+              borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.6),
+                  offset: const Offset(4, 4),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            width: 200,
+            child: FlatButton(
+              child: Text("Load More", style: TextStyle(color: AppTheme.primary),),
+              onPressed: () async {
+                pageCount += 1;
+                commentWidgets.removeLast();
 
-              for(var idx = (pageCount-1)*perPage; idx <  perPage*pageCount && idx < commentIDs.length; idx++ ){
-                var commentID = commentIDs[idx];
-                var commentSnap = await Firestore.instance.collection('comments').document(commentID).get();
-                commentData = commentSnap.data;
-                bool isCurrentUserComment = false;
-                if(userID == commentData['userID']){
-                  isCurrentUserComment = true;
+                for(var idx = (pageCount-1)*perPage; idx <  perPage*pageCount && idx < commentIDs.length; idx++ ){
+                  var commentID = commentIDs[idx];
+                  var commentSnap = await Firestore.instance.collection('comments').document(commentID).get();
+                  commentData = commentSnap.data;
+                  bool isCurrentUserComment = false;
+                  if(userID == commentData['userID']){
+                    isCurrentUserComment = true;
+                  }
+
+                  if(commentData['level'] == 1)
+                    commentWidgets.add(
+                        CommentBox(
+                          commentData: commentData,
+                          isSubCommentPage: false,
+                          pageID: widget.pageID,
+                          commentID: commentIDs[idx],
+                          isCurrentUserComment: isCurrentUserComment,
+                          pageType: widget.pageType,
+                          state: this,
+                        )
+                    );
                 }
+                setState(() {
 
-                if(commentData['level'] == 1)
-                  commentWidgets.add(
-                      CommentBox(
-                        commentData: commentData,
-                        isSubCommentPage: false,
-                        pageID: widget.pageID,
-                        commentID: commentIDs[idx],
-                        isCurrentUserComment: isCurrentUserComment,
-                        pageType: widget.pageType,
-                        state: this,
-                      )
-                  );
-              }
-              setState(() {
+                });
 
-              });
-
-            },
+              },
+            ),
           ),
-        ),
+        )
       );
     }
 

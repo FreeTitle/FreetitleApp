@@ -7,6 +7,7 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:freetitle/views/login/login.dart';
+import 'package:freetitle/model/photo.dart';
 
 class CommentBox extends StatefulWidget {
 
@@ -54,7 +55,18 @@ class _CommentBoxState extends State<CommentBox>{
     }
     Widget img;
     if (content['image'] != null){
-      img =  Image.network(content['image'], fit: BoxFit.contain);
+//      img = Image.network(content['image'], fit: BoxFit.contain);
+      img = InkWell(
+        onTap: () {
+          Navigator.push<dynamic>(
+              context,
+              MaterialPageRoute<dynamic>(
+                  builder: (BuildContext context) => PhotoScreen(photoUrl: content['image'], photoType: 'network',)
+              )
+          );
+        },
+        child: Image.network(content['image'], fit: BoxFit.contain,),
+      );
     }
     if (img != null){
       return Column(
