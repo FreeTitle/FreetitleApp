@@ -63,17 +63,16 @@ class _BlogDetail extends State<BlogDetail> {
   String wechatDescription;
   Future<bool> _getBlogData;
 
+  SharedPreferences sharedPref;
   Map blogData;
   Map authorData;
-  String htmlBody;
   String pdfPath;
 
   @override
   void initState(){
-    final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
     _userRepository = new UserRepository();
 
-    SharedPreferences sharedPref;
+
     SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
@@ -369,23 +368,6 @@ class _BlogDetail extends State<BlogDetail> {
     List<String> commentIDs = getCommentIDs(content);
     if (commentIDs.isNotEmpty){
       blogWidget.add(CommentBottom(key: commentBottomKey,pageID: widget.blogID, pageType: 'blog',));
-//      if(commentIDs.length > 3){
-//        blogWidget.add(
-//            Center(
-//              child: InkWell(
-//                onTap: () {
-//                  Navigator.push<dynamic>(
-//                      context,
-//                      MaterialPageRoute<dynamic>(
-//                          builder: (BuildContext context) => CommentPage(key: commentPageKey, pageID: widget.blogID, pageType: 'blog',)
-//                      )
-//                  );
-//                },
-//                child: Text('更多评论...', style: AppTheme.link,),
-//              ),
-//            )
-//        );
-//      }
     }else{
       blogWidget.add(PlaceHolderCard(text: 'No comments yet', height: 200.0,));
     }
@@ -463,7 +445,7 @@ class _BlogDetail extends State<BlogDetail> {
             return Scaffold(
                 backgroundColor: AppTheme.nearlyWhite,
                 appBar: AppBar(
-                  brightness: Brightness.dark,
+//                  brightness: Brightness.dark,
                   title: Text('Blog正文', style: TextStyle(color: Colors.black),),
                   leading: IconButton(
                     icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
