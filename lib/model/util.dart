@@ -9,6 +9,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freetitle/views/chat/chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:connectivity/connectivity.dart';
 
 class LinkTextSpan extends TextSpan {
 
@@ -173,6 +175,17 @@ void saveCurrentUser() async {
       sharedPref.setString('currentUser', json.encode(userData));
     }
   }
+
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  _firebaseMessaging.getToken().then((token) async {
+    print('FCM Token: $token');
+    await _userRepository.getUser().then((snap) {
+      String uid = snap.uid;
+      Firestore.instance.collection('users').document(uid).updateData({
+        'notificationToken': FieldValue.arrayUnion([token])
+      });
+    });
+  });
 }
 
 
@@ -230,11 +243,32 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername, sharedBlogID: sharedBlogID, sharedMissionID: sharedMissionID,),
+          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername, ),
         )
     );
   }
   else{
+    // 检查是否联网 保证不会多次创建聊天
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if(connectivityResult == ConnectivityResult.none){
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('创建聊天失败'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('好'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          }
+      );
+    }
+    // 在firestore新建chat document，使用transaction来保障不会重复创建
     String chatID;
     await Firestore.instance.runTransaction((transaction) async {
       var documentRef = Firestore.instance.collection('chat').document();
@@ -247,8 +281,26 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
         'lastMessageContent': '',
       });
       chatID = documentRef.documentID;
+    }).catchError((err) {
+      showDialog(
+        context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('创建聊天失败'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('好'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          }
+      );
     });
 
+    // 将聊天存入本地
     List<String> chatJson;
     chatJson = sharedPref.getStringList('chatlist');
 
@@ -262,11 +314,11 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
       'delete': false,
     }));
     sharedPref.setStringList('chatlist', chatJson);
-
+    // 进入聊天界面
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => Chat(chatID: chatID, sharedBlogID: sharedBlogID, otherUsername: otherUsername, sharedMissionID: sharedMissionID,),
+          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername,),
         )
     );
   }
