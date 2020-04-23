@@ -2,27 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/blog/blog_card.dart';
+import 'package:freetitle/views/home/content_card.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 
 class PublicationView extends StatefulWidget {
   const PublicationView (
   {Key key,
-    this.blogIDs,
+    this.contentIDs,
     this.title,
     this.cover,
+    this.typeList,
   }) : super(key : key);
-  final List blogIDs;
+  final List contentIDs;
   final String title;
   final String cover;
+  final List typeList;
 
   _PublicationView createState() => _PublicationView();
 }
 
 class _PublicationView extends State<PublicationView> with TickerProviderStateMixin {
 
-  List blogList = List();
+  List contentList = List();
   AnimationController animationController;
+  List typeList;
 
   @override
   void initState(){
@@ -38,23 +42,49 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
     super.dispose();
   }
 
-  Future<bool> getBlogs() async {
-    blogList.clear();
-    await Firestore.instance.collection('blogs').getDocuments().then((snap) {
-      if(snap.documents.isNotEmpty){
-        widget.blogIDs.forEach((id) {
-          snap.documents.where((doc) => doc.documentID == id).forEach((blogSnap) {
-            blogList.add(blogSnap.data);
+  Future<bool> getContent() async {
+    contentList.clear();
+    if(widget.typeList != null){
+      for(var index = 0;index < widget.contentIDs.length;index++) {
+        var contentID = widget.contentIDs[index];
+        var contentType = widget.typeList[index];
+        if(contentType == 'blog'){
+          await Firestore.instance.collection('blogs').document(contentID).get().then((snap) {
+            contentList.add(snap.data);
           });
-        });
+        }
+        else if(contentType == 'mission'){
+          await Firestore.instance.collection('missions').document(contentID).get().then((snap) {
+            contentList.add(snap.data);
+          });
+        }
+        else if(contentType == 'publication'){
+          await Firestore.instance.collection('publications').document(contentID).get().then((snap) {
+            contentList.add(snap.data);
+          });
+        }
       }
-    });
+    }
+    else{
+      typeList = List();
+      await Firestore.instance.collection('blogs').getDocuments().then((snap) {
+        if(snap.documents.isNotEmpty){
+          widget.contentIDs.forEach((id) {
+            snap.documents.where((doc) => doc.documentID == id).forEach((blogSnap) {
+              contentList.add(blogSnap.data);
+            });
+            typeList.add('blog');
+          });
+        }
+      });
+    }
+
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-
+    typeList = widget.typeList;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.white,
@@ -68,7 +98,7 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
         title: Text(widget.title.length > 15 ? widget.title.substring(0, 15) +  '...' : widget.title, style: TextStyle(color: Colors.black),),
       ),
       body: FutureBuilder<bool>(
-        future: getBlogs(),
+        future: getContent(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if(snapshot.connectionState == ConnectionState.done){
             return LiquidPullToRefresh(
@@ -76,10 +106,10 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
               color: AppTheme.primary,
               showChildOpacityTransition: false,
               onRefresh: () async {
-                getBlogs();
+                getContent();
               },
               child: ListView.builder(
-                  itemCount: blogList.length+1,
+                  itemCount: contentList.length+1,
                   padding: EdgeInsets.only(),
                   scrollDirection: Axis.vertical,
                   itemBuilder: (BuildContext context, int index) {
@@ -90,7 +120,7 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
                       );
                     }
                     else{
-                      final int count = blogList.length;
+                      final int count = contentList.length;
                       final Animation<double> animation = Tween<double>(begin: 0.0, end: 1.0)
                           .animate(CurvedAnimation(
                           parent: animationController,
@@ -101,11 +131,12 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
                       )
                       );
                       animationController.forward();
-                      return AnimatedBlogCard(
-                        blogID: widget.blogIDs[index-1],
-                        blogData: blogList[index-1],
-                        animation: animation,
+                      return AnimatedContentCard(
+                        contentID: widget.contentIDs[index-1],
+                        contentData: contentList[index-1],
+                        contentType: typeList[index-1],
                         animationController: animationController,
+                        animation: animation,
                       );
                     }
                   }
