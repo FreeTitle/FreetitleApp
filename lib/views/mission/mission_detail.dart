@@ -203,7 +203,18 @@ class _MissionDetail extends State<MissionDetail>
           missionWidget.add(
               Padding(
                 padding: EdgeInsets.all(20.0),
-                child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+//                child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push<dynamic>(
+                        context,
+                        MaterialPageRoute<dynamic>(
+                            builder: (BuildContext context) => PhotoScreen(photoUrl: block['data']['file']['url'], photoType: 'network',)
+                        )
+                    );
+                  },
+                  child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
+                )
               )
           );
         }
