@@ -11,7 +11,7 @@ class FullPDFScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PDFViewerScaffold(
       appBar: AppBar(
-        brightness: Brightness.dark,
+//        brightness: Brightness.dark,
         title: Text(filename, style: TextStyle(color: Colors.black),),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black,),

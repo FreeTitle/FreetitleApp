@@ -54,6 +54,11 @@ class _MyAppState extends State<MyApp> {
 //            brightness: Brightness.light,
             primaryColor: AppTheme.white,
             accentColor: Colors.black,
+              textTheme: TextTheme(
+                headline: AppTheme.headline,
+                body1: AppTheme.body1,
+                body2: AppTheme.body2,
+              )
           ),
           darkTheme: ThemeData(
             primaryColor: AppTheme.white,

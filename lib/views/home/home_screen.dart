@@ -65,6 +65,7 @@ class _Home extends State<Home> {
                   _scrollController.jumpTo(0);
                 },
               ),
+//              brightness: Brightness.light,
               actions: <Widget>[
                 Container(
                     padding: EdgeInsets.only(right: 16),
