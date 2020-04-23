@@ -545,3 +545,4 @@ class VerticalMissionCard extends StatelessWidget {
     );
   }
 }
+

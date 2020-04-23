@@ -20,7 +20,12 @@ import 'package:freetitle/views/chat/contact_list_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
-import 'package:pinch_zoom_image/pinch_zoom_image.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:native_pdf_view/native_pdf_view.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:freetitle/model/full_pdf_screen.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -46,6 +51,7 @@ class _MissionDetail extends State<MissionDetail>
   String wechatThumbnailUrl;
   String wechatDescription;
   bool showFloatingAction = true;
+  Future<bool> _getMissionData;
 
   bool liked = false;
   bool followed = false;
@@ -54,10 +60,11 @@ class _MissionDetail extends State<MissionDetail>
   SharedPreferences sharedPref;
   Map missionData;
   Map authorData;
+  String pdfPath;
 
   @override
   void initState() {
-    final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
+
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     animation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
@@ -65,14 +72,11 @@ class _MissionDetail extends State<MissionDetail>
         curve: Interval(0, 1.0, curve: Curves.fastOutSlowIn)));
     _userRepository = new UserRepository();
 
-
+    _getMissionData = getMissionData();
 
     SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
-
-//    _scrollController = new ScrollController(initialScrollOffset: widget.restorePosition != null ? widget.restorePosition : 0.0, keepScrollOffset: true);
-
 
     super.initState();
   }
@@ -120,19 +124,19 @@ class _MissionDetail extends State<MissionDetail>
     return img;
   }
 
-  List<Widget> buildMissionContent(mission, context){
+  List<Widget> buildMissionContent(content, context){
     List<Widget> missionWidget = new List<Widget>();
-    if(mission == null){
+    if(content == null){
       missionWidget.add(Text('Loading mission'));
       return missionWidget;
     }
 
     // Add time
-    var date = mission['time'].toDate();
+    var date = content['time'].toDate();
 
     // Process contents
-    if(mission['article'] != null){
-      for(var block in mission['article']['blocks']){
+    if(content['article'] != null){
+      for(var block in content['article']['blocks']){
         String blockText = block['data']['text'];
         if(block['type'] == 'paragraph'){
           blockText = blockText.replaceAll('&nbsp;', ' ');
@@ -199,66 +203,114 @@ class _MissionDetail extends State<MissionDetail>
           missionWidget.add(
               Padding(
                 padding: EdgeInsets.all(20.0),
-                child: PinchZoomImage(
-                  image: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
-                  zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
-                  onZoomStart: () {
-                    print('Zoom started');
-                  },
-                  onZoomEnd: () {
-                    print('Zoom finished');
-                  },
-                ),
+                child: Image.network(block['data']['file']['url'], fit: BoxFit.contain,),
               )
           );
         }
         else if(block['type'] == 'embed'){
           String code = block['data']['code'];
-          int end = code.indexOf('>');
-          String pre = code.substring(0, end);
-          pre += " allowfullscreen ";
-          if(Platform.isIOS){
-            pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
-          }
-          else{
-            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
-          }
-          code = pre + code.substring(end);
+//          int end = code.indexOf('>');
+//          String pre = code.substring(0, end);
+//          pre += " allowfullscreen ";
+//          if(Platform.isIOS){
+//            pre += "width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"600\"";
+//          }
+//          else{
+//            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
+//          }
+//          code = pre + code.substring(end);
 
           if(code.contains('163')){
+            int end = code.indexOf('>');
+            String pre = code.substring(0, end-3);
+            if(Platform.isIOS){
+              pre += "20\"";
+            }
+            else{
+              pre += "20\" height=\"230\"";
+            }
+            code = pre + code.substring(end);
             end = code.indexOf('//');
             pre = code.substring(0, end);
             pre += 'https:';
             code = pre + code.substring(end);
+            print(code);
             missionWidget.add(
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: Platform.isAndroid ? 120 : 70,
-                  padding: EdgeInsets.all(16.0),
-                  child: WebView(
-                    javascriptMode: JavascriptMode.unrestricted,
-                  ),
+                HtmlWidget(
+                  code,
+                  webView: true,
                 )
             );
           }
           else{
+            if(code.contains('bilibili')){
+              int end = code.indexOf('>');
+
+              String pre = code.substring(0, end);
+//              pre += " allowfullscreen ";
+              if(Platform.isIOS){
+//                pre += " width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"300\"";
+              }
+              else{
+                pre += " width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
+              }
+              code = pre + code.substring(end);
+              print(code);
+              end = code.indexOf('//');
+              pre = code.substring(0, end);
+              pre += 'https:';
+              code = pre + code.substring(end);
+              print(code);
+              code = '<iframe src="https://player.bilibili.com/player.html?bvid=BV1gs411v735&amp;cid=171271807"></iframe>';
+            }
             missionWidget.add(
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 280,
-                  padding: EdgeInsets.all(16.0),
-                  child: WebView(
-                    initialUrl: Uri.dataFromString("<html><body>$code</body></html>", mimeType: 'text/html').toString(),
-                    javascriptMode: JavascriptMode.unrestricted,
-                  ),
+                HtmlWidget(
+                  code,
+                  webView: true,
                 )
             );
           }
         }
+        else if(block['type'] == 'attaches' && block['data']['file']['extension'] == 'pdf') {
+          missionWidget.add(
+              FutureBuilder<PDFDocument>(
+                future: getPDF(block['data']['file']['url'], block['data']['file']['name']),
+                builder: (BuildContext context, AsyncSnapshot<PDFDocument> snapshot) {
+                  if(snapshot.connectionState == ConnectionState.done){
+                    return Container(
+                        padding: EdgeInsets.all(16.0),
+                        height: 300,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push<dynamic>(
+                                context,
+                                MaterialPageRoute<dynamic>(builder: (context) => FullPDFScreen(pdfPath: pdfPath, filename: block['data']['file']['name'],))
+                            );
+                          },
+                          child: PDFView(
+                            document: snapshot.data,
+                          ),
+                        )
+                    );
+                  }
+                  else {
+                    return SizedBox(
+                      height: 300,
+                      width: MediaQuery.of(context).size.width,
+                      child: PlaceHolderCard(
+                        text: 'Loading pdf...',
+                        height: 200.0,
+                      ),
+                    );
+                  }
+                },
+              )
+          );
+        }
       }
-    }
-    else if (mission.containsKey('blocks')){
-      for(var block in mission['blocks']){
+    } // Handle old style content
+    else if (content.containsKey('blocks')){
+      for(var block in content['blocks']){
         if(block.contains('https')){
           missionWidget.add(
               Padding(
@@ -278,7 +330,7 @@ class _MissionDetail extends State<MissionDetail>
       }
     }
 
-    if(mission.containsKey('RSSarticle')){
+    if(content.containsKey('RSSarticle')){
       missionWidget.add(
           SizedBox(
             height: 20,
@@ -286,19 +338,27 @@ class _MissionDetail extends State<MissionDetail>
       );
 
       missionWidget.add(
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height-350,
-            child: WebView(
-              initialUrl: Uri.dataFromString("<html><body>${mission['RSSarticle']}</body></html>",
-                  mimeType: "text/html",
-                  encoding: Encoding.getByName('utf-8')).toString(),
-              javascriptMode: JavascriptMode.unrestricted,
-              gestureRecognizers: [Factory(() => PlatformViewVerticalGestureRecognizer())].toSet(),
-            ),
+          Html(
+            data: content['RSSarticle'],
+            padding: EdgeInsets.all(16.0),
+            defaultTextStyle: TextStyle(fontFamily: 'serif'),
+            onLinkTap: (url) {
+              launch(url, forceSafariVC: false);
+            },
+            onImageTap: (src) {
+              Navigator.push<dynamic>(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => PhotoScreen(photoUrl: src, photoType: 'network',)
+                  )
+              );
+            },
           )
       );
+
+
     }
+
 
     missionWidget.add(
         Row(
@@ -317,7 +377,7 @@ class _MissionDetail extends State<MissionDetail>
     );
 
 
-    List<String> commentIDs = getCommentIDs(mission);
+    List<String> commentIDs = getCommentIDs(content);
     if (commentIDs.isNotEmpty){
       missionWidget.add(
           CommentBottom(
@@ -363,12 +423,31 @@ class _MissionDetail extends State<MissionDetail>
     return labels;
   }
 
-  
-
   void showFloatingActionButton(bool value){
     setState(() {
       showFloatingAction = value;
     });
+  }
+
+  Future<PDFDocument> getPDF(url, filename) async {
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    String filePath = dir+'/'+filename;
+    bool fileExisted = await File(filePath).exists();
+    File file;
+    if(!fileExisted){
+      var request = await HttpClient().getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+
+      file = new File(filePath);
+      await file.writeAsBytes(bytes);
+    }
+    else {
+      file = new File(filePath);
+    }
+    pdfPath = file.path;
+    PDFDocument document = await PDFDocument.openFile(file.path);
+    return document;
   }
 
   Future<bool> getMissionData() async {
@@ -393,7 +472,7 @@ class _MissionDetail extends State<MissionDetail>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: getMissionData(),
+      future: _getMissionData,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if(snapshot.connectionState == ConnectionState.done) {
           if(missionData['followedBy'] != null && missionData['followedBy'].contains(userID)){
