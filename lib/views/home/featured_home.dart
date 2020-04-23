@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/home/publication.dart';
+import 'package:freetitle/views/home/publication_list.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class FeaturedHome extends StatefulWidget {
@@ -132,7 +132,7 @@ class PublicationTile extends StatelessWidget{
           Navigator.push<dynamic>(
             context,
             MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => PublicationView(blogIDs: publication['blogIDList'], title: publication['title'],),
+              builder: (BuildContext context) => PublicationView(blogIDs: publication['blogIDList'], title: publication['title'], cover: publication['cover']),
             ),
           );
         },

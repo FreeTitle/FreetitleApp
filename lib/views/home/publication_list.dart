@@ -10,9 +10,11 @@ class PublicationView extends StatefulWidget {
   {Key key,
     this.blogIDs,
     this.title,
+    this.cover,
   }) : super(key : key);
   final List blogIDs;
   final String title;
+  final String cover;
 
   _PublicationView createState() => _PublicationView();
 }
@@ -77,27 +79,35 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
                 getBlogs();
               },
               child: ListView.builder(
-                  itemCount: blogList.length,
-                  padding: EdgeInsets.only(top: 8),
+                  itemCount: blogList.length+1,
+                  padding: EdgeInsets.only(),
                   scrollDirection: Axis.vertical,
                   itemBuilder: (BuildContext context, int index) {
-                    final int count = blogList.length;
-                    final Animation<double> animation = Tween<double>(begin: 0.0, end: 1.0)
-                        .animate(CurvedAnimation(
-                        parent: animationController,
-                        curve: Interval(
-                            (1 / count) * index, 1.0,
-                            curve: Curves.fastOutSlowIn
-                        )
-                    )
-                    );
-                    animationController.forward();
-                    return AnimatedBlogCard(
-                      blogID: widget.blogIDs[index],
-                      blogData: blogList[index],
-                      animation: animation,
-                      animationController: animationController,
-                    );
+                    if(index == 0){
+                      return SizedBox(
+                        height: 200,
+                        child: Image.network(widget.cover,  fit: BoxFit.cover,),
+                      );
+                    }
+                    else{
+                      final int count = blogList.length;
+                      final Animation<double> animation = Tween<double>(begin: 0.0, end: 1.0)
+                          .animate(CurvedAnimation(
+                          parent: animationController,
+                          curve: Interval(
+                              (1 / count) * index, 1.0,
+                              curve: Curves.fastOutSlowIn
+                          )
+                      )
+                      );
+                      animationController.forward();
+                      return AnimatedBlogCard(
+                        blogID: widget.blogIDs[index-1],
+                        blogData: blogList[index-1],
+                        animation: animation,
+                        animationController: animationController,
+                      );
+                    }
                   }
               ),
             );
