@@ -95,9 +95,20 @@ class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderState
                         animationController.forward();
                         return (index == present) ?
                         Padding(
-                          padding: EdgeInsets.only(left: 24, right: 24),
+                          padding: EdgeInsets.only(left: 24, right: 24, bottom: 10),
                           child: Container(
-                            color: AppTheme.grey,
+//                            color: AppTheme.grey,
+                            decoration: BoxDecoration(
+                              color: AppTheme.white,
+                              borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
                             child: FlatButton(
                               child: Text("Load More", style: TextStyle(color: AppTheme.primary),),
                               onPressed: () async {
