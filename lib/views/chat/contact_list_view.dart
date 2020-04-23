@@ -5,6 +5,8 @@ import 'package:freetitle/app_theme.dart';
 import 'package:algolia/algolia.dart';
 import 'package:freetitle/model/algolias_search.dart';
 import 'package:freetitle/views/chat/contact_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class ContactListView extends StatefulWidget{
 
@@ -23,6 +25,31 @@ class ContactListView extends StatefulWidget{
 class _ContactListView extends State<ContactListView>{
 
   Algolia algolia = AlgoliaSearch.algolia;
+
+  SharedPreferences sharedPref;
+  List contactList;
+  Future<bool> _getPlaceHolder;
+
+  @override
+  void initState() {
+    _getPlaceHolder = getPlaceHolder();
+    super.initState();
+  }
+
+  Future<bool> getPlaceHolder() async {
+    await SharedPreferences.getInstance().then((pref) {
+      sharedPref = pref;
+      List<String> jsonChats;
+      jsonChats = sharedPref.getStringList('chatlist');
+      contactList = List();
+      if(jsonChats != null){
+        jsonChats.forEach((chat) {
+          contactList.add(json.decode(chat));
+        });
+      }
+    });
+    return true;
+  }
 
   /// searchContact
   ///  Input: String search - text to be searched
@@ -56,7 +83,7 @@ class _ContactListView extends State<ContactListView>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.dark,
+//        brightness: Brightness.dark,
         backgroundColor: AppTheme.appbarColor,
         title: Text('搜索用户', style: TextStyle(color: Colors.black)),
         leading: IconButton(
@@ -66,26 +93,46 @@ class _ContactListView extends State<ContactListView>{
           },
         ),
       ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 9),
-          child: SearchBar<ContactSearchResult>(
-            onSearch: searchContact,
-            hintText: '搜索用户',
-            placeHolder: Center(
-              child: Text('Search Contacts'),
-            ),
-            emptyWidget: Center(
-              child: Text('未找到用户'),
-            ),
-            onItemFound: (ContactSearchResult result, int index){
-              return ContactCard(otherAvatar: result.avatarUrl, otherUsername: result.name, otherUserID: result.uid, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID,);
-            },
-          ),
-        ),
-      ),
+      body: FutureBuilder<bool>(
+        future: _getPlaceHolder,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if(snapshot.connectionState == ConnectionState.done){
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 9),
+                child: SearchBar<ContactSearchResult>(
+                  onSearch: searchContact,
+                  hintText: '搜索用户',
+                  placeHolder: ListView.builder(
+                    itemCount: contactList.length,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ContactCard(
+                        otherAvatar: contactList[index]['avatar'],
+                        otherUserID: contactList[index]['id'],
+                        otherUsername: contactList[index]['displayName'],
+                      );
+                    },
+                  ),
+                  emptyWidget: Center(
+                    child: Text('未找到用户'),
+                  ),
+                  onItemFound: (ContactSearchResult result, int index){
+                    return ContactCard(otherAvatar: result.avatarUrl, otherUsername: result.name, otherUserID: result.uid, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID,);
+                  },
+                ),
+              ),
+            );
+          }
+          else{
+            return Center(
+              child: Text('搜索用户'),
+            );
+          }
+        },
+      )
     );
   }
 }
