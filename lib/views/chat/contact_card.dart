@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
-import 'package:freetitle/views/chat/chat.dart';
+import 'package:dash_chat/dash_chat.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:connectivity/connectivity.dart';
 
 class ContactCard extends StatefulWidget {
   const ContactCard({Key key,
@@ -45,14 +48,38 @@ class _ContactCard extends State<ContactCard>{
           children: <Widget>[
             InkWell(
               onTap: () async {
+
+                // 检查是否联网 保证不会多次创建聊天
+                var connectivityResult = await (Connectivity().checkConnectivity());
+                if(connectivityResult == ConnectivityResult.none){
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('创建聊天失败'),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('好'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        );
+                      }
+                  );
+                }
+
                 await _userRepository.getUser().then((snap) {
                   userID = snap.uid;
                 });
 
+                // disable launch button 保障不会重复点击
                 if(!isLaunchButtonEnabled){
                   return;
                 }
                 isLaunchButtonEnabled = false;
+                // 如果这两个id中的一个不为null，则用户在发送blog或mission
                 if(widget.sharedBlogID != null || widget.sharedMissionID != null){
                   showDialog(
                     context: context,
@@ -72,8 +99,115 @@ class _ContactCard extends State<ContactCard>{
                           ),
                           FlatButton(
                             child: Text('是'),
-                            onPressed: () {
-                              launchChat(context, userID, widget.otherUserID, widget.otherUsername, widget.otherAvatar, sharedBlogID: widget.sharedBlogID, sharedMissionID: widget.sharedMissionID);
+                            onPressed: () async {
+                              if(userID == widget.otherUserID){
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('请不要发送消息给自己哦'),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: Text('好'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                );
+                                return;
+                              }
+
+                              String name, avatar;
+                              await Firestore.instance.collection('users').document(userID).get().then((snap) {
+                                name = snap.data['displayName'];
+                                avatar = snap.data['avatarUrl'];
+                              });
+                              ChatUser user = ChatUser(name: name, avatar: avatar, uid: userID);
+                              List existingChats = List();
+                              SharedPreferences sharedPref;
+                              await SharedPreferences.getInstance().then((pref) {
+                                sharedPref = pref;
+                              });
+
+                              List<String> chatJson = List();
+                              chatJson = sharedPref.getStringList('chatlist');
+                              int index;
+                              for(index = 0;index < chatJson.length;index++) {
+                                Map chat = json.decode(chatJson[index]);
+                                if(chat["otherUserID"] == widget.otherUserID){
+                                  existingChats.add(chat);
+                                  break;
+                                }
+                              }
+
+                              String chatID;
+
+                              ChatMessage message;
+                              String messageText;
+                              String errMessage;
+                              if(widget.sharedBlogID != null){
+                                message = ChatMessage(text: "shareblogid=${widget.sharedBlogID}", user: user);
+                                messageText = "shareblogid=${widget.sharedBlogID}";
+                                errMessage = 'Blog发送失败';
+                              }
+                              else if(widget.sharedMissionID != null){
+                                message = ChatMessage(text: "sharemissionid=${widget.sharedMissionID}", user: user);
+                                messageText = "sharemissionid=${widget.sharedMissionID}";
+                                errMessage = 'Mission发送失败';
+                              }
+
+                              if(existingChats.isNotEmpty){
+                                Map chat = existingChats[0];
+                                chatID = chat['id'];
+                              }else {
+                                await Firestore.instance.runTransaction((transaction) async {
+                                  var documentRef = Firestore.instance.collection('chat').document();
+                                  await transaction.set(documentRef, {
+                                    'users': [
+                                      userID,
+                                      widget.otherUserID,
+                                    ],
+                                    'lastMessageTime': DateTime.now(),
+                                    'lastMessageContent': '',
+                                  });
+                                  chatID = documentRef.documentID;
+                                });
+                              }
+
+
+
+                              await Firestore.instance.runTransaction((transaction) async {
+                                var messageRef = Firestore.instance.collection('chat').document(chatID).collection('messages').reference().document();
+                                var chatRef = Firestore.instance.collection('chat').document(chatID);
+                                await transaction.set(messageRef, message.toJson());
+                                await transaction.update(chatRef, {
+                                  'lastSenderId': userID,
+                                  'lastMessageContent': messageText,
+                                });
+                              }).catchError((err) {
+                                print(err);
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(errMessage),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: Text('好'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          )
+                                        ],
+                                      );
+                                    }
+                                );
+                              });
+
+                              Navigator.of(context).pop();
                             },
                           )
                         ],
