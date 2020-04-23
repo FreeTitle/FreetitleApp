@@ -286,13 +286,9 @@ class _ChatScreenState extends State<ChatScreen>{
             if(snapshot.hasData){
               if(snapshot.data.data != null){
 //                Map blogData = snapshot.data.data;
-                return Container(
-                  height: 230,
-                  width: 250,
-                  child: ChatBlogCard(
-                    blogID: message.text.substring(12),
-                    blogData: snapshot.data.data,
-                  ),
+                return ChatBlogCard(
+                  blogID: message.text.substring(12),
+                  blogData: snapshot.data.data,
                 );
               }
               else{
@@ -357,13 +353,9 @@ class _ChatScreenState extends State<ChatScreen>{
 
             if(snapshot.hasData){
               if(snapshot.data.data != null) {
-                return Container(
-                  height: 230,
-                  width: 250,
-                  child: VerticalMissionCard(
+                return ChatMissionCard(
                     missionData: snapshot.data.data,
                     missionID: message.text.substring(15),
-                  ),
                 );
               }
               else{

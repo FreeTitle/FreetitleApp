@@ -111,8 +111,10 @@ class _ContactListView extends State<ContactListView>{
                     itemBuilder: (BuildContext context, int index) {
                       return ContactCard(
                         otherAvatar: contactList[index]['avatar'],
-                        otherUserID: contactList[index]['id'],
+                        otherUserID: contactList[index]['otherUserID'],
                         otherUsername: contactList[index]['displayName'],
+                        sharedBlogID: widget.sharedBlogID,
+                        sharedMissionID: widget.sharedMissionID,
                       );
                     },
                   ),

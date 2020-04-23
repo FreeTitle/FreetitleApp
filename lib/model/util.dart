@@ -190,6 +190,7 @@ void saveCurrentUser() async {
 
 
 void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {sharedBlogID, sharedMissionID}) async {
+  print('Launch chat: $userID, $otherUserID, $otherUsername');
 
   if(userID == otherUserID){
     showDialog(
@@ -268,15 +269,17 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
   if(localChats.length != 1 || remoteChats.length != 1){
     //TODO merge chats
     mergeChats(context, localChats, remoteChats);
+    Navigator.of(context).pop();
   }
 
   if(localChats.isNotEmpty){
-
+    print('going local! ');
     Map localChat = localChats[0];
     Map remoteChat = remoteChats[0];
     if(localChat['id'] != remoteChat['id']){
       //TODO merge chats
       mergeChats(context, localChat['id'], remoteChat['id']);
+      Navigator.of(context).pop();
     }
 
     // When local chat exists
@@ -298,9 +301,11 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     );
   }
   else{
+    print('going remote! ');
     // 在firestore新建chat document，使用transaction来保障不会重复创建
     String chatID;
     if(remoteChats.isEmpty){
+      print('create');
       await Firestore.instance.runTransaction((transaction) async {
         var documentRef = Firestore.instance.collection('chat').document();
         await transaction.set(documentRef, {
@@ -333,6 +338,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
       });
     }
     else {
+      print('remote exist');
       chatID = remoteChats[0]['id'];
     }
 

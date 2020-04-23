@@ -186,6 +186,7 @@ class _ContactCard extends State<ContactCard>{
                               if(localChats.length != 1 || remoteChats.length != 1){
                                 //TODO merge chats
                                 mergeChats(context, localChats, remoteChats);
+                                Navigator.of(context).pop();
                               }
 
                               String chatID;
@@ -210,6 +211,7 @@ class _ContactCard extends State<ContactCard>{
                                 if(localChat['id'] != remoteChat['id']){
                                   //TODO merge chats
                                   mergeChats(context, localChat['id'], remoteChat['id']);
+                                  Navigator.of(context).pop();
                                 }
 
                                 Map chat = localChats[0];
