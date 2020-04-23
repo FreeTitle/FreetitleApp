@@ -512,6 +512,7 @@ class VerticalMissionCard extends StatelessWidget {
                                       ],
                                     ),
                                   ),
+                                  Spacer(),
                                   Container(
                                     child: Padding(
                                       padding:
@@ -546,3 +547,102 @@ class VerticalMissionCard extends StatelessWidget {
   }
 }
 
+
+class ChatMissionCard extends StatelessWidget {
+
+  const ChatMissionCard({Key key, this.missionID, this.missionData}) : super(key : key);
+
+  final Map missionData;
+  final String missionID;
+
+  Image getImage(){
+    Image img;
+    img = Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,);
+    if(missionData['article'] != null){
+      for(var block in missionData['article']['blocks']){
+        if(block['type'] == "image"){
+          if(block['data']['file']['url'] != null){
+            img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);
+            break;
+          }
+        }
+      }
+    }
+    return img;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+          left: 24, right: 24, top: 8, bottom: 16),
+      child: InkWell(
+        splashColor: Colors.transparent,
+        onTap: () {
+          Navigator.push<dynamic>(
+              context,
+              MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => MissionDetail(missionID: missionID,),
+              )
+          );
+        },
+        child: Container(
+//          height: 70,
+          width: 200,
+          decoration: BoxDecoration(
+            color: AppTheme.white,
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.6),
+                offset: const Offset(4, 4),
+                blurRadius: 16,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            child: Stack(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+                      child: SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: getImage(),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              missionData['name'],
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              'Mission'
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

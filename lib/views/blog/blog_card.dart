@@ -345,7 +345,10 @@ class ChatBlogCard extends StatelessWidget {
           );
         },
         child: Container(
+//          height: 70,
+          width: 200,
           decoration: BoxDecoration(
+            color: AppTheme.white,
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             boxShadow: <BoxShadow>[
               BoxShadow(
@@ -359,40 +362,36 @@ class ChatBlogCard extends StatelessWidget {
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             child: Stack(
               children: <Widget>[
-                Column(
+                Row(
                   children: <Widget>[
-                    AspectRatio(
-                      aspectRatio: 2,
-                      child: blogData['cover'] != null ? Image.network(blogData['cover'], fit: BoxFit.cover,) : Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,),
+                    Padding(
+                      padding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+                      child: SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: blogData['cover'] != null ? Image.network(blogData['cover'], fit: BoxFit.cover,) : Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,),
+                      ),
                     ),
-                    Container(
-                      color: AppTheme.buildLightTheme().backgroundColor,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            child: Container(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      blogData['title'],
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              blogData['title'],
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
                               ),
                             ),
-                          ),
-                        ],
+                            Text(
+                              'Blog'
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ],
