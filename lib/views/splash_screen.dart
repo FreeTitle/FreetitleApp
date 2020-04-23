@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:freetitle/views/index.dart';
-
+import 'package:freetitle/views/notification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 
@@ -17,6 +17,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     BlocProvider.of<AuthenticationBloc>(context).dispatch(
       AppStarted(),
     );
+
     print("Splash Page: ${BlocProvider.of<AuthenticationBloc>(context).state}");
     return IndexPage();
   }

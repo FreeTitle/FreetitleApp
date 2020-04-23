@@ -7,7 +7,6 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:freetitle/views/login/login.dart';
-import 'package:pinch_zoom_image/pinch_zoom_image.dart';
 
 class CommentBox extends StatefulWidget {
 
@@ -55,16 +54,7 @@ class _CommentBoxState extends State<CommentBox>{
     }
     Widget img;
     if (content['image'] != null){
-      img =  PinchZoomImage(
-        image: Image.network(content['image'], fit: BoxFit.contain),
-        zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
-        onZoomStart: () {
-          print('Zoom started');
-        },
-        onZoomEnd: () {
-          print('Zoom finished');
-        },
-      );
+      img =  Image.network(content['image'], fit: BoxFit.contain);
     }
     if (img != null){
       return Column(
@@ -545,7 +535,7 @@ class _SubCommentPage extends State<SubCommentPage>{
     print('refresh subcomment');
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.dark,
+//        brightness: Brightness.dark,
         title: Text('回复', style: TextStyle(color: Colors.black),),
         backgroundColor: AppTheme.white,
         leading: IconButton(

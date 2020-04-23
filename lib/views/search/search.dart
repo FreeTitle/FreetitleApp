@@ -113,6 +113,9 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                     emptyWidget: Center(
                       child: Text('No blogs found'),
                     ),
+                    onError: (err) {
+                      print(err);
+                    },
                     onItemFound: (SearchResult result, int index) {
                       if (index != 0){
                         final int count = resultCount;

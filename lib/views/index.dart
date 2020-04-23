@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/chat/chat_list_view.dart';
 import 'package:freetitle/views/mission/mission_detail.dart';
 import 'package:freetitle/views/profile/my_profile.dart';
@@ -14,8 +17,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/notification.dart';
 import 'package:badges/badges.dart';
-import 'package:flutter/services.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'dart:io';
+import 'package:fluwx/fluwx.dart';
+import 'package:flutter/services.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -35,11 +40,8 @@ class _IndexPageState extends State<IndexPage> {
     });
   }
 
-  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
-
   Map<String, int> unreadMessages;
-
-  UserRepository _userRepository;
+  StreamController<Map> streamController;
 
   void readChat(chatID){
     unreadMessages[chatID] = 0;
@@ -52,22 +54,26 @@ class _IndexPageState extends State<IndexPage> {
     return unreadMessages.values.reduce((sum, element) => sum+element).toString();
   }
 
+  FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+
   @override
   void initState(){
     unreadMessages = Map();
-    _userRepository = UserRepository();
-//    unreadMessages['ImDgoO7r63XVZCrhuxKU'] =  1;
+    streamController = StreamController.broadcast();
+
     _children = [
       Home(),
-      ChatListScreen(unreadMessages: unreadMessages, callback: readChat,),
+      ChatListScreen(indexState: this, stream: streamController.stream,),
       SearchView(),
       GetMyProfile(),
     ];
 
+    final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
+
 
     firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: true
+            sound: true, badge: true, alert: true, provisional: false
         )
     );
 
@@ -76,11 +82,33 @@ class _IndexPageState extends State<IndexPage> {
         print('onMessage called: $message');
         if(message['blog'] != null){
           try{
-            Navigator.push<dynamic>(
-                context,
-                MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
-                )
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(message['title']),
+                  content: Text(message['body']),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('好的'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('去看看'),
+                      onPressed: () {
+                        Navigator.push<dynamic>(
+                            context,
+                            MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
+                            )
+                        );
+                      },
+                    ),
+                  ],
+                );
+              }
             );
           } catch(e) {
             print('Error open blog from notification due to: $e');
@@ -88,26 +116,53 @@ class _IndexPageState extends State<IndexPage> {
         }
         else if (message['mission'] != null){
           try{
-            Navigator.push<dynamic>(
-                context,
-                MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
-                )
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(message['title']),
+                    content: Text(message['body']),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('好的'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('去看看'),
+                        onPressed: () {
+                          Navigator.push<dynamic>(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                  builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
+                              )
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                }
             );
           } catch(e) {
             print('Error open mission from notification due to: $e');
           }
         }
         else if (message['chat'] != null) {
+          print('recieve message id ${message['chat']}');
           if(unreadMessages.containsKey(message['chat'])){
-            unreadMessages[message['chat']] += 1;
+            setState(() {
+              unreadMessages[message['chat']] += 1;
+            });
+            streamController.add(unreadMessages);
           }
           else{
-            unreadMessages[message['chat']] = 1;
+            setState(() {
+              unreadMessages[message['chat']] = 1;
+            });
+            streamController.add(unreadMessages);
           }
-          setState(() {
 
-          });
         }
         return;
       },
@@ -191,32 +246,20 @@ class _IndexPageState extends State<IndexPage> {
       },
       onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
     );
-
-    firebaseMessaging.getToken().then((token) async {
-      print('FCM Token: $token');
-      await _userRepository.getUser().then((snap) {
-        String uid = snap.uid;
-        Firestore.instance.collection('users').document(uid).updateData({
-          'notificationToken': FieldValue.arrayUnion([token])
-        });
-      });
+    firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    }).onError((err) {
+      print('request error: $err');
     });
 
-
+    saveCurrentUser();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-//      statusBarColor: Colors.black,
-//      statusBarIconBrightness: Brightness.dark,
-//      statusBarBrightness: Brightness.dark,
-//      systemNavigationBarColor: Colors.black,
-//      systemNavigationBarDividerColor: Colors.grey,
-//      systemNavigationBarIconBrightness: Brightness.dark,
-//    ));
     return Container(
       child: Scaffold(
           body: BlocBuilder(
@@ -236,9 +279,10 @@ class _IndexPageState extends State<IndexPage> {
           bottomNavigationBar: new Theme(
             data: Theme.of(context).copyWith(
                 // sets the background color of the `BottomNavigationBar`
-                canvasColor: Colors.white,
+                canvasColor: Theme.of(context).primaryColor,
                 // sets the active color of the `BottomNavigationBar` if `Brightness` is light
                 primaryColor: AppTheme.primary,
+                unselectedWidgetColor: Theme.of(context).accentColor,
             ),
               child: new BottomNavigationBar(
                 currentIndex: _pageIndex,
@@ -246,14 +290,14 @@ class _IndexPageState extends State<IndexPage> {
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
-                    title: Text('主页'),
+                    title: Text('主页', style: TextStyle(color: Theme.of(context).accentColor),),
                   ),
                   BottomNavigationBarItem(
                       icon: getNumUnread() != '0' ? Badge(
                         badgeContent: Text(getNumUnread(), style: TextStyle(color: Colors.white, fontSize: 12),),
                         child: Icon(Icons.chat),
                       ) :  Icon(Icons.chat),
-                      title: Text('私信'),
+                      title: Text('私信', style: TextStyle(color: Theme.of(context).accentColor),),
                   ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.business),
@@ -262,11 +306,11 @@ class _IndexPageState extends State<IndexPage> {
 //            ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    title: Text('搜索'),
+                    title: Text('搜索', style: TextStyle(color: Theme.of(context).accentColor),),
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),
-                    title: Text('我的'),
+                    title: Text('我的', style: TextStyle(color: Theme.of(context).accentColor),),
                   ),
                 ],
                 onTap: onTabTapped,

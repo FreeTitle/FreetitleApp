@@ -106,7 +106,7 @@ class _MyProfile extends State<MyProfile> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: AppTheme.white,
-          brightness: Brightness.dark,
+//          brightness: Brightness.dark,
           title: Text(
             widget.isMyProfile ? '我' : widget.userName,
             style: TextStyle(
@@ -184,7 +184,9 @@ class _GetMyProfile extends State<GetMyProfile>{
             return MyProfile(userID: userID, isMyProfile: true, );
           }
           else{
-            return Text('Get User file broken');
+            return Center(
+              child: Text('Loading...'),
+            );
           }
         }
     );
