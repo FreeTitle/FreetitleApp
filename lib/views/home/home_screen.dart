@@ -47,162 +47,134 @@ class _Home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.black,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.dark,
-    ));
-//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-    return Theme(
-      data: AppTheme.buildLightTheme(),
-      child: Container(
+    return DefaultTabController(
+        length: 3,
+        initialIndex: 1,
         child: Scaffold(
-          body: Stack(
-            children: <Widget>[
-              InkWell(
-                splashColor: Colors.transparent,
-                focusColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                hoverColor: Colors.transparent,
+            backgroundColor: Theme.of(context).primaryColor,
+            appBar: AppBar(
+              centerTitle: true,
+              iconTheme: IconThemeData(color: Theme.of(context).accentColor),
+              title: InkWell(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  alignment: Alignment.center,
+                  child: Text('FreeTitle', style: TextStyle(color: Theme.of(context).accentColor),),
+                ),
                 onTap: () {
-                  FocusScope.of(context).requestFocus(FocusNode());
+                  _scrollController.jumpTo(0);
                 },
-                child:
-                    DefaultTabController(
-                      length: 3,
-                      initialIndex: 1,
-                      child: Scaffold(
-                          appBar: AppBar(
-                            centerTitle: true,
-//                            brightness: Brightness.dark,
-                            iconTheme: IconThemeData(color:  Colors.black),
-                            title: InkWell(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                alignment: Alignment.center,
-                                child: Text('FreeTitle', style: TextStyle(color: Colors.black),),
-                              ),
-                              onTap: () {
-                                _scrollController.jumpTo(0);
-                              },
-                            ),
-                            actions: <Widget>[
-                              Container(
-                                  padding: EdgeInsets.only(right: 16),
-                                  child: IconButton(
-                                    icon: Icon(Icons.camera_alt, color: Colors.white,),
-                                    onPressed: () {
+              ),
+              actions: <Widget>[
+                Container(
+                    padding: EdgeInsets.only(right: 16),
+                    child: IconButton(
+                        icon: Icon(Icons.camera_alt, color: Theme.of(context).primaryColor,),
+                        onPressed: () {
 
-                                    }
-                                  )
-                              ),
-                            ],
-                            backgroundColor: AppTheme.white,
-                            bottom: TabBar(
-                              labelColor: AppTheme.primary,
-                              unselectedLabelColor: Colors.black,
-                              indicatorColor: AppTheme.primary,
-                              tabs: <Widget>[
-                                Tab(child: Text('Blogs')),
-                                Tab(child: Text('Featured')),
-                                Tab(child: Text('Mission')),
-                              ],
-                            ),
-                          ),
-                          drawer: Drawer(
-                            child: HomeDrawer(),
-                          ),
-                          body: TabBarView(
-                            children: <Widget>[
-                              HomeBlogListView(scrollController: _scrollController,),
-                              FeaturedHome(scrollController: _scrollController,),
-                              StreamBuilder<QuerySnapshot>(
-                                key: PageStorageKey('Missions'),
-                                stream: Firestore.instance.collection('missions').orderBy('time', descending: true).snapshots(),
-                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                                  if (snapshot.hasError)
-                                    return new Text('Error: ${snapshot.error}');
-                                  switch (snapshot.connectionState) {
-                                    case ConnectionState.waiting:
-                                      return new Center(
-                                        child: Text('Loading'),
-                                      );
-                                    default:
-                                      if(snapshot.hasData){
-                                        missionList = List();
-                                        missionIDs = List();
-                                        snapshot.data.documents.forEach((mission) {
-                                          missionList.add(mission.data);
-                                          missionIDs.add(mission.documentID);
-                                        });
-                                        return SingleChildScrollView(
-                                          controller: _scrollController,
-                                          child: Container(
-                                            color: AppTheme.nearlyWhite,
+                        }
+                    )
+                ),
+              ],
+              bottom: TabBar(
+                labelColor: AppTheme.primary,
+                unselectedLabelColor: Theme.of(context).accentColor,
+                indicatorColor: AppTheme.primary,
+                tabs: <Widget>[
+                  Tab(child: Text('Blogs')),
+                  Tab(child: Text('Featured')),
+                  Tab(child: Text('Mission')),
+                ],
+              ),
+            ),
+            drawer: Drawer(
+              child: HomeDrawer(),
+            ),
+            body: TabBarView(
+              children: <Widget>[
+                HomeBlogListView(scrollController: _scrollController,),
+                FeaturedHome(scrollController: _scrollController,),
+                StreamBuilder<QuerySnapshot>(
+                  key: PageStorageKey('Missions'),
+                  stream: Firestore.instance.collection('missions').orderBy('time', descending: true).snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                    if (snapshot.hasError)
+                      return new Text('Error: ${snapshot.error}');
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return new Center(
+                          child: Text('Loading'),
+                        );
+                      default:
+                        if(snapshot.hasData){
+                          missionList = List();
+                          missionIDs = List();
+                          snapshot.data.documents.forEach((mission) {
+                            missionList.add(mission.data);
+                            missionIDs.add(mission.documentID);
+                          });
+                          return SingleChildScrollView(
+                            controller: _scrollController,
+                            child: Container(
+//                              color: AppTheme.nearlyWhite,
 //                                            height: MediaQuery.of(context).size.height,
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16, bottom: 4),
-                                                      child: Text(
-                                                        'Popular Mission',
-                                                        textAlign: TextAlign.left,
-                                                        style: TextStyle(
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: 22,
-                                                          letterSpacing: 0.27,
-                                                          color: AppTheme.darkerText,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    HorizontalMissionListView(
-                                                      missionList: missionList,
-                                                      missionIDs: missionIDs,
-                                                    ),
-                                                  ],
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.only(left: 16, bottom: 8),
-                                                  child: Text(
-                                                    'Latest Mission',
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: 22,
-                                                      letterSpacing: 0.27,
-                                                      color: AppTheme.darkerText,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                    padding: const EdgeInsets.only(top: 0.0, left: 16, right: 16),
-                                                    child: VerticalMissionListView(missionList: missionList, missionIDs: missionIDs,),
-                                                ),
-                                              ],
-                                            ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16, bottom: 4),
+                                        child: Text(
+                                          'Popular Mission',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 22,
+                                            letterSpacing: 0.27,
+                                            color: Theme.of(context).accentColor,
                                           ),
-                                        );
-                                      }
-                                      else{
-                                        return new Text("Something is wrong with firebase");
-                                      }
-                                  }
-                                },
-                              )
-                            ],
-                          )
-                      )
-                  ),
+                                        ),
+                                      ),
+                                      HorizontalMissionListView(
+                                        missionList: missionList,
+                                        missionIDs: missionIDs,
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 16, bottom: 8),
+                                    child: Text(
+                                      'Latest Mission',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 22,
+                                        letterSpacing: 0.27,
+                                        color: Theme.of(context).accentColor,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 0.0, left: 16, right: 16),
+                                    child: VerticalMissionListView(missionList: missionList, missionIDs: missionIDs,),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                        else{
+                          return new Text("Something is wrong with firebase");
+                        }
+                    }
+                  },
                 )
-            ],
-          ),
-        ),
-      ),
+              ],
+            )
+        )
     );
   }
 
