@@ -120,27 +120,72 @@ class _ContactCard extends State<ContactCard>{
                                 return;
                               }
 
+                              // 检查是否联网 保证不会多次创建聊天
+                              var connectivityResult = await (Connectivity().checkConnectivity());
+                              if(connectivityResult == ConnectivityResult.none){
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('创建聊天失败'),
+                                        content: Text('网络错误'),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: Text('好'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          )
+                                        ],
+                                      );
+                                    }
+                                );
+                              }
+
+                              // Create my ChatUser object
                               String name, avatar;
                               await Firestore.instance.collection('users').document(userID).get().then((snap) {
                                 name = snap.data['displayName'];
                                 avatar = snap.data['avatarUrl'];
                               });
                               ChatUser user = ChatUser(name: name, avatar: avatar, uid: userID);
-                              List existingChats = List();
+
+                              //  Get local chats
+                              List localChats = List();
                               SharedPreferences sharedPref;
                               await SharedPreferences.getInstance().then((pref) {
                                 sharedPref = pref;
                               });
-
                               List<String> chatJson = List();
                               chatJson = sharedPref.getStringList('chatlist');
                               int index;
                               for(index = 0;index < chatJson.length;index++) {
                                 Map chat = json.decode(chatJson[index]);
                                 if(chat["otherUserID"] == widget.otherUserID){
-                                  existingChats.add(chat);
+                                  localChats.add(chat);
                                   break;
                                 }
+                              }
+
+                              // Get remote chats
+                              var remoteChatsRef = await Firestore.instance.collection('chat')
+                                  .where('users', arrayContains: userID)
+                                  .getDocuments()
+                                  .catchError((e) {
+                                print(e);
+                              });
+                              List remoteChats = List();
+                              for(var doc in remoteChatsRef.documents) {
+                                Map chat = Map.from(doc.data);
+                                if(chat['users'].contains(widget.otherUserID)){
+                                  chat['id'] = doc.documentID;
+                                  remoteChats.add(chat);
+                                }
+                              }
+
+                              if(localChats.length != 1 || remoteChats.length != 1){
+                                //TODO merge chats
+                                mergeChats(context, localChats, remoteChats);
                               }
 
                               String chatID;
@@ -159,25 +204,35 @@ class _ContactCard extends State<ContactCard>{
                                 errMessage = 'Mission发送失败';
                               }
 
-                              if(existingChats.isNotEmpty){
-                                Map chat = existingChats[0];
+                              if(localChats.isNotEmpty){
+                                Map localChat = localChats[0];
+                                Map remoteChat = remoteChats[0];
+                                if(localChat['id'] != remoteChat['id']){
+                                  //TODO merge chats
+                                  mergeChats(context, localChat['id'], remoteChat['id']);
+                                }
+
+                                Map chat = localChats[0];
                                 chatID = chat['id'];
                               }else {
-                                await Firestore.instance.runTransaction((transaction) async {
+                                if(remoteChats.isEmpty){
                                   var documentRef = Firestore.instance.collection('chat').document();
-                                  await transaction.set(documentRef, {
-                                    'users': [
-                                      userID,
-                                      widget.otherUserID,
-                                    ],
-                                    'lastMessageTime': DateTime.now(),
-                                    'lastMessageContent': '',
+                                  await Firestore.instance.runTransaction((transaction) async {
+                                    await transaction.set(documentRef, {
+                                      'users': [
+                                        userID,
+                                        widget.otherUserID,
+                                      ],
+                                      'lastMessageTime': DateTime.now(),
+                                      'lastMessageContent': '',
+                                    });
+                                    chatID = documentRef.documentID;
                                   });
-                                  chatID = documentRef.documentID;
-                                });
+                                }
+                                else {
+                                  chatID = remoteChats[0]['id'];
+                                }
                               }
-
-
 
                               await Firestore.instance.runTransaction((transaction) async {
                                 var messageRef = Firestore.instance.collection('chat').document(chatID).collection('messages').reference().document();

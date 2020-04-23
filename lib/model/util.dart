@@ -211,7 +211,29 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     return;
   }
 
-  List existingChats = List();
+  // 检查是否联网 保证不会多次创建聊天
+  var connectivityResult = await (Connectivity().checkConnectivity());
+  if(connectivityResult == ConnectivityResult.none){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('创建聊天失败'),
+            content: Text('网络错误'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('好'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        }
+    );
+  }
+
+  List localChats = List();
   SharedPreferences sharedPref;
   await SharedPreferences.getInstance().then((pref) {
     sharedPref = pref;
@@ -223,14 +245,42 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
   for(index = 0;index < chatJson.length;index++) {
     Map chat = json.decode(chatJson[index]);
     if(chat["otherUserID"] == otherUserID){
-      existingChats.add(chat);
+      localChats.add(chat);
       break;
     }
   }
-  if(existingChats.isNotEmpty){
-    assert (existingChats.length == 1);
-    // When this chat exists
-    Map chat = existingChats[0];
+
+  var remoteChatsRef = await Firestore.instance.collection('chat')
+      .where('users', arrayContains: userID)
+      .getDocuments()
+      .catchError((e) {
+    print(e);
+  });
+  List remoteChats = List();
+  for(var doc in remoteChatsRef.documents) {
+    Map chat = Map.from(doc.data);
+    if(chat['users'].contains(otherUserID)){
+      chat['id'] = doc.documentID;
+      remoteChats.add(chat);
+    }
+  }
+
+  if(localChats.length != 1 || remoteChats.length != 1){
+    //TODO merge chats
+    mergeChats(context, localChats, remoteChats);
+  }
+
+  if(localChats.isNotEmpty){
+
+    Map localChat = localChats[0];
+    Map remoteChat = remoteChats[0];
+    if(localChat['id'] != remoteChat['id']){
+      //TODO merge chats
+      mergeChats(context, localChat['id'], remoteChat['id']);
+    }
+
+    // When local chat exists
+    Map chat = localChats[0];
     String chatID = chat['id'];
 
     chat['avatar'] = otherUserAvatar;
@@ -248,57 +298,43 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     );
   }
   else{
-    // 检查是否联网 保证不会多次创建聊天
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if(connectivityResult == ConnectivityResult.none){
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('创建聊天失败'),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('好'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          }
-      );
-    }
     // 在firestore新建chat document，使用transaction来保障不会重复创建
     String chatID;
-    await Firestore.instance.runTransaction((transaction) async {
-      var documentRef = Firestore.instance.collection('chat').document();
-      await transaction.set(documentRef, {
-        'users': [
-          userID,
-          otherUserID,
-        ],
-        'lastMessageTime': DateTime.now(),
-        'lastMessageContent': '',
+    if(remoteChats.isEmpty){
+      await Firestore.instance.runTransaction((transaction) async {
+        var documentRef = Firestore.instance.collection('chat').document();
+        await transaction.set(documentRef, {
+          'users': [
+            userID,
+            otherUserID,
+          ],
+          'lastMessageTime': DateTime.now(),
+          'lastMessageContent': '',
+        });
+        chatID = documentRef.documentID;
+      }).catchError((err) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('创建聊天失败'),
+                content: Text('数据库错误'),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('好'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            }
+        );
       });
-      chatID = documentRef.documentID;
-    }).catchError((err) {
-      showDialog(
-        context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('创建聊天失败'),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('好'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          }
-      );
-    });
+    }
+    else {
+      chatID = remoteChats[0]['id'];
+    }
 
     // 将聊天存入本地
     List<String> chatJson;
@@ -322,4 +358,25 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
         )
     );
   }
+}
+
+
+void mergeChats(context, localChatID, remoteChatID) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context){
+      return AlertDialog(
+        title: Text('开启聊天出现错误，请截屏联系开发人员'),
+        content: Text('localID: $localChatID, remoteID: $remoteChatID'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('好'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      );
+    }
+  );
 }
