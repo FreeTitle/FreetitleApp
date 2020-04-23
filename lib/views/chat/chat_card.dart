@@ -13,16 +13,15 @@ class ChatCard extends StatelessWidget {
         @required this.latestMessage,
         @required this.chatID,
         this.unreadNum,
-        this.callback,
+        this.indexState,
       }) : assert(chatID != null), super(key: key);
   final String chatID;
-//  final String otherUserID;
   final int unreadNum;
-  final callback;
   final String avatar;
   final String username;
   final String latestMessage;
   final int latestTime;
+  final indexState;
 
 
   Widget buildTime(){
@@ -53,12 +52,10 @@ class ChatCard extends StatelessWidget {
         height: 100,
         child: InkWell(
           onTap: () {
-            print(chatID);
-            callback(chatID);
             Navigator.push<dynamic>(
                 context,
                 MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) => ChatView(chatID: chatID, otherUsername: username,),
+                  builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: username, indexState: indexState,),
                 )
             );
           },
@@ -90,7 +87,7 @@ class ChatCard extends StatelessWidget {
                     children: <Widget>[
                       Text(username, style: AppTheme.body2,),
                       SizedBox(height: 10,),
-                      Text(latestMessage.length > 20 ? latestMessage.substring(0, 20) + '...' : latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
+                      Text(latestMessage.length > 20 ? latestMessage.substring(0, 19) + '...' : latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
                     ],
                   ),
                   Spacer(),
@@ -99,6 +96,7 @@ class ChatCard extends StatelessWidget {
                       buildTime(),
                       unreadNum != null && unreadNum != 0 ? Badge(
                         badgeContent: Text(unreadNum.toString(), style: TextStyle(color: Colors.white, fontSize: 12),),
+                        toAnimate: false,
                       ) : SizedBox(),
                     ],
                   ),

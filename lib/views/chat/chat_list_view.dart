@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +12,10 @@ import 'dart:convert';
 
 class ChatListScreen extends StatefulWidget{
 
-  ChatListScreen({Key key, @required this.unreadMessages, this.callback}) : super(key : key);
+  ChatListScreen({Key key, this.indexState, this.stream}) : super(key : key);
 
-  final unreadMessages;
-  final callback;
+  final indexState;
+  final Stream<Map> stream;
 
   _ChatListScreenState createState() => _ChatListScreenState();
 }
@@ -29,18 +31,27 @@ class _ChatListScreenState extends State<ChatListScreen>{
   Map<String, Map<String, dynamic>> chatData;
 //  String messageID;
   bool refresh = true;
+  Map unreadMessages;
 
   @override
   void initState(){
     _userRepository = UserRepository();
+    unreadMessages = Map();
     _getChatList = getChatList();
     _getLocal = getLocal();
     chatData = Map();
+    unreadMessages = widget.indexState.unreadMessages;
+    widget.stream.listen((stream) {
+      unreadMessages = stream;
+      setState(() {
+
+      });
+    });
     super.initState();
   }
 
   Future<bool> getLocal() async {
-    SharedPreferences.getInstance().then((pref) {
+    await SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
     return true;
@@ -80,12 +91,13 @@ class _ChatListScreenState extends State<ChatListScreen>{
         }
 
         //私聊
+//        print(data);
         if(data['users'].length == 2) {
           for(var uid in data['users']){
             if(uid != userID){
               otherUserID = uid;
               await Firestore.instance.collection('users').document(uid).get().then((userSnap) {
-                if(userSnap != null) {
+                if(userSnap.data != null) {
                   otherUserAvatar = userSnap.data['avatarUrl'];
                   otherUserName = userSnap.data['displayName'];
                 }
@@ -93,6 +105,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
             }
           }
         }
+
         // deleted chats should not display
         if(chatData.containsKey(doc.documentID) && chatData[doc.documentID]['delete'] == true){
           continue;
@@ -101,16 +114,23 @@ class _ChatListScreenState extends State<ChatListScreen>{
         if(lastMessageContent == ''){
           continue;
         }
-        chatData[doc.documentID] = {
-          'id': doc.documentID,
-          'otherUserID': otherUserID,
-          'lastMessageContent': lastMessageContent,
-          'lastMessageTime': lastMessageTime.millisecondsSinceEpoch,
-          'avatar': otherUserAvatar,
-          'displayName': otherUserName,
-          'delete': false,
-        };
 
+        if(otherUserAvatar == null || otherUserName == null){
+          if(chatData.containsKey(doc.documentID)){
+            chatData.remove(doc.documentID);
+          }
+        }
+        else{
+          chatData[doc.documentID] = {
+            'id': doc.documentID,
+            'otherUserID': otherUserID,
+            'lastMessageContent': lastMessageContent,
+            'lastMessageTime': lastMessageTime.millisecondsSinceEpoch,
+            'avatar': otherUserAvatar,
+            'displayName': otherUserName,
+            'delete': false,
+          };
+        }
       }
     }
 
@@ -133,7 +153,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
           SizedBox(width: 10,),
         ],
         backgroundColor: Colors.white,
-        brightness: Brightness.light,
+//        brightness: Brightness.light,
       ),
       body: FutureBuilder<bool>(
         future: _getLocal,
@@ -143,25 +163,26 @@ class _ChatListScreenState extends State<ChatListScreen>{
               future: getChatList(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if(snapshot.connectionState == ConnectionState.done){
-                  List<String> chatJson = List();
+                  for(var chatId in unreadMessages.keys){
+                    if(chatData.containsKey(chatId)){
+                      chatData[chatId]['delete'] = false;
+                    }
+                  }
+                  List<String> jsonChats = List();
 
                   for(var id in chatData.keys.toList()) {
-                    chatJson.add(json.encode(chatData[id]));
+                    jsonChats.add(json.encode(chatData[id]));
                   }
 
-                  sharedPref.setStringList('chatlist', chatJson);
+                  sharedPref.setStringList('chatlist', jsonChats);
                   List chatDataValue = chatData.values.toList().where((chat) => chat['delete'] == false).toList();
                   chatDataValue.sort((a, b) => b['lastMessageTime'].compareTo(a['lastMessageTime']));
                   return ListView.builder(
                       itemCount: chatDataValue.length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index){
-                        Map unreadMessages = widget.unreadMessages;
-                        int unreadNum = 0;
                         String messageID = chatDataValue[index]['id'];
-                        if(unreadMessages.containsKey(messageID)){
-                          unreadNum = unreadMessages[messageID];
-                        }
+                        int unreadNum = unreadMessages[messageID];
                         return Slidable(
                           actionPane: SlidableDrawerActionPane(),
                           child: ChatCard(
@@ -171,7 +192,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
                             avatar: chatDataValue[index]['avatar'],
                             username: chatDataValue[index]['displayName'],
                             unreadNum: unreadNum,
-                            callback: widget.callback,
+                            indexState: widget.indexState,
                           ),
                           secondaryActions: <Widget>[
                             IconSlideAction(
@@ -196,13 +217,13 @@ class _ChatListScreenState extends State<ChatListScreen>{
                                               child: Text('是'),
                                               onPressed: () {
                                                 chatData[messageID]['delete'] = true;
-                                                List<String> chatJson = List();
+                                                List<String> jsonChats = List();
 
                                                 for(var id in chatData.keys.toList()) {
-                                                  chatJson.add(json.encode(chatData[id]));
+                                                  jsonChats.add(json.encode(chatData[id]));
                                                 }
 
-                                                sharedPref.setStringList('chatlist', chatJson);
+                                                sharedPref.setStringList('chatlist', jsonChats);
                                                 setState(() {
 
                                                 });
@@ -222,12 +243,14 @@ class _ChatListScreenState extends State<ChatListScreen>{
                   );
                 }
                 else{
-                  List<String> chatJson;
-                  chatJson = sharedPref.getStringList('chatlist');
+                  List<String> jsonChats;
+                  jsonChats = sharedPref.getStringList('chatlist');
                   List chatList = List();
-                  chatJson.forEach((chat) {
-                    chatList.add(json.decode(chat));
-                  });
+                  if(jsonChats != null){
+                    jsonChats.forEach((chat) {
+                      chatList.add(json.decode(chat));
+                    });
+                  }
 
                   chatList.forEach((chat) {
                     chatData[chat['id']] = chat;
@@ -248,6 +271,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
                           latestTime: chatList[index]['lastMessageTime'],
                           avatar: chatList[index]['avatar'],
                           username: chatList[index]['displayName'],
+                          indexState: widget.indexState,
                         ),
                         secondaryActions: <Widget>[
                           IconSlideAction(
@@ -272,13 +296,13 @@ class _ChatListScreenState extends State<ChatListScreen>{
                                             child: Text('是'),
                                             onPressed: () {
                                               chatData[messageID]['delete'] = true;
-                                              List<String> chatJson = List();
+                                              List<String> jsonChats = List();
 
                                               for(var id in chatData.keys.toList()) {
-                                                chatJson.add(json.encode(chatData[id]));
+                                                jsonChats.add(json.encode(chatData[id]));
                                               }
 
-                                              sharedPref.setStringList('chatlist', chatJson);
+                                              sharedPref.setStringList('chatlist', jsonChats);
                                               setState(() {
 
                                               });
@@ -325,32 +349,3 @@ Route contactListRoute() {
     },
   );
 }
-
-//class ChatListAppBar extends StatefulWidget {
-//  ChatListAppBar({Key key, this.state}) : super(key : key);
-//
-//  final _ChatListScreenState state;
-//
-//  _ChatListAppBar createState() => _ChatListAppBar();
-//}
-
-//class _ChatListAppBar extends State<ChatListAppBar> {
-//  @override
-//  Widget build(BuildContext context) {
-//    return AppBar(
-//      centerTitle: true,
-//      title: Text(widget.state.refresh == true ? '加载中...' : '私信', style: TextStyle(color: Colors.black)),
-//      actions: <Widget>[
-//        IconButton(
-//          icon: Icon(Icons.add, color: Colors.black,),
-//          onPressed: () {
-//            Navigator.of(context).push(contactListRoute());
-//          },
-//        ),
-//        SizedBox(width: 10,),
-//      ],
-//      backgroundColor: Colors.white,
-//      brightness: Brightness.light,
-//    );
-//  }
-//}
