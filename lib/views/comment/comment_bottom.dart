@@ -189,59 +189,61 @@ class _CommentListState extends State<CommentsList> {
     }
 
     if(commentWidgets.length < commentIDs.length){
-      commentWidgets.add(
-        Padding(
-          padding: EdgeInsets.only(top: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppTheme.white,
-              borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.6),
-                  offset: const Offset(4, 4),
-                  blurRadius: 8,
+      if(commentWidgets[commentWidgets.length-1].toString() == 'CommentBox'){
+        commentWidgets.add(
+            Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.white,
+                  borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.6),
+                      offset: const Offset(4, 4),
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            width: 200,
-            child: FlatButton(
-              child: Text("Load More", style: TextStyle(color: AppTheme.primary),),
-              onPressed: () async {
-                pageCount += 1;
-                commentWidgets.removeLast();
+                width: 200,
+                child: FlatButton(
+                  child: Text("Load More", style: TextStyle(color: AppTheme.primary),),
+                  onPressed: () async {
+                    pageCount += 1;
+                    commentWidgets.removeLast();
 
-                for(var idx = (pageCount-1)*perPage; idx <  perPage*pageCount && idx < commentIDs.length; idx++ ){
-                  var commentID = commentIDs[idx];
-                  var commentSnap = await Firestore.instance.collection('comments').document(commentID).get();
-                  commentData = commentSnap.data;
-                  bool isCurrentUserComment = false;
-                  if(userID == commentData['userID']){
-                    isCurrentUserComment = true;
-                  }
+                    for(var idx = (pageCount-1)*perPage; idx <  perPage*pageCount && idx < commentIDs.length; idx++ ){
+                      var commentID = commentIDs[idx];
+                      var commentSnap = await Firestore.instance.collection('comments').document(commentID).get();
+                      commentData = commentSnap.data;
+                      bool isCurrentUserComment = false;
+                      if(userID == commentData['userID']){
+                        isCurrentUserComment = true;
+                      }
 
-                  if(commentData['level'] == 1)
-                    commentWidgets.add(
-                        CommentBox(
-                          commentData: commentData,
-                          isSubCommentPage: false,
-                          pageID: widget.pageID,
-                          commentID: commentIDs[idx],
-                          isCurrentUserComment: isCurrentUserComment,
-                          pageType: widget.pageType,
-                          state: this,
-                        )
-                    );
-                }
-                setState(() {
+                      if(commentData['level'] == 1)
+                        commentWidgets.add(
+                            CommentBox(
+                              commentData: commentData,
+                              isSubCommentPage: false,
+                              pageID: widget.pageID,
+                              commentID: commentIDs[idx],
+                              isCurrentUserComment: isCurrentUserComment,
+                              pageType: widget.pageType,
+                              state: this,
+                            )
+                        );
+                    }
+                    setState(() {
 
-                });
+                    });
 
-              },
-            ),
-          ),
-        )
-      );
+                  },
+                ),
+              ),
+            )
+        );
+      }
     }
 
     return Column(
