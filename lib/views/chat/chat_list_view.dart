@@ -192,6 +192,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
                             avatar: chatDataValue[index]['avatar'],
                             username: chatDataValue[index]['displayName'],
                             unreadNum: unreadNum,
+                            stream: widget.stream,
                             indexState: widget.indexState,
                           ),
                           secondaryActions: <Widget>[
@@ -271,6 +272,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
                           latestTime: chatList[index]['lastMessageTime'],
                           avatar: chatList[index]['avatar'],
                           username: chatList[index]['displayName'],
+                          stream: widget.stream,
                           indexState: widget.indexState,
                         ),
                         secondaryActions: <Widget>[

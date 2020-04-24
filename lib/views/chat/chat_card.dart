@@ -12,6 +12,7 @@ class ChatCard extends StatelessWidget {
         @required this.latestTime,
         @required this.latestMessage,
         @required this.chatID,
+        this.stream,
         this.unreadNum,
         this.indexState,
       }) : assert(chatID != null), super(key: key);
@@ -22,6 +23,7 @@ class ChatCard extends StatelessWidget {
   final String latestMessage;
   final int latestTime;
   final indexState;
+  final Stream<Map> stream;
 
 
   Widget buildTime(){
@@ -55,7 +57,7 @@ class ChatCard extends StatelessWidget {
             Navigator.push<dynamic>(
                 context,
                 MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: username, indexState: indexState,),
+                  builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: username, indexState: indexState, stream: stream,),
                 )
             );
           },
@@ -87,7 +89,7 @@ class ChatCard extends StatelessWidget {
                     children: <Widget>[
                       Text(username, style: AppTheme.body2,),
                       SizedBox(height: 10,),
-                      Text(latestMessage.length > 20 ? latestMessage.substring(0, 19) + '...' : latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
+                      Text(latestMessage.length > 19 ? latestMessage.substring(0, 18) + '...' : latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
                     ],
                   ),
                   Spacer(),

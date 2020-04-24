@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +22,15 @@ class Chat extends StatefulWidget{
     @required this.chatID,
     @required this.otherUsername,
     this.indexState,
+    this.stream,
 //    this.sharedBlogID,
 //    this.sharedMissionID,
   }): assert(chatID != null), super(key:key);
   
   final String chatID;
   final String otherUsername;
+  final Stream<Map> stream;
+
 //  final String sharedBlogID;
 //  final String sharedMissionID;
   final indexState;
@@ -51,19 +55,28 @@ class _ChatState extends State<Chat> {
 
   List<ChatMessage> messages;
 
+  StreamSubscription subscription;
+
   @override
   void initState() {
-    if(widget.indexState != null){
-      if(widget.indexState.unreadMessages != null){
-        if(widget.indexState.unreadMessages.containsKey(widget.chatID)){
-          widget.indexState.unreadMessages[widget.chatID] = 0;
-        }
-      }
-    }
     getRemoteChat();
     getLocalChat();
     messages = List();
+    subscription = widget.stream.listen((stream) {
+      print(stream);
+      if(stream.containsKey(widget.chatID)){
+        if(stream[widget.chatID] != 0){
+          widget.indexState.unreadMessages[widget.chatID] = 0;
+        }
+      }
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 
   Future<bool> getLocalChat() async {
@@ -107,6 +120,15 @@ class _ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
+    if(widget.indexState != null){
+      if(widget.indexState.unreadMessages != null){
+        if(widget.indexState.unreadMessages.containsKey(widget.chatID)){
+          widget.indexState.unreadMessages[widget.chatID] = 0;
+//          widget.indexState.setState(() {});
+        }
+      }
+    }
     return Scaffold(
       appBar: AppBar(
 //        brightness: Brightness.dark,

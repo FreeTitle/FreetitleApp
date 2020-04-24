@@ -43,10 +43,6 @@ class _IndexPageState extends State<IndexPage> {
   Map<String, int> unreadMessages;
   StreamController<Map> streamController;
 
-  void readChat(chatID){
-    unreadMessages[chatID] = 0;
-  }
-
   String getNumUnread() {
     if(unreadMessages.values.length == 0){
       return '0';
