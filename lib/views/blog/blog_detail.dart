@@ -148,9 +148,12 @@ class _BlogDetail extends State<BlogDetail> {
                     text: ' ' + blockString.substring(boldItalicStart, boldItalicEnd),
                   )
                 );
-                processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
-                  textLists.add(block);
-                });
+                print(blockString);
+                if(boldItalicEnd+9 < blockString.length){
+                  processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
+                    textLists.add(block);
+                  });
+                }
               }
               else{
                 processText(blockString).forEach((block) {
