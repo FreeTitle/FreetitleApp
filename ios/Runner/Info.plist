@@ -63,6 +63,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Push notification of content based on user location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Give user location based news</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Users can upload photos to the comments</string>
 	<key>UIBackgroundModes</key>

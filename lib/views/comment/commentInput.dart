@@ -35,8 +35,14 @@ class CommentInputPage extends StatefulWidget {
 class _CommentInputPage extends State<CommentInputPage> {
 
   final textController = TextEditingController();
-
+  bool isPublishEnabled;
   File image;
+
+  @override
+  void initState(){
+    isPublishEnabled = true;
+    super.initState();
+  }
 
   @override
   void dispose(){
@@ -90,6 +96,10 @@ class _CommentInputPage extends State<CommentInputPage> {
             padding: EdgeInsets.only(right: 5),
             child: FlatButton(
               onPressed: () async {
+                if(isPublishEnabled != true){
+                  return;
+                }
+                isPublishEnabled = false;
                 String text = textController.text;
                 final Map data = new Map();
                 data['_text'] = text;
@@ -155,73 +165,103 @@ class _CommentInputPage extends State<CommentInputPage> {
                   // Set target page's comments
                   List pageComments;
                   if(widget.pageType == 'blog') {
-                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) {
-                      print(snap.data['comments']);
-                      pageComments = snap.data['comments'];
+                    var blogRef = Firestore.instance.collection('blogs').document(data['pageID']);
+                    Firestore.instance.runTransaction((transaction) async {
+                      await transaction.update(blogRef, {
+                        'comments': FieldValue.arrayUnion([commentID]),
+                      });
                     });
-                    if(pageComments == null){
-                      pageComments = List();
-                    }
-                    pageComments.add(commentID);
-                    await Firestore.instance.collection('blogs').document(data['pageID']).updateData({
-                      'comments': pageComments,
-                    });
+//                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) {
+//                      print(snap.data['comments']);
+//                      pageComments = snap.data['comments'];
+//                    });
+//                    if(pageComments == null){
+//                      pageComments = List();
+//                    }
+//                    pageComments.add(commentID);
+//                    await Firestore.instance.collection('blogs').document(data['pageID']).updateData({
+//                      'comments': pageComments,
+//                    });
                   }
                   else if(widget.pageType == 'mission') {
-                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) {
-                      print(snap.data['comments']);
-                      pageComments = snap.data['comments'];
+                    var missionRef = Firestore.instance.collection('missions').document(data['pageID']);
+                    Firestore.instance.runTransaction((transaction) async {
+                      await transaction.update(missionRef, {
+                        'comments': FieldValue.arrayUnion([commentID]),
+                      });
                     });
-                    if(pageComments == null){
-                      pageComments = List();
-                    }
-                    pageComments.add(commentID);
-                    await Firestore.instance.collection('missions').document(data['pageID']).updateData({
-                      'comments': pageComments,
-                    });
+//                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) {
+//                      print(snap.data['comments']);
+//                      pageComments = snap.data['comments'];
+//                    });
+//                    if(pageComments == null){
+//                      pageComments = List();
+//                    }
+//                    pageComments.add(commentID);
+//                    await Firestore.instance.collection('missions').document(data['pageID']).updateData({
+//                      'comments': pageComments,
+//                    });
                   }
-
                 } // Level 2 and level 3 comment setup
                 else if(data['level'] == 2 || data['level'] == 3){
 
                   // Set target comment's replies
-                  List commentReplies;
-                  await Firestore.instance.collection('comments').document(data['parentID']).get().then((snap) {
-                    commentReplies = snap.data['replies'];
-                  });
-                  if(commentReplies == null){
-                    commentReplies = List();
-                  }
-                  commentReplies.add(commentID);
-                  await Firestore.instance.collection('comments').document(data['parentID']).updateData({
-                    'replies': commentReplies,
+//                  List commentReplies;
+//                  await Firestore.instance.collection('comments').document(data['parentID']).get().then((snap) {
+//                    commentReplies = snap.data['replies'];
+//                  });
+//                  if(commentReplies == null){
+//                    commentReplies = List();
+//                  }
+//                  commentReplies.add(commentID);
+//                  await Firestore.instance.collection('comments').document(data['parentID']).updateData({
+//                    'replies': commentReplies,
+//                  });
+
+                  var commentRef = Firestore.instance.collection('comments').document(data['parentID']);
+                  Firestore.instance.runTransaction((transaction) async {
+                    await transaction.update(commentRef, {
+                      'replies': FieldValue.arrayUnion([commentID]),
+                    });
                   });
 
                   // Set target page's subcomments
                   List pageSubcomments;
                   if(widget.pageType == 'blog'){
-                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) {
-                      pageSubcomments = snap.data['subcomments'];
+                    var blogRef = Firestore.instance.collection('blogs').document(data['pageID']);
+                    Firestore.instance.runTransaction((transaction) async {
+                      await transaction.update(blogRef, {
+                        'subcomments': FieldValue.arrayUnion([commentID]),
+                      });
                     });
-                    if(pageSubcomments == null){
-                      pageSubcomments = List();
-                    }
-                    pageSubcomments.add(commentID);
-                    await Firestore.instance.collection('blogs').document(data['pageID']).updateData({
-                      'subcomments': pageSubcomments
-                    });
+//                    await Firestore.instance.collection('blogs').document(data['pageID']).get().then((snap) {
+//                      pageSubcomments = snap.data['subcomments'];
+//                    });
+//                    if(pageSubcomments == null){
+//                      pageSubcomments = List();
+//                    }
+//                    pageSubcomments.add(commentID);
+//                    await Firestore.instance.collection('blogs').document(data['pageID']).updateData({
+//                      'subcomments': pageSubcomments
+//                    });
                   }
                   else if(widget.pageType == 'mission') {
-                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) {
-                      pageSubcomments = snap.data['subcomments'];
+                    var missionRef = Firestore.instance.collection('missions').document(data['pageID']);
+                    Firestore.instance.runTransaction((transaction) async {
+                      await transaction.update(missionRef, {
+                        'subcomments': FieldValue.arrayUnion([commentID]),
+                      });
                     });
-                    if(pageSubcomments == null){
-                      pageSubcomments = List();
-                    }
-                    pageSubcomments.add(commentID);
-                    await Firestore.instance.collection('missions').document(data['pageID']).updateData({
-                      'subcomments': pageSubcomments
-                    });
+//                    await Firestore.instance.collection('missions').document(data['pageID']).get().then((snap) {
+//                      pageSubcomments = snap.data['subcomments'];
+//                    });
+//                    if(pageSubcomments == null){
+//                      pageSubcomments = List();
+//                    }
+//                    pageSubcomments.add(commentID);
+//                    await Firestore.instance.collection('missions').document(data['pageID']).updateData({
+//                      'subcomments': pageSubcomments
+//                    });
                   }
                 }
                 else{

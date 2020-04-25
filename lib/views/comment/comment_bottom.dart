@@ -44,6 +44,23 @@ class _CommentBottomState extends State<CommentBottom>{
     _userRepository = UserRepository();
     _getComments = getComments();
     commentList = List();
+    if(widget.pageType == 'blog'){
+      var documentRef = Firestore.instance.collection('blogs').document(widget.pageID);
+      documentRef.snapshots().listen((snap) {
+        setState(() {
+          _getComments = getComments();
+        });
+      });
+    }
+    else if(widget.pageType == 'mission'){
+      var documentRef = Firestore.instance.collection('missions').document(widget.pageID);
+      documentRef.snapshots().listen((snap) {
+        setState(() {
+          _getComments = getComments();
+        });
+      });
+    }
+
     lock = new Lock();
     super.initState();
   }
