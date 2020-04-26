@@ -255,31 +255,53 @@ class _MissionDetail extends State<MissionDetail>
           }
           else{
             if(code.contains('bilibili')){
-              int end = code.indexOf('>');
-
-              String pre = code.substring(0, end);
-//              pre += " allowfullscreen ";
-              if(Platform.isIOS){
-//                pre += " width=\"${MediaQuery.of(context).size.width*2.3}\" height=\"300\"";
-              }
-              else{
-                pre += " width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
-              }
-              code = pre + code.substring(end);
-              print(code);
-              end = code.indexOf('//');
-              pre = code.substring(0, end);
-              pre += 'https:';
-              code = pre + code.substring(end);
-              print(code);
-              code = '<iframe src="https://player.bilibili.com/player.html?bvid=BV1gs411v735&amp;cid=171271807"></iframe>';
+              String url = code.split('\"')[1];
+              print(url);
+              url = 'https:'+url;
+              missionWidget.add(
+                  RichText(
+                    text: LinkTextSpan(
+                        style: AppTheme.link,
+                        url: url,
+                        text: '点击此处，观看视频'
+                    ),
+                  )
+              );
             }
-            missionWidget.add(
-                HtmlWidget(
-                  code,
-                  webView: true,
-                )
-            );
+            else {
+              missionWidget.add(
+                  HtmlWidget(
+                    code,
+                    webView: true,
+                  )
+              );
+              String url = code.split('\"')[1];
+              print(url);
+              if(code.contains('youtube') || code.contains('youtu')){
+                missionWidget.add(
+                    RichText(
+                      text: LinkTextSpan(
+                          style: AppTheme.link,
+                          url: url,
+                          text: '视频若无法观看，请点击此处',
+                          innerOpen: false
+                      ),
+                    )
+                );
+              }
+              else {
+                missionWidget.add(
+                    RichText(
+                      text: LinkTextSpan(
+                        style: AppTheme.link,
+                        url: url,
+                        text: '视频若无法观看，请点击此处',
+                        innerOpen: true,
+                      ),
+                    )
+                );
+              }
+            }
           }
         }
         else if(block['type'] == 'attaches' && block['data']['file']['extension'] == 'pdf') {

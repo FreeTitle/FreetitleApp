@@ -14,11 +14,11 @@ import 'package:connectivity/connectivity.dart';
 
 class LinkTextSpan extends TextSpan {
 
-  LinkTextSpan({ TextStyle style, String url, String text }) : super(
+  LinkTextSpan({ TextStyle style, String url, String text, bool innerOpen=true }) : super(
       style: style,
       text: text ?? url,
       recognizer: TapGestureRecognizer()..onTap = () {
-        launch(url, forceSafariVC: false);
+        launch(url, forceSafariVC: innerOpen);
       }
   );
 }
