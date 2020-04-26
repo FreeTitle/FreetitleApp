@@ -6,6 +6,17 @@ Written using Flutter
 
 Backend using Firebase SDK
 
+## Version 0.1.1
+### This is the Alpha 0.1.1 version of FreeTitle App
+A lot of bug fixes
+
+* fixed chat bugs, e.g. 'Future' time, multiple chats on the same person...
+* fixed comment problems
+* changed RSS article style
+* finished publication display
+* change embed media play
+* other fixes
+
 ## Version 0.0.1
 ### This is the Alpha 0.0.1 version of FreeTitle App
 It supports the following capabilities: 
