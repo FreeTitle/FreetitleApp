@@ -87,7 +87,7 @@ class _ResetPasswordForm extends State<ResetPasswordForm> {
                     autovalidate: true,
                     validator: (_) {
                       return !state.isPasswordValid
-                          ? '请至少包含一个字母和一个数字且总长度不小于8'
+                          ? '请至少包含一个字母和一个数字且总长度不小于8，不大于20'
                           : null;
                     },
                   ),

@@ -35,24 +35,6 @@ class _ProfileBlogListView extends State<ProfileBlogListView> with TickerProvide
     super.dispose();
   }
 
-//  Widget noBlogWidget() {
-//    return Padding(
-//      padding: EdgeInsets.only(left: 24, right: 24),
-//      child: Card(
-//        child: Container(
-//          height: 200,
-//          child: Center(
-//            child: Container(
-//              child: Text(
-//                  'No blogs yet'
-//              ),
-//            ),
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-
   void getBlog(blog){
     Navigator.push<dynamic>(
         context,

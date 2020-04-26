@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/blog/blog_detail.dart';
+import 'package:freetitle/views/notification.dart';
 import 'package:freetitle/views/splash_screen.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,30 +35,14 @@ class _MyAppState extends State<MyApp> {
 
   AuthenticationBloc _authenticationBloc;
 
-
-
-  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-    print("onBackgroundMessage: $message");
-    //_showBigPictureNotification(message);
-    return Future<void>.value();
-  }
-
   @override
   void initState() {
-    super.initState();
     _authenticationBloc = AuthenticationBloc(userRepository: _userRepository);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-//    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-//      statusBarColor: Colors.transparent,
-//      statusBarIconBrightness: Brightness.dark,
-//      statusBarBrightness: Platform.isAndroid ? Brightness.dark : Brightness.light,
-//      systemNavigationBarColor: Colors.white,
-//      systemNavigationBarDividerColor: Colors.grey,
-//      systemNavigationBarIconBrightness: Brightness.dark,
-//    ));
     return BlocProvider(
       bloc: _authenticationBloc,
       child: Provider<UserRepository>.value(
@@ -65,8 +51,23 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           title: 'FreeTitle',
           theme: ThemeData(
-//          primarySwatch: Colors.blue,
-            accentColor: Colors.blue,
+//            brightness: Brightness.light,
+            primaryColor: AppTheme.white,
+            accentColor: Colors.black,
+              textTheme: TextTheme(
+                headline: AppTheme.headline,
+                body1: AppTheme.body1,
+                body2: AppTheme.body2,
+              )
+          ),
+          darkTheme: ThemeData(
+            primaryColor: AppTheme.white,
+            accentColor: Colors.black,
+            textTheme: TextTheme(
+              headline: AppTheme.headline,
+              body1: AppTheme.body1,
+              body2: AppTheme.body2,
+            )
           ),
           home: SplashScreenPage(),
         ),

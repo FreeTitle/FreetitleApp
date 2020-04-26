@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,85 +12,126 @@ import 'package:freetitle/views/profile/profile.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class ChatView extends StatefulWidget{
+class Chat extends StatefulWidget{
 
-  const ChatView(
+  const Chat(
   { Key key,
     @required this.chatID,
     @required this.otherUsername,
-    this.sharedBlogID,
-    this.sharedMissionID,
+    this.indexState,
+    this.stream,
+//    this.sharedBlogID,
+//    this.sharedMissionID,
   }): assert(chatID != null), super(key:key);
   
   final String chatID;
   final String otherUsername;
-  final String sharedBlogID;
-  final String sharedMissionID;
+  final Stream<Map> stream;
+
+//  final String sharedBlogID;
+//  final String sharedMissionID;
+  final indexState;
 
   @override
   State<StatefulWidget> createState() {
-    return _ChatView();
+    return _ChatState();
   }
 }
 
-class _ChatView extends State<ChatView> {
+class _ChatState extends State<Chat> {
 
-  ScrollController _scrollController;
   ChatUser user;
   String uid;
   String name;
   String avatar;
 
+//  Future<bool> _getRemoteChat;
+//  Future<bool> _getLocalChat;
+
+  SharedPreferences sharedPref;
+
+  List<ChatMessage> messages;
+
+  StreamSubscription subscription;
+
   @override
   void initState() {
-    _scrollController = ScrollController();
+    getRemoteChat();
+    getLocalChat();
+    messages = List();
+    subscription = widget.stream.listen((stream) {
+      print(stream);
+      if(stream.containsKey(widget.chatID)){
+        if(stream[widget.chatID] != 0){
+          widget.indexState.unreadMessages[widget.chatID] = 0;
+        }
+      }
+    });
     super.initState();
   }
 
   @override
-  void dispose(){
-    _scrollController.dispose();
+  void dispose() {
+    subscription.cancel();
     super.dispose();
   }
 
-  Future<bool> setupChat() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
-
-    UserRepository _userRepository = UserRepository();
-    await _userRepository.getUser().then((snap) {
-      uid = snap.uid;
+  Future<bool> getLocalChat() async {
+    await SharedPreferences.getInstance().then((pref) {
+      sharedPref = pref;
     });
+    String jsonUser = sharedPref.getString('currentUser');
+    Map currentUser = json.decode(jsonUser);
+    uid = currentUser['uid'];
+    name = currentUser['displayName'];
+    avatar = currentUser['avatarUrl'];
+    user = ChatUser(name: name, avatar: avatar, uid: uid);
+    return true;
+  }
+
+  Future<bool> getRemoteChat() async {
+    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
     await Firestore.instance.collection('users').document(uid).get().then((snap) {
       name = snap.data['displayName'];
       avatar = snap.data['avatarUrl'];
     });
     user = ChatUser(name: name, avatar: avatar, uid: uid);
-    if(widget.sharedBlogID != null){
-      ChatMessage message = ChatMessage(text: "shareblogid=${widget.sharedBlogID}", user: user);
-      Firestore.instance.runTransaction((transaction) async {
-        var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
-        await transaction.set(documentRef, message.toJson());
-      });
-    }
-
-    if(widget.sharedMissionID != null){
-      ChatMessage message = ChatMessage(text: "sharemissionid=${widget.sharedMissionID}", user: user);
-      Firestore.instance.runTransaction((transaction) async {
-        var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
-        await transaction.set(documentRef, message.toJson());
-      });
-    }
 
     return true;
+  }
+
+  void saveLocalChat(List<ChatMessage> messages) async {
+    List<String> jsonMessages = List();
+    messages.forEach((message) {
+      final color = message.user.color;
+      final containerColor = message.user.containerColor;
+      message.user.containerColor = null;
+      message.user.color = null;
+      jsonMessages.add(json.encode(message.toJson()));
+      message.user.containerColor = containerColor;
+      message.user.color = color;
+    });
+    sharedPref.setStringList('chat${widget.chatID}', jsonMessages);
   }
 
 
   @override
   Widget build(BuildContext context) {
+    print('build');
+    if(widget.indexState != null){
+      if(widget.indexState.unreadMessages != null){
+        if(widget.indexState.unreadMessages.containsKey(widget.chatID)){
+          widget.indexState.unreadMessages[widget.chatID] = 0;
+//          widget.indexState.setState(() {});
+        }
+      }
+    }
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.dark,
+//        brightness: Brightness.dark,
         centerTitle: true,
         backgroundColor: AppTheme.white,
         title: Text(widget.otherUsername, style: TextStyle(color: Colors.black),),
@@ -109,50 +151,81 @@ class _ChatView extends State<ChatView> {
           )
         ],
       ),
-      body: FutureBuilder(
-        future: setupChat(),
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
-          if(snapshot.connectionState == ConnectionState.done){
-            return StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                if (snapshot.hasError)
-                  return new Text('Error: ${snapshot.error}');
-                switch (snapshot.connectionState){
-//                  case ConnectionState.waiting:
-//                    return new Center(
-//                      child: Text('Loading'),
-//                    );
-                  default:
-                    if(snapshot.hasData){
-                      List<DocumentSnapshot> items = snapshot.data.documents;
-                      List<ChatMessage> messages = List();
-                      ChatMessage message;
-                      items.forEach((m) {
-                        if(m.data['user']['uid'] == uid){
-                          message = ChatMessage.fromJson(m.data);
-                          message.user.containerColor = AppTheme.primary;
-                          messages.add(message);
-                        }
-                        else{
-                          message = ChatMessage.fromJson(m.data);
-                          message.user.containerColor = AppTheme.secondary;
-                          messages.add(message);
-                        }
-                      });
-                      messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-                      return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
-                    }
-                    else{
-                      return new Center(
-                        child: Text('Some thing is wrong'),
-                      );
-                    }
+      body: FutureBuilder<bool>(
+        future: getLocalChat(),
+        builder: (BuildContext context, AsyncSnapshot<bool> localSnapshot) {
+          if(localSnapshot.connectionState == ConnectionState.done) {
+            print(user);
+            return FutureBuilder(
+              future: getRemoteChat(),
+              builder: (BuildContext context, AsyncSnapshot<bool> remoteSnapshot){
+                if(remoteSnapshot.connectionState == ConnectionState.done){
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                      if (snapshot.hasError)
+                        return new Text('Error: ${snapshot.error}');
+                      switch (snapshot.connectionState){
+                        default:
+                          if(snapshot.hasData){
+                            List<DocumentSnapshot> items = snapshot.data.documents;
+                            List<ChatMessage> messages = List();
+                            ChatMessage message;
+
+                            items.forEach((m) {
+                              if(m.data['user']['uid'] == uid){
+                                message = ChatMessage.fromJson(m.data);
+                                message.user.containerColor = AppTheme.primary;
+                                messages.add(message);
+                              }
+                              else{
+                                message = ChatMessage.fromJson(m.data);
+                                message.user.containerColor = AppTheme.secondary;
+                                messages.add(message);
+                              }
+                            });
+                            messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+                            saveLocalChat(messages);
+                            return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                          }
+                          else{
+                            return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                          }
+                      }
+                    },
+                  );
+                }
+                else{
+                  // Load local chat
+                  List jsonMessages = sharedPref.getStringList('chat${widget.chatID}');
+                  ChatMessage message;
+//                  List<ChatMessage> messages = List();
+                  if(jsonMessages != null){
+                    jsonMessages.forEach((jsonMessage) {
+                      Map m = json.decode(jsonMessage);
+                      if(m['user']['uid'] == uid){
+                        message = ChatMessage.fromJson(m);
+                        message.user.containerColor = AppTheme.primary;
+                        messages.add(message);
+                      }
+                      else {
+                        message = ChatMessage.fromJson(m);
+                        message.user.containerColor = AppTheme.secondary;
+                        messages.add(message);
+                      }
+                    });
+                    return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                  }
+                  else{
+                    return Center(
+                      child: Text("Loading messages"),
+                    );
+                  }
                 }
               },
             );
           }
-          else{
+          else {
             return Center(
               child: Text("Loading messages"),
             );
@@ -164,9 +237,9 @@ class _ChatView extends State<ChatView> {
 }
 
 
-class Chat extends StatefulWidget {
+class ChatScreen extends StatefulWidget {
 
-  const Chat(
+  const ChatScreen(
   {Key key,
     this.chatID,
     this.user,
@@ -178,26 +251,48 @@ class Chat extends StatefulWidget {
   final user;
   final avatar;
   final messages;
-  _Chat createState() => _Chat();
+  _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _Chat extends State<Chat>{
+class _ChatScreenState extends State<ChatScreen>{
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
+
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if(_scrollController.position.activity.velocity < -600.0){
+        print(_scrollController.position.activity.velocity);
+        var currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void onSend(ChatMessage message){
     message.user.avatar = widget.avatar;
+
+    var chatRef = Firestore.instance.collection('chat').document(widget.chatID);
+    var messageRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
     Firestore.instance.runTransaction((transaction) async {
-      var documentRef = Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().document();
-      await transaction.set(documentRef, message.toJson()).catchError((e){
+      await transaction.set(messageRef, message.toJson()).catchError((e){
         print(e);
       });
-    });
-    Firestore.instance.runTransaction((transaction) async {
-      var documentRef = Firestore.instance.collection('chat').document(widget.chatID);
-      await transaction.update(documentRef, {
+      await transaction.update(chatRef, {
         'lastMessageTime': message.createdAt,
         'lastSenderId': widget.user.uid,
-        'lastMessageContent': message.text,
+        'lastMessageContent': message.image != null ? '[图片]' : message.text,
       }).catchError((e) {
         print(e);
       });
@@ -212,13 +307,10 @@ class _Chat extends State<Chat>{
           builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
             if(snapshot.hasData){
               if(snapshot.data.data != null){
-                return Container(
-                  height: 288,
-                  width: 255,
-                  child: BlogCard(
-                    blogID: message.text.substring(12),
-                    blogData: snapshot.data.data,
-                  ),
+//                Map blogData = snapshot.data.data;
+                return ChatBlogCard(
+                  blogID: message.text.substring(12),
+                  blogData: snapshot.data.data,
                 );
               }
               else{
@@ -247,17 +339,6 @@ class _Chat extends State<Chat>{
                             color: Colors.black87,
                           ),
                         ),
-                        if (message.image != null)
-                          Padding(
-                            padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                            child: FadeInImage.memoryNetwork(
-                              height: MediaQuery.of(context).size.height * 0.3,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              fit: BoxFit.contain,
-                              image: message.image,
-                              placeholder: kTransparentImage,
-                            ),
-                          ),
                         Padding(
                           padding: EdgeInsets.only(top: 5.0),
                           child: Text(
@@ -294,13 +375,9 @@ class _Chat extends State<Chat>{
 
             if(snapshot.hasData){
               if(snapshot.data.data != null) {
-                return Container(
-                  height: 280,
-                  width: 255,
-                  child: VerticalMissionCard(
+                return ChatMissionCard(
                     missionData: snapshot.data.data,
                     missionID: message.text.substring(15),
-                  ),
                 );
               }
               else{
@@ -350,15 +427,12 @@ class _Chat extends State<Chat>{
                 ),
               ),
               if (message.image != null)
-                Padding(
-                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: FadeInImage.memoryNetwork(
-                    height: MediaQuery.of(context).size.height * 0.3,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    fit: BoxFit.contain,
-                    image: message.image,
-                    placeholder: kTransparentImage,
-                  ),
+                FadeInImage.memoryNetwork(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  fit: BoxFit.contain,
+                  image: message.image,
+                  placeholder: kTransparentImage,
                 ),
               Padding(
                 padding: EdgeInsets.only(top: 5.0),
@@ -390,8 +464,36 @@ class _Chat extends State<Chat>{
       timeFormat: DateFormat('HH:mm'),
       messages: widget.messages,
       showUserAvatar: true,
+      avatarBuilder: (user) {
+        return Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            ClipOval(
+              child: Container(
+                height: MediaQuery.of(context).size.width * 0.08,
+                width: MediaQuery.of(context).size.width * 0.08,
+                color: Colors.grey,
+                child: Center(child: Text(user.name[0])),
+              ),
+            ),
+            user.avatar != null && user.avatar.length != 0
+                ? Center(
+              child: ClipOval(
+                child: FadeInImage.memoryNetwork(
+                  image: user.avatar,
+                  placeholder: kTransparentImage,
+                  fit: BoxFit.cover,
+                  height: MediaQuery.of(context).size.width * 0.08,
+                  width: MediaQuery.of(context).size.width * 0.08,
+                ),
+              ),
+            )
+                : Container()
+          ],
+        );
+      },
       showAvatarForEveryMessage: true,
-//                        scrollController: _scrollController,
+      scrollController: _scrollController,
       scrollToBottom: false,
       messageBuilder: buildMessage,
       onPressAvatar: (ChatUser user) {
@@ -408,10 +510,10 @@ class _Chat extends State<Chat>{
       },
       inputMaxLines: 5,
       messageContainerPadding: EdgeInsets.only(left: 5.0, right: 5.0),
-//                      messageContainerDecoration: BoxDecoration(
-//                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-//                        color: AppTheme.primary,
-//                      ),
+//      messageContainerDecoration: BoxDecoration(
+//        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+//        color: AppTheme.primary,
+//      ),
       alwaysShowSend: true,
       inputTextStyle: TextStyle(fontSize: 16.0),
       inputContainerStyle: BoxDecoration(
@@ -486,3 +588,4 @@ class _Chat extends State<Chat>{
     );
   }
 }
+

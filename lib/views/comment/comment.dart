@@ -7,91 +7,7 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/comment/commentInput.dart';
 import 'package:freetitle/views/login/login.dart';
-
-class CommentBottom extends StatefulWidget {
-
-  const CommentBottom(
-      {Key key,
-        @required this.commentIDs,
-        @required this.pageID,
-        @required this.pageType,
-      }): super(key: key);
-
-  final String pageID;
-  final List<String> commentIDs;
-  final String pageType;
-
-  @override
-  _CommentBottom createState() => _CommentBottom();
-}
-
-class _CommentBottom extends State<CommentBottom>{
-
-  ScrollController _scrollController;
-  UserRepository _userRepository;
-  String userID;
-
-  @override
-  void initState(){
-    _scrollController =  new ScrollController();
-    _userRepository = UserRepository();
-    _userRepository.getUser().then((snap) {
-      if(snap != null)
-        userID = snap.uid;
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  List<Widget>buildComments(){
-    List commentIDs = widget.commentIDs.reversed.toList();
-    List<Widget> commentList = List();
-    for(var index = 0; index < commentIDs.length;index++){
-      commentList.add(
-          StreamBuilder<DocumentSnapshot>(
-            stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
-            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-              if (snapshot.hasError)
-                return new Text('Error: ${snapshot.error}');
-              switch(snapshot.connectionState){
-                case ConnectionState.waiting:
-                  return new Text('Loading');
-                default:
-                  if(snapshot.data.data != null){
-                    final comment = snapshot.data.data;
-                    bool isCurrentUserComment = false;
-                    if(userID == comment['userID']){
-                      isCurrentUserComment = true;
-                    }
-                    if(comment['level'] == 1)
-                      return CommentBox(commentData: comment, isSubCommentPage: false, pageID: widget.pageID, commentID: commentIDs[index], isCurrentUserComment: isCurrentUserComment, pageType: widget.pageType,);
-                  }
-                  else{
-                    return PlaceHolderCard(
-                      text: 'No comments yet',
-                      height: 200.0,
-                    );
-                  }
-              }
-            },
-          )
-      );
-    }
-    return commentList;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: buildComments(),
-    );
-  }
-}
+import 'package:freetitle/model/photo.dart';
 
 class CommentBox extends StatefulWidget {
 
@@ -102,6 +18,7 @@ class CommentBox extends StatefulWidget {
     @required this.pageType,
     @required this.commentID,
     this.isCurrentUserComment,
+    @required this.state,
   }) : super(key: key);
 
   final Map commentData;
@@ -110,14 +27,24 @@ class CommentBox extends StatefulWidget {
   final String commentID;
   final bool isCurrentUserComment;
   final String pageType;
+  final state;
 
   _CommentBoxState createState() => _CommentBoxState();
 }
 
 class _CommentBoxState extends State<CommentBox>{
 
-  bool liked = false;
+//  bool liked = false;
   String userID;
+  UserRepository _userRepository;
+  Map authorData;
+
+  @override
+  void initState(){
+    _userRepository = UserRepository();
+
+    super.initState();
+  }
 
   Widget buildContent(){
     final Map content = widget.commentData['content'];
@@ -126,14 +53,28 @@ class _CommentBoxState extends State<CommentBox>{
 
       );
     }
-    Image img;
+    Widget img;
     if (content['image'] != null){
-      img = Image.network(content['image']);
+//      img = Image.network(content['image'], fit: BoxFit.contain);
+      img = InkWell(
+        onTap: () {
+          Navigator.push<dynamic>(
+              context,
+              MaterialPageRoute<dynamic>(
+                  builder: (BuildContext context) => PhotoScreen(photoUrl: content['image'], photoType: 'network',)
+              )
+          );
+        },
+        child: Image.network(content['image'], fit: BoxFit.contain,),
+      );
     }
     if (img != null){
       return Column(
         children: <Widget>[
           img,
+          SizedBox(
+            height: 15,
+          ),
           Text(content['text']),
         ],
       );
@@ -143,10 +84,6 @@ class _CommentBoxState extends State<CommentBox>{
     }
   }
 
-  Widget buildUser(){
-    UserRepository _userRepository = new UserRepository();
-    return _userRepository.getUserWidget(widget.commentData['userID'], color: AppTheme.white);
-  }
 
   Widget buildSubComment(BuildContext context){
     final commentData = widget.commentData;
@@ -263,35 +200,35 @@ class _CommentBoxState extends State<CommentBox>{
                               await Firestore.instance.collection('comments').document(id).delete();
                             }
 
-                            List comments;
-                            List subcomments;
+//                            List comments;
+//                            List subcomments;
 
                             if(pageType == 'blog') {
-                              await Firestore.instance.collection('blogs').document(pageID).get().then((snap) {
-                                comments = snap.data['comments'];
-                                subcomments = snap.data['subcomments'];
-                              });
-                              comments.remove(commentID);
-                              for(var id in subCommentIDs){
-                                subcomments.remove(id);
-                              }
+//                              await Firestore.instance.collection('blogs').document(pageID).get().then((snap) {
+//                                comments = snap.data['comments'];
+//                                subcomments = snap.data['subcomments'];
+//                              });
+//                              comments.remove(commentID);
+//                              for(var id in subCommentIDs){
+//                                subcomments.remove(id);
+//                              }
                               await Firestore.instance.collection('blogs').document(pageID).updateData({
-                                'comments': comments,
-                                'subcomments': subcomments
+                                'comments': FieldValue.arrayRemove([commentID]),
+                                'subcomments': FieldValue.arrayRemove(subCommentIDs),
                               });
                             }
                             else if(pageType == 'mission') {
-                              await Firestore.instance.collection('missions').document(pageID).get().then((snap) {
-                                comments = snap.data['comments'];
-                                subcomments = snap.data['subcomments'];
-                              });
-                              comments.remove(commentID);
-                              for(var id in subCommentIDs){
-                                subcomments.remove(id);
-                              }
+//                              await Firestore.instance.collection('missions').document(pageID).get().then((snap) {
+//                                comments = snap.data['comments'];
+//                                subcomments = snap.data['subcomments'];
+//                              });
+//                              comments.remove(commentID);
+//                              for(var id in subCommentIDs){
+//                                subcomments.remove(id);
+//                              }
                               await Firestore.instance.collection('missions').document(pageID).updateData({
-                                'comments': comments,
-                                'subcomments': subcomments
+                                'comments': FieldValue.arrayRemove([commentID]),
+                                'subcomments': FieldValue.arrayRemove(subCommentIDs),
                               });
                             }
 
@@ -330,6 +267,9 @@ class _CommentBoxState extends State<CommentBox>{
                           print('This comment has some error');
                         }
                         Navigator.of(context).pop();
+                        widget.state.setState(() {});
+
+
                       }
                     )
                   ],
@@ -346,82 +286,31 @@ class _CommentBoxState extends State<CommentBox>{
     }
   }
 
-  Future<bool> getLke() async {
-    UserRepository _userRepository = UserRepository();
-
-    var user = await _userRepository.getUser();
-    userID = user.uid;
-
-    if(widget.commentData['upvotedBy'].contains(userID)){
-      liked = true;
-    }else {
-      liked = false;
-    }
+  Future<bool> getUser() async {
+    authorData = Map();
+    await Firestore.instance.collection('users').document(widget.commentData['userID']).get().then((snap) {
+      authorData = snap.data;
+    });
 
     return true;
   }
 
-  Widget buildLikeButton() {
-    return FutureBuilder<bool>(
-      future: getLke(),
+  Widget buildUser() {
+    _userRepository = UserRepository();
+    return FutureBuilder<bool> (
+      future: getUser(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if(snapshot.connectionState == ConnectionState.done){
-          return IconButton(
-            icon: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
-            onPressed: () {
-              if (userID==null){
-                Navigator.push<dynamic>(
-                  context,
-                  MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) => LoginScreen(),
-                  ),
-                );
-                return;
-              }
-
-              // toggle like
-              liked = !liked;
-              setState(() {
-
-              });
-
-              // modify comment document in database
-              Firestore.instance.collection('comments').document(widget.commentID).updateData({
-                "likes": FieldValue.increment((liked ? (1) : (-1))),
-              }).whenComplete(() {
-                print('succeeded');
-              }).catchError((e) {
-                print('get error $e');
-              });
-
-              // toggle user like status in database
-              if(liked){
-                Firestore.instance.collection('comments').document(widget.commentID).updateData({
-                  "upvotedBy": FieldValue.arrayUnion([userID]),
-                }).whenComplete(() {
-                  print('like  succeeds');
-                }).catchError((e) {
-                  print('like gets error $e');
-                });
-              }
-              else{
-                Firestore.instance.collection('comments').document(widget.commentID).updateData({
-                  "upvotedBy": FieldValue.arrayRemove([userID]),
-                }).whenComplete(() {
-                  print('unlike  succeeds');
-                }).catchError((e) {
-                  print('unlike gets error $e');
-                });
-              }
-            },
-          );
+        if(snapshot.connectionState == ConnectionState.done) {
+          return _userRepository.getUserWidget(context, widget.commentData['userID'], authorData, color: AppTheme.white);
         }
-        else{
-          return SizedBox();
+        else {
+          return Text('FreeTitle Author');
         }
       },
     );
   }
+
+
   
 
   @override
@@ -435,6 +324,7 @@ class _CommentBoxState extends State<CommentBox>{
     final commentID = widget.commentID;
     final pageID = widget.pageID;
     final pageType = widget.pageType;
+
     return Center(
       child: Card(
         child: Column(
@@ -444,27 +334,27 @@ class _CommentBoxState extends State<CommentBox>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: 16),
+                  padding: EdgeInsets.only(left: 16, top: 16),
                   child: buildUser(),
                 ),
                 ButtonBar(
                   buttonPadding: EdgeInsets.all(0),
                   children: <Widget>[
-                    buildLikeButton(),
+                    CommentLikeButton(commentID: widget.commentID, commentData: widget.commentData,),
                     buildDeleteButton(context),
                     IconButton(
                       icon: Icon(Icons.comment),
                       onPressed: () {
                         Navigator.push<dynamic>(
-                          context,
-                          MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) {
-                              if (commentData['level']  == 1)
-                                return CommentInputPage(pageID: pageID, parentLevel: commentData['level'], parentID: commentID, parentType: 'page', targetID: commentID, pageType: pageType,);
-                              else
-                                return CommentInputPage(pageID: pageID, parentLevel: commentData['level'], parentID: commentData['parentID'], parentType: 'comment', targetID: commentID, pageType: pageType,);
-                            }
-                          )
+                            context,
+                            MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) {
+                                  if (commentData['level']  == 1)
+                                    return CommentInputPage(pageID: pageID, parentLevel: commentData['level'], parentID: commentID, parentType: 'page', targetID: commentID, pageType: pageType,);
+                                  else
+                                    return CommentInputPage(pageID: pageID, parentLevel: commentData['level'], parentID: commentData['parentID'], parentType: 'comment', targetID: commentID, pageType: pageType,);
+                                }
+                            )
                         );
                       },
                     ),
@@ -495,115 +385,97 @@ class _CommentBoxState extends State<CommentBox>{
   }
 }
 
-class CommentPage extends StatefulWidget{
-  const CommentPage(
-      {Key key,
-        @required this.commentIDs,
-        @required this.pageID,
-        @required this.pageType,
-      }): super(key: key);
+class CommentLikeButton extends StatefulWidget {
+  CommentLikeButton({Key key, this.commentID, this.commentData}) : super(key : key);
 
-  final List<String> commentIDs;
-  final String pageID;
-  final String pageType;
+//  final _CommentBoxState state;
+  final String commentID;
+  final Map commentData;
 
-  @override
-  _CommentPage createState() => _CommentPage();
+  _CommentLikeButtonState createState() => _CommentLikeButtonState();
 }
 
-class _CommentPage extends State<CommentPage>{
-
-  ScrollController _scrollController;
+class _CommentLikeButtonState extends State<CommentLikeButton> {
   UserRepository _userRepository;
   String userID;
-
-  @override
-  void initState(){
-    _scrollController =  new ScrollController();
+  bool liked = false;
+  Future<bool> getLike() async {
     _userRepository = UserRepository();
-    _userRepository.getUser().then((snap) {
-      userID = snap.uid;
-    });
-    super.initState();
+    var userSnap = await _userRepository.getUser();
+    userID = userSnap.uid;
+
+    return true;
   }
 
-  @override
-  void dispose(){
-    _scrollController.dispose();
-    super.dispose();
+  void modifyFirebase(liked) {
+    // modify comment document in database
+//    print(liked);
+    Firestore.instance.collection('comments').document(widget.commentID).updateData({
+      "likes": FieldValue.increment((liked ? (1) : (-1))),
+    });
+
+    // toggle user like status in database
+    if(liked){
+      Firestore.instance.collection('comments').document(widget.commentID).updateData({
+        "upvotedBy": FieldValue.arrayUnion([userID]),
+      }).whenComplete(() {
+        print('like  succeeds');
+      }).catchError((e) {
+        print('like gets error $e');
+      });
+//      widget.commentData['upvotedBy'].add(userID);
+    }
+    else{
+      Firestore.instance.collection('comments').document(widget.commentID).updateData({
+        "upvotedBy": FieldValue.arrayRemove([userID]),
+      }).whenComplete(() {
+        print('unlike  succeeds');
+      }).catchError((e) {
+        print('unlike gets error $e');
+      });
+//      widget.commentData['upvotedBy'].remove(userID);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    List commentIDs = widget.commentIDs.reversed.toList();
-    return Scaffold(
-        appBar: AppBar(
-          title: InkWell(
-            child: Text("评论", style: TextStyle(color: Colors.black),),
-            onTap: () {
-              _scrollController.jumpTo(0.0);
-            },
-          ),
-          brightness: Brightness.dark,
-          backgroundColor: AppTheme.white,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: (){
-              Navigator.pop(context);
-            },
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.comment),
-          backgroundColor: AppTheme.primary,
-          onPressed: () {
-            Navigator.push<dynamic>(
-                context,
-                MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) => CommentInputPage(pageID: widget.pageID, parentLevel: 0, parentID: widget.pageID, parentType: 'comment', pageType: widget.pageType, )
-                )
-            );
-          },
-        ),
-        body: Padding(
-          key: PageStorageKey('CommentPage'),
-          padding: EdgeInsets.symmetric(vertical: 16),
-          child: ListView.builder(
-              controller: _scrollController,
-              itemCount: commentIDs.length,
-              padding: const EdgeInsets.only(top: 8),
-              scrollDirection: Axis.vertical,
-              itemBuilder: (BuildContext context, int index){
-                return StreamBuilder<DocumentSnapshot>(
-                  stream: Firestore.instance.collection('comments').document(commentIDs[index]).snapshots(),
-                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                    if (snapshot.hasError)
-                      return new Text('Error: ${snapshot.error}');
-                    switch(snapshot.connectionState){
-                      case ConnectionState.waiting:
-                        return new Text('Loading');
-                      default:
-                        if(snapshot.data.data != null){
-                          final comment = snapshot.data.data;
-                          bool isCurrentUserComment = false;
-                          if(userID == comment['userID']){
-                            isCurrentUserComment = true;
-                          }
-                          if(comment['level'] == 1)
-                            return CommentBox(commentData: comment, isSubCommentPage: false, commentID: commentIDs[index], pageID: widget.pageID, isCurrentUserComment: isCurrentUserComment, pageType: widget.pageType,);
-                        }
-                        else{
-                          return SizedBox(
+    return SizedBox(
+      child: FutureBuilder<bool>(
+        future: getLike(),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.done) {
+            if(widget.commentData['upvotedBy'] != null && widget.commentData['upvotedBy'].contains(userID)){
+              liked = true;
+            }
+            return IconButton(
+              icon: liked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+              onPressed: () {
+                if (userID==null){
+                  Navigator.push<dynamic>(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => LoginScreen(),
+                    ),
+                  );
+                  return;
+                }
 
-                          );
-                        }
-                    }
-                  },
-                );
-              }
-          ),
-        ),
+                // toggle like
+                liked = !liked;
+                setState(() {
+
+                });
+
+                modifyFirebase(liked);
+
+              },
+            );
+          }
+          else {
+            return SizedBox();
+          }
+        },
+      ),
     );
   }
 }
@@ -633,6 +505,7 @@ class _SubCommentPage extends State<SubCommentPage>{
   String userID;
   Map commentData;
   List subCommentIDs;
+  List<Map> subCommentList;
 
   @override
   void initState(){
@@ -641,7 +514,7 @@ class _SubCommentPage extends State<SubCommentPage>{
     _userRepository.getUser().then((snap) {
       userID = snap.uid;
     });
-
+    subCommentList = List();
     super.initState();
   }
 
@@ -651,11 +524,30 @@ class _SubCommentPage extends State<SubCommentPage>{
     super.dispose();
   }
 
+  Future<bool> getComment() async {
+    var commentSnap = await Firestore.instance.collection('comments').document(widget.commentID).get();
+    commentData = commentSnap.data;
+    return true;
+  }
+
+
+  Future<bool> getSubComments(subCommentIDs) async {
+    Map subCommentData = Map();
+    subCommentList.clear();
+    for(var subCommentID in subCommentIDs){
+      var subCommentSnap = await Firestore.instance.collection('comments').document(subCommentID).get();
+      subCommentData = subCommentSnap.data;
+      subCommentList.add(subCommentData);
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('refresh subcomment');
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.dark,
+//        brightness: Brightness.dark,
         title: Text('回复', style: TextStyle(color: Colors.black),),
         backgroundColor: AppTheme.white,
         leading: IconButton(
@@ -667,72 +559,74 @@ class _SubCommentPage extends State<SubCommentPage>{
         ),
       ),
       resizeToAvoidBottomPadding: false,
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: Firestore.instance.collection('comments').document(widget.commentID).snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-          if (snapshot.hasError)
-            return new Text('Error: ${snapshot.error}');
-          switch(snapshot.connectionState){
-            case ConnectionState.waiting:
-              return new Text('Loading');
-            default:
-              if(snapshot.data.data != null){
-                commentData = snapshot.data.data;
-                subCommentIDs = commentData['replies'];
-                subCommentIDs = subCommentIDs.reversed.toList();
-                return SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      // Level 1 comment
-                      CommentBox(commentData: commentData, isSubCommentPage: true, commentID: widget.commentID, pageID: widget.pageID, pageType: widget.pageType,),
-                      Container(
-                        height: subCommentIDs.length*170.0,
-                        color: AppTheme.nearlyWhite,
-                        child: ListView.builder(
+      body: FutureBuilder<bool>(
+        future: getComment(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+          if(snapshot.connectionState == ConnectionState.done){
+            subCommentIDs = commentData['replies'];
+            subCommentIDs = subCommentIDs.reversed.toList();
+            return SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  // Level 1 comment
+                  CommentBox(
+                    commentData: commentData,
+                    isSubCommentPage: true,
+                    commentID: widget.commentID,
+                    pageID: widget.pageID,
+                    pageType: widget.pageType,
+                    state: this,
+                  ),
+                  Container(
+                    height: subCommentIDs.length*170.0,
+                    color: AppTheme.nearlyWhite,
+                    child: FutureBuilder<bool>(
+                      future: getSubComments(subCommentIDs),
+                      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        if(snapshot.connectionState == ConnectionState.done) {
+                          return ListView.builder(
                             controller: _scrollController,
                             itemCount: subCommentIDs.length,
                             padding: const EdgeInsets.only(top: 8),
                             scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index){
-                              return StreamBuilder<DocumentSnapshot>(
-                                stream: Firestore.instance.collection('comments').document(subCommentIDs[index]).snapshots(),
-                                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                                  if (snapshot.hasError)
-                                    return new Text('Error: ${snapshot.error}');
-                                  switch(snapshot.connectionState) {
-                                    case ConnectionState.waiting:
-                                      return new Text('Loading');
-                                    default:
-                                      if(snapshot.hasData){
-                                        final subcomment = snapshot.data.data;
-                                        bool isCurrentUserComment = false;
-                                        if(userID == subcomment['userID']){
-                                          isCurrentUserComment = true;
-                                        }
-                                        return Padding(
-                                            padding: EdgeInsets.only(left: 16, right: 16),
-                                            child: CommentBox(commentData: subcomment, isSubCommentPage: true, commentID: subCommentIDs[index], pageID: widget.pageID, isCurrentUserComment: isCurrentUserComment, pageType: widget.pageType,)
-                                        );
-                                      }
-                                      else{
-                                        return new Text("Something is wrong with firebase");
-                                      }
-                                  }
-                                },
+                            itemBuilder: (BuildContext context, int index) {
+                              final subCommentData_ = subCommentList[index];
+                              bool isCurrentUserComment = false;
+                              if(userID == subCommentData_['userID']){
+                                isCurrentUserComment = true;
+                              }
+                              return Padding(
+                                  padding: EdgeInsets.only(left: 16, right: 16),
+                                  child: CommentBox(
+                                    commentData: subCommentData_,
+                                    isSubCommentPage: true,
+                                    commentID: subCommentIDs[index],
+                                    pageID: widget.pageID,
+                                    isCurrentUserComment: isCurrentUserComment,
+                                    pageType: widget.pageType,
+                                    state: this,
+                                  )
                               );
                             }
-                        ),
-
-                      ),
-                    ],
+                          );
+                        }
+                        else {
+                          return PlaceHolderCard(
+                            text: 'Loading...',
+                            height: 200.0,
+                          );
+                        }
+                      },
+                    ),
                   ),
-                );
-              }
-              else{
-                return SizedBox(
-
-                );
-              }
+                ],
+              ),
+            );
+          }
+          else{
+            return SizedBox(
+              child: Text('Loading...'),
+            );
           }
         },
       ),

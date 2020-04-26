@@ -59,10 +59,12 @@ class BlogCard extends StatefulWidget {
 
 class _BlogCard extends State<BlogCard>{
   final keyBlogDetail = PageStorageKey('blogDetail');
-  String author = 'FreeTitle Author';
+  String author;
+  Future<bool> _getAuthor;
 
   @override
   void initState(){
+    _getAuthor = getAuthor();
     super.initState();
   }
 
@@ -89,6 +91,11 @@ class _BlogCard extends State<BlogCard>{
     return img;
   }
 
+  Future<bool> getAuthor() async {
+    var authorRef = await Firestore.instance.collection('users').document(widget.blogData['user']).get();
+    author = authorRef.data['displayName'];
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,38 +161,25 @@ class _BlogCard extends State<BlogCard>{
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: <Widget>[
-                                        StreamBuilder<DocumentSnapshot>(
-                                          stream: Firestore.instance.collection('users').document(blogData['user']).snapshots(),
-                                          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                                            if (snapshot.hasError)
-                                              return new Text('Error: ${snapshot.error}');
-                                            switch(snapshot.connectionState){
-                                              case ConnectionState.waiting:
-                                                return new Text(
-                                                    'FreeTitle Author',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.grey
-                                                    )
-                                                );
-                                              default:
-                                                if(snapshot.data.data != null){
-                                                  return Text(
-                                                      snapshot.data.data['displayName'],
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          color: Colors.grey
-                                                      ));
-                                                }
-                                                else{
-                                                  return new Text(
-                                                      'FreeTitle Author',
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          color: Colors.grey
-                                                      )
-                                                  );
-                                                }
+                                        FutureBuilder<bool>(
+                                          future: _getAuthor,
+                                          builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+                                            if(snapshot.connectionState == ConnectionState.done){
+                                              return Text(
+                                                  author,
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.grey
+                                                  ));
+                                            }
+                                            else{
+                                              return new Text(
+                                                  'FreeTitle Author',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.grey
+                                                  )
+                                              );
                                             }
                                           },
                                         ),
@@ -314,6 +308,90 @@ class _BlogCard extends State<BlogCard>{
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class ChatBlogCard extends StatelessWidget {
+
+  const ChatBlogCard({Key key, this.blogID, this.blogData}) : super(key : key);
+
+  final Map blogData;
+  final String blogID;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+          left: 24, right: 24, top: 8, bottom: 16),
+      child: InkWell(
+        splashColor: Colors.transparent,
+        onTap: () {
+          Navigator.push<dynamic>(
+              context,
+              MaterialPageRoute<dynamic>(
+                builder: (BuildContext context) => BlogDetail(blogID: blogID,),
+              )
+          );
+        },
+        child: Container(
+//          height: 70,
+          width: 200,
+          decoration: BoxDecoration(
+            color: AppTheme.white,
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.6),
+                offset: const Offset(4, 4),
+                blurRadius: 16,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            child: Stack(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(top: 8, bottom: 8, left: 16),
+                      child: SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: blogData['cover'] != null ? Image.network(blogData['cover'], fit: BoxFit.cover,) : Image.asset('assets/images/blog_placeholder.png', fit: BoxFit.cover,),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              blogData['title'],
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              'Blog'
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ],

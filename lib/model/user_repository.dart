@@ -7,6 +7,7 @@ import 'package:freetitle/views/profile/profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
@@ -31,14 +32,14 @@ class UserRepository {
     FirebaseUser user = await _firebaseAuth.currentUser();
     print('In user repository ${user}');
     await Firestore.instance.collection('users').document(user.uid).get()
-        .then((snap) => {
-          if(snap.data == null){
-            Firestore.instance.collection('users').document(user.uid).setData({
-              'displayName': user.displayName,
-              'email': user.email,
-              'avatarUrl': user.photoUrl,
-            })
-          }
+        .then((snap) {
+      if (snap.data == null) {
+        Firestore.instance.collection('users').document(user.uid).setData({
+          'displayName': user.displayName,
+          'email': user.email,
+          'avatarUrl': user.photoUrl,
+        });
+      }
     });
 
     return _firebaseAuth.currentUser();
@@ -109,6 +110,11 @@ class UserRepository {
   }
 
   Future<void> signOut() async {
+    SharedPreferences sharedPref;
+    SharedPreferences.getInstance().then((pref) {
+      sharedPref = pref;
+    });
+    sharedPref.remove('currentUser');
     return Future.wait([
       _firebaseAuth.signOut(),
       _googleSignIn.signOut(),
@@ -124,76 +130,59 @@ class UserRepository {
     return (await _firebaseAuth.currentUser());
   }
 
-  Widget getUserWidget(uid, {color=AppTheme.nearlyWhite}) {
-    return StreamBuilder<DocumentSnapshot> (
-      stream: Firestore.instance.collection('users').document(uid).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-        if (snapshot.hasError)
-          return new Text('Error: ${snapshot
-              .error}');
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return new Text('Loading');
-          default:
-            if (snapshot.hasData) {
-              final userData = snapshot.data;
-              String userName = userData['displayName'];
-              if(userName.length > 15){
-                userName = userName.substring(0,15) + "...";
-              }
-              String avatarURL = userData['avatarUrl'];
-              Image avatar = Image.network(avatarURL, fit: BoxFit.fill,);
-              return Material(
-                color: color,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push<dynamic>(
-                      context,
-                      MaterialPageRoute<dynamic>(
-                        builder: (BuildContext context) => Profile(userID: uid, isMyProfile: false),
+  Widget getUserWidget(BuildContext context, String uid, Map userData,
+      {color = AppTheme.nearlyWhite}) {
+    String userName = userData['displayName'];
+    if (userName.length > 15) {
+      userName = userName.substring(0, 15) + "...";
+    }
+    String avatarURL = userData['avatarUrl'];
+    Image avatar = Image.network(avatarURL, fit: BoxFit.cover,);
+    return Material(
+      color: color,
+      child: InkWell(
+        onTap: () {
+          Navigator.push<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) =>
+                  Profile(userID: uid, isMyProfile: false),
 //                        builder: (BuildContext context) => MyProfile(userID: uid, isMyProfile: false, userName: userName,),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+            ),
+          );
+        },
+        child: Row(
+          children: <Widget>[
+            Container(
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
 //                          boxShadow: <BoxShadow>[
 //                            BoxShadow(
 //                                color: AppTheme.grey.withOpacity(0.6),
 //                                offset: const Offset(2.0, 4.0),
 //                                blurRadius: 2),
 //                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius:
-                          const BorderRadius.all(Radius.circular(60.0)),
-                          child: avatar,
-                        ),
-                      ),
-                      SizedBox(width: 10,),
-                      Text(
-                        userName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.grey,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-            else{
-              return Text('Author');
-            }
-        }
-      },
+              ),
+              child: ClipRRect(
+                borderRadius:
+                const BorderRadius.all(Radius.circular(60.0)),
+                child: avatar,
+              ),
+            ),
+            SizedBox(width: 10,),
+            Text(
+              userName,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppTheme.grey,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

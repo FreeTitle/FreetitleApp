@@ -77,13 +77,13 @@ class ModifyAccountBloc extends Bloc<ModifyAccountEvent, ModifyAccountState> {
 
     // Check if username is used
     bool isUsernameUsed = false;
-    await reference.where('displayName', isEqualTo: username).getDocuments().then((user) {
-      if (user.documents.isEmpty) {
-        isUsernameUsed = false;
-      } else {
-        isUsernameUsed = true;
-      }
-    });
+//    await reference.where('displayName', isEqualTo: username).getDocuments().then((user) {
+//      if (user.documents.isEmpty) {
+//        isUsernameUsed = false;
+//      } else {
+//        isUsernameUsed = true;
+//      }
+//    });
 
     try {
       if(isUsernameUsed){

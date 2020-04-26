@@ -14,7 +14,7 @@ class ResetProfileButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       onPressed: _onPressed,
-      child: Text('重置用户名'),
+      child: Text('修改账户'),
     );
   }
 }

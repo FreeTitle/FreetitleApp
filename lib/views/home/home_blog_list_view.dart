@@ -51,9 +51,9 @@ class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderState
               if (snapshot.hasData) {
                 blogList = new List();
                 blogIDs = new List();
-                snapshot.data.documents.forEach((blog) => {
-                  blogList.add(blog.data),
-                  blogIDs.add(blog.documentID),
+                snapshot.data.documents.forEach((blog) {
+                  blogList.add(blog.data);
+                  blogIDs.add(blog.documentID);
                 });
                 int present = blogList.length;
                 return LiquidPullToRefresh(
@@ -65,13 +65,13 @@ class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderState
                       blogList.clear();
                       blogIDs.clear();
 
-                      await Firestore.instance.collection('blogs').limit(15).orderBy('time', descending: true).getDocuments().then((snap)=>{
-                        snap.documents.forEach((blog) => {
-                          blogList.add(blog.data),
-                          blogIDs.add(blog.documentID),
-                        }),
-                        present = blogList.length,
-                        pageCount = 1,
+                      await Firestore.instance.collection('blogs').limit(15).orderBy('time', descending: true).getDocuments().then((snap) {
+                        snap.documents.forEach((blog) {
+                          blogList.add(blog.data);
+                          blogIDs.add(blog.documentID);
+                        });
+                        present = blogList.length;
+                        pageCount = 1;
                       });
                       setState(() {
 
@@ -95,21 +95,32 @@ class _HomeBlogListView extends State<HomeBlogListView> with TickerProviderState
                         animationController.forward();
                         return (index == present) ?
                         Padding(
-                          padding: EdgeInsets.only(left: 24, right: 24),
+                          padding: EdgeInsets.only(left: 24, right: 24, bottom: 10),
                           child: Container(
-                            color: AppTheme.grey,
+//                            color: AppTheme.grey,
+                            decoration: BoxDecoration(
+                              color: AppTheme.white,
+                              borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
                             child: FlatButton(
                               child: Text("Load More", style: TextStyle(color: AppTheme.primary),),
                               onPressed: () async {
                                 pageCount += 1;
                                 blogList.clear();
                                 blogIDs.clear();
-                                await Firestore.instance.collection('blogs').limit(pageCount*perPage).orderBy('time', descending: true).getDocuments().then((snap) => {
-                                  snap.documents.forEach((blog) => {
-                                    blogList.add(blog.data),
-                                    blogIDs.add(blog.documentID),
-                                  }),
-                                  present = blogList.length,
+                                await Firestore.instance.collection('blogs').limit(pageCount*perPage).orderBy('time', descending: true).getDocuments().then((snap) {
+                                  snap.documents.forEach((blog) {
+                                    blogList.add(blog.data);
+                                    blogIDs.add(blog.documentID);
+                                  });
+                                  present = blogList.length;
                                 });
                                 setState(() {
 
