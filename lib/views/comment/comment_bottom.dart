@@ -44,20 +44,27 @@ class _CommentBottomState extends State<CommentBottom>{
     _userRepository = UserRepository();
     _getComments = getComments();
     commentList = List();
+    commentIDs = List();
+
     if(widget.pageType == 'blog'){
       var documentRef = Firestore.instance.collection('blogs').document(widget.pageID);
       documentRef.snapshots().listen((snap) {
-        setState(() {
-          _getComments = getComments();
-        });
+
+        if(snap.data['comments'] != commentIDs){
+          setState(() {
+            _getComments = getComments();
+          });
+        }
       });
     }
     else if(widget.pageType == 'mission'){
       var documentRef = Firestore.instance.collection('missions').document(widget.pageID);
       documentRef.snapshots().listen((snap) {
-        setState(() {
-          _getComments = getComments();
-        });
+        if(snap.data['comments'] != commentIDs){
+          setState(() {
+            _getComments = getComments();
+          });
+        }
       });
     }
 
@@ -73,29 +80,31 @@ class _CommentBottomState extends State<CommentBottom>{
 
 
   Future<bool> getComments() async {
-    commentIDs = List();
-    if(widget.pageType == 'blog'){
-      await Firestore.instance.collection('blogs').document(widget.pageID).get().then((snap) {
-        if(snap.data['comments'] != null) {
-          snap.data['comments'].forEach((comment) {
-            commentIDs.add(comment);
-          });
-        }
-      });
-    }
-    else if(widget.pageType  == 'mission'){
-      await Firestore.instance.collection('missions').document(widget.pageID).get().then((snap) {
-        if(snap.data['comments'] != null) {
-          snap.data['comments'].forEach((comment) {
-            commentIDs.add(comment);
-          });
-        }
-      });
-    }
-    commentIDs = commentIDs.reversed.toList();
-    Map commentData = Map();
-
     await lock.synchronized(() async {
+      commentIDs.clear();
+      if(widget.pageType == 'blog'){
+        await Firestore.instance.collection('blogs').document(widget.pageID).get().then((snap) {
+          if(snap.data['comments'] != null) {
+            snap.data['comments'].forEach((comment) {
+              commentIDs.add(comment);
+            });
+          }
+        });
+      }
+      else if(widget.pageType  == 'mission'){
+        await Firestore.instance.collection('missions').document(widget.pageID).get().then((snap) {
+          if(snap.data['comments'] != null) {
+            snap.data['comments'].forEach((comment) {
+              commentIDs.add(comment);
+            });
+          }
+        });
+      }
+      commentIDs = commentIDs.reversed.toList();
+      print(commentIDs);
+      Map commentData = Map();
+
+
       commentList.clear();
       for(var idx = startIdx; idx <  startIdx+perPage*pageCount && idx < commentIDs.length; idx++ ){
         var commentID = commentIDs[idx];
@@ -115,9 +124,7 @@ class _CommentBottomState extends State<CommentBottom>{
 
   @override
   Widget build(BuildContext context){
-//    List commentIDs = widget.commentIDs.reversed.toList();
-//    List<Widget> commentWidgets = List();
-//    Map commentData = Map();
+    print('build');
     return FutureBuilder<bool>(
       future: _getComments,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot){

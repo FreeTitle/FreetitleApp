@@ -483,7 +483,6 @@ class _CommentLikeButtonState extends State<CommentLikeButton> {
 class SubCommentPage extends StatefulWidget {
   const SubCommentPage(
   {Key key,
-//    this.commentData,
     @required this.commentID,
     @required this.pageID,
     @required this.pageType,
@@ -492,7 +491,6 @@ class SubCommentPage extends StatefulWidget {
   final String commentID;
   final String pageID;
   final String pageType;
-//  final commentData;
 
   @override
   _SubCommentPage createState() => _SubCommentPage();
@@ -564,7 +562,7 @@ class _SubCommentPage extends State<SubCommentPage>{
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
           if(snapshot.connectionState == ConnectionState.done){
             subCommentIDs = commentData['replies'];
-            subCommentIDs = subCommentIDs.reversed.toList();
+//            subCommentIDs = subCommentIDs.reversed.toList();
             return SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -577,37 +575,31 @@ class _SubCommentPage extends State<SubCommentPage>{
                     pageType: widget.pageType,
                     state: this,
                   ),
-                  Container(
-                    height: subCommentIDs.length*170.0,
-                    color: AppTheme.nearlyWhite,
-                    child: FutureBuilder<bool>(
+                  FutureBuilder<bool>(
                       future: getSubComments(subCommentIDs),
                       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         if(snapshot.connectionState == ConnectionState.done) {
-                          return ListView.builder(
-                            controller: _scrollController,
-                            itemCount: subCommentIDs.length,
-                            padding: const EdgeInsets.only(top: 8),
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index) {
-                              final subCommentData_ = subCommentList[index];
-                              bool isCurrentUserComment = false;
-                              if(userID == subCommentData_['userID']){
-                                isCurrentUserComment = true;
-                              }
-                              return Padding(
+                          List<Widget> subCommentData_ = List();
+                          for(var index = 0; index < subCommentIDs.length;index++){
+                            subCommentData_.add(
+                                Padding(
                                   padding: EdgeInsets.only(left: 16, right: 16),
                                   child: CommentBox(
-                                    commentData: subCommentData_,
-                                    isSubCommentPage: true,
-                                    commentID: subCommentIDs[index],
-                                    pageID: widget.pageID,
-                                    isCurrentUserComment: isCurrentUserComment,
-                                    pageType: widget.pageType,
-                                    state: this,
-                                  )
-                              );
-                            }
+                                      commentData: subCommentList[index],
+                                      isSubCommentPage: true,
+                                      pageID: widget.pageID,
+                                      pageType: widget.pageType,
+                                      commentID: subCommentIDs[index],
+                                      state: this
+                                  ),
+                                )
+                            );
+                          }
+                          subCommentData_.add(
+                            SizedBox(height: 25,)
+                          );
+                          return Column(
+                            children: subCommentData_,
                           );
                         }
                         else {
@@ -618,7 +610,6 @@ class _SubCommentPage extends State<SubCommentPage>{
                         }
                       },
                     ),
-                  ),
                 ],
               ),
             );
