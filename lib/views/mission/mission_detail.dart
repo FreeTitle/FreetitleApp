@@ -891,12 +891,12 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                 child: Text('分享至', style: AppTheme.body1),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Flexible(
                     flex: 2,
                     child: Container(
-                        height: 80,
+                        height: 60,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
@@ -904,7 +904,7 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                         child: Center(
                           child: IconButton(
                             icon: Icon(Icons.people,),
-                            iconSize: 50,
+                            iconSize: 40,
                             onPressed: () {
                               Navigator.push<dynamic>(
                                 context,
@@ -918,25 +918,54 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                     ),
                   ),
                   Flexible(
-                    flex: 1,
+                    flex: 2,
                     child: Container(
-                      height: 80,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipRRect(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(160.0)),
+                        child: InkWell(
+                          child: Image.asset('assets/icons/wechat.png', fit: BoxFit.cover,),
+                          onTap: () {
+                            shareToWeChat(
+                                WeChatShareWebPageModel(
+                                  "https://freetitle.us/missiondetail?id=${widget.missionID}",
+                                  title: mission['title'],
+                                  description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
+                                  thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                )
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 60,
                       decoration: BoxDecoration(
                         color: Colors.black,
                         shape: BoxShape.circle,
                       ),
                       child: ClipRRect(
                           borderRadius:
-                          const BorderRadius.all(Radius.circular(80.0)),
+                          const BorderRadius.all(Radius.circular(160.0)),
                           child: InkWell(
-                            child: Image.asset('assets/icons/wechat.png', fit: BoxFit.fill,),
+                            child: Image.asset('assets/icons/wechat_timeline.png', fit: BoxFit.cover,),
                             onTap: () {
-                              shareToWeChat(WeChatShareWebPageModel(
-                                "https://freetitle.us/missiondetail?id=${widget.missionID}",
-                                title: mission['title'],
-                                description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
-                              ));
+                              shareToWeChat(
+                                  WeChatShareWebPageModel(
+                                    "https://freetitle.us/missiondetail?id=${widget.missionID}",
+                                    title: mission['title'],
+                                    scene: WeChatScene.TIMELINE,
+                                    description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                  ));
                             },
                           )
                       ),
@@ -945,7 +974,34 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                   Flexible(
                     flex: 2,
                     child: Container(
-                      height: 80,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipRRect(
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(160.0)),
+                          child: InkWell(
+                            child: Image.asset('assets/icons/wechat_favorite.png', fit: BoxFit.cover,),
+                            onTap: () {
+                              shareToWeChat(
+                                  WeChatShareWebPageModel(
+                                    "https://freetitle.us/missiondetail?id=${widget.missionID}",
+                                    title: mission['title'],
+                                    scene: WeChatScene.FAVORITE,
+                                    description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                  ));
+                            },
+                          )
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 60,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -953,7 +1009,7 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                       child: Center(
                         child: IconButton(
                           icon: Icon(CupertinoIcons.share,),
-                          iconSize: 50,
+                          iconSize: 40,
                           onPressed: () {
                             Share.share('请看Mission${mission['title']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
                                 .catchError((e) {
@@ -969,7 +1025,17 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
               Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: InkWell(
-                  child: Text('取消'),
+                  child: Container(
+                    width: 60,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      color: AppTheme.primary,
+                    ),
+                    child: Center(
+                        child: Text('取消', style: TextStyle(color: AppTheme.white),)
+                    ),
+                  ),
                   onTap: () {
                     Navigator.of(context).pop();
                   },
