@@ -148,7 +148,7 @@ class _BlogDetail extends State<BlogDetail> {
                     text: ' ' + blockString.substring(boldItalicStart, boldItalicEnd),
                   )
                 );
-                print(blockString);
+//                print(blockString);
                 if(boldItalicEnd+9 < blockString.length){
                   processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
                     textLists.add(block);
@@ -223,7 +223,7 @@ class _BlogDetail extends State<BlogDetail> {
 //            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
 //          }
 //          code = pre + code.substring(end);
-          print(code);
+//          print(code);
           if(code.contains('163')){
             int end = code.indexOf('>');
             String pre = code.substring(0, end-3);
@@ -238,7 +238,7 @@ class _BlogDetail extends State<BlogDetail> {
             pre = code.substring(0, end);
             pre += 'https:';
             code = pre + code.substring(end);
-            print(code);
+//            print(code);
             blogWidget.add(
               HtmlWidget(
                 code,
@@ -249,7 +249,7 @@ class _BlogDetail extends State<BlogDetail> {
           else{
             if(code.contains('bilibili')){
               String url = code.split('\"')[1];
-              print(url);
+//              print(url);
               url = 'https:'+url;
               blogWidget.add(
                   RichText(
@@ -269,7 +269,7 @@ class _BlogDetail extends State<BlogDetail> {
                   )
               );
               String url = code.split('\"')[1];
-              print(url);
+//              print(url);
               if(code.contains('youtube') || code.contains('youtu')){
                 blogWidget.add(
                     RichText(
@@ -513,8 +513,6 @@ class _BlogDetail extends State<BlogDetail> {
                   state: this,
                   userID: userID,
                   blogID: widget.blogID,
-                  wechatDescription: wechatDescription,
-                  wechatThumbnailUrl: wechatThumbnailUrl,
                 ) : Container(),
                 resizeToAvoidBottomPadding: false,
                 body: SingleChildScrollView(
@@ -551,15 +549,11 @@ class BlogFloatingButton extends StatefulWidget {
     @required this.state,
     @required this.userID,
     @required this.blogID,
-    @required this.wechatThumbnailUrl,
-    @required this.wechatDescription
   }) : super(key : key);
 
   final _BlogDetail state;
   final String userID;
   final String blogID;
-  final String wechatThumbnailUrl;
-  final String wechatDescription;
   
   _BlogFloatingButtonState createState() => _BlogFloatingButtonState();
 }
@@ -625,8 +619,8 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
                               WeChatShareWebPageModel(
                                 "https://freetitle.us/blogdetail?id=${widget.blogID}",
                                 title: blog['title'],
-                                description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
                               )
                             );
                           },
@@ -653,8 +647,8 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
                                     "https://freetitle.us/blogdetail?id=${widget.blogID}",
                                     title: blog['title'],
                                     scene: WeChatScene.TIMELINE,
-                                    description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                    thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
                                   ));
                             },
                           )
@@ -680,8 +674,8 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
                                     "https://freetitle.us/blogdetail?id=${widget.blogID}",
                                     title: blog['title'],
                                     scene: WeChatScene.FAVORITE,
-                                    description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                    thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
                                   ));
                             },
                           )

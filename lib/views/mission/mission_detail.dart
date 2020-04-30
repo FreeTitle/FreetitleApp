@@ -524,8 +524,6 @@ class _MissionDetail extends State<MissionDetail>
                       state: this,
                       userID: userID,
                       missionID: widget.missionID,
-                      wechatDescription: wechatDescription,
-                      wechatThumbnailUrl: wechatThumbnailUrl,
                     )
                   : Container(),
               body: Stack(
@@ -861,15 +859,11 @@ class MissionFloatingButton extends StatefulWidget {
     @required this.state,
     @required this.userID,
     @required this.missionID,
-    @required this.wechatThumbnailUrl,
-    @required this.wechatDescription
   }) : super(key : key);
 
   final _MissionDetail state;
   final String userID;
   final String missionID;
-  final String wechatThumbnailUrl;
-  final String wechatDescription;
   
   _MissionFloatingButtonState createState() => _MissionFloatingButtonState();
 }
@@ -934,9 +928,9 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                             shareToWeChat(
                                 WeChatShareWebPageModel(
                                   "https://freetitle.us/missiondetail?id=${widget.missionID}",
-                                  title: mission['title'],
-                                  description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                  thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                  title: mission['name'],
+                                  description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                  thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
                                 )
                             );
                           },
@@ -961,10 +955,10 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                               shareToWeChat(
                                   WeChatShareWebPageModel(
                                     "https://freetitle.us/missiondetail?id=${widget.missionID}",
-                                    title: mission['title'],
+                                    title: mission['name'],
                                     scene: WeChatScene.TIMELINE,
-                                    description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                    thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
                                   ));
                             },
                           )
@@ -988,10 +982,10 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                               shareToWeChat(
                                   WeChatShareWebPageModel(
                                     "https://freetitle.us/missiondetail?id=${widget.missionID}",
-                                    title: mission['title'],
+                                    title: mission['name'],
                                     scene: WeChatScene.FAVORITE,
-                                    description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                    thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
                                   ));
                             },
                           )
@@ -1011,7 +1005,7 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                           icon: Icon(CupertinoIcons.share,),
                           iconSize: 40,
                           onPressed: () {
-                            Share.share('请看Mission${mission['title']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
+                            Share.share('请看Mission${mission['name']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
                                 .catchError((e) {
                               print('sharing error $e');
                             });
@@ -1051,6 +1045,7 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
   @override
   Widget build(BuildContext context) {
     final userID = widget.userID;
+    print(widget.state.wechatThumbnailUrl);
     return SpeedDial(
       marginRight: 20,
       marginBottom: 80,
