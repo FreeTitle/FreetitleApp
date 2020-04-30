@@ -174,18 +174,19 @@ void saveCurrentUser() async {
       userData['lastClaimTime'] = null;
       sharedPref.setString('currentUser', json.encode(userData));
     }
-  }
 
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  _firebaseMessaging.getToken().then((token) async {
-    print('FCM Token: $token');
-    await _userRepository.getUser().then((snap) {
-      String uid = snap.uid;
-      Firestore.instance.collection('users').document(uid).updateData({
-        'notificationToken': FieldValue.arrayUnion([token])
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+    _firebaseMessaging.getToken().then((token) async {
+      print('FCM Token: $token');
+      await _userRepository.getUser().then((snap) {
+        String uid = snap.uid;
+        Firestore.instance.collection('users').document(uid).updateData({
+          'notificationToken': FieldValue.arrayUnion([token])
+        });
       });
     });
-  });
+
+  }
 }
 
 

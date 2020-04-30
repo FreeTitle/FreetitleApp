@@ -66,16 +66,25 @@ class _IndexPageState extends State<IndexPage> {
 
     final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
 
-
-    firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: false
-        )
-    );
+    if(Platform.isIOS) {
+      firebaseMessaging.requestNotificationPermissions(
+          const IosNotificationSettings(
+              sound: true, badge: true, alert: true, provisional: false
+          )
+      );
+    }
 
     firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
-        print('onMessage called: $message');
+      onMessage: (Map<String, dynamic> incomeMessage) {
+        print('onMessage called: $incomeMessage');
+        var message;
+        if(Platform.isAndroid){
+          message = incomeMessage['data'];
+        }
+        else{
+          message = incomeMessage;
+        }
+
         if(message['blog'] != null){
           try{
             showDialog(

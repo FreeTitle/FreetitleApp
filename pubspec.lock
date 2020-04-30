@@ -126,7 +126,7 @@ packages:
       name: connectivity_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.5"
   convert:
     dependency: transitive
     description:
@@ -259,7 +259,7 @@ packages:
       name: firebase_database
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.3"
+    version: "3.1.5"
   firebase_dynamic_links:
     dependency: "direct main"
     description:
@@ -334,7 +334,7 @@ packages:
       name: flutter_launcher_icons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.4"
+    version: "0.7.5"
   flutter_parsed_text:
     dependency: transitive
     description:
@@ -400,14 +400,14 @@ packages:
       name: flutter_widget_from_html
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.3"
+    version: "0.3.3+1"
   flutter_widget_from_html_core:
     dependency: transitive
     description:
       name: flutter_widget_from_html_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.3"
+    version: "0.3.3+1"
   flutube:
     dependency: "direct main"
     description:
@@ -442,7 +442,7 @@ packages:
       name: google_sign_in_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   google_sign_in_web:
     dependency: transitive
     description:
@@ -463,7 +463,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.0+4"
+    version: "0.12.1"
   http_client_helper:
     dependency: transitive
     description:
@@ -512,7 +512,7 @@ packages:
       name: liquid_pull_to_refresh
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.2"
+    version: "1.2.0"
   matcher:
     dependency: transitive
     description:
@@ -645,7 +645,7 @@ packages:
       name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.5"
+    version: "4.0.5+1"
   pull_to_refresh:
     dependency: "direct main"
     description:
@@ -832,7 +832,7 @@ packages:
       name: url_launcher_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.1+1"
+    version: "0.1.1+2"
   uuid:
     dependency: transitive
     description:
@@ -853,7 +853,7 @@ packages:
       name: video_player
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.9"
+    version: "0.10.9+1"
   video_player_platform_interface:
     dependency: transitive
     description:
@@ -881,7 +881,7 @@ packages:
       name: webview_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.20+2"
+    version: "0.3.21"
   xml:
     dependency: transitive
     description:
@@ -895,7 +895,7 @@ packages:
       name: yaml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "2.2.1"
 sdks:
   dart: ">=2.7.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"
