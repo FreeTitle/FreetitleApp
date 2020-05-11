@@ -162,7 +162,7 @@ class _BlogCard extends State<BlogCard>{
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: <Widget>[
                                         FutureBuilder<bool>(
-                                          future: _getAuthor,
+                                          future: getAuthor(),
                                           builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
                                             if(snapshot.connectionState == ConnectionState.done){
                                               return Text(

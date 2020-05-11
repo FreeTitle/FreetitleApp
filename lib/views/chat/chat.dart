@@ -426,14 +426,14 @@ class _ChatScreenState extends State<ChatScreen>{
                   color: Colors.black87,
                 ),
               ),
-              if (message.image != null)
+              message.image != null ?
                 FadeInImage.memoryNetwork(
                   height: MediaQuery.of(context).size.height * 0.3,
                   width: MediaQuery.of(context).size.width * 0.7,
                   fit: BoxFit.contain,
                   image: message.image,
                   placeholder: kTransparentImage,
-                ),
+                ) : SizedBox(),
               Padding(
                 padding: EdgeInsets.only(top: 5.0),
                 child: Text(

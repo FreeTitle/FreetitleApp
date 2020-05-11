@@ -69,6 +69,8 @@
 	<string>Give user location based news</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Users can upload photos to the comments</string>
+	<key>NSCameraUsageDescription</key>
+	<string>The app needs camera for AR functionality</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

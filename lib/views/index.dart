@@ -17,7 +17,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/notification.dart';
 import 'package:badges/badges.dart';
-import 'package:notification_permissions/notification_permissions.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
 import 'package:flutter/services.dart';

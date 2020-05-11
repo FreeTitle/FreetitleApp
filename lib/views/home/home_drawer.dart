@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/ar/ar_ios.dart';
 import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/home/coin.dart';
 import 'package:freetitle/views/login/login.dart';
@@ -140,6 +143,26 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 ),
                 onTap: () {
                   restorePage();
+                },
+              ),
+              ListTile(
+                title: Row(
+                  children: <Widget>[
+                    SizedBox(width: 20,),
+                    Text('开启AR'),
+                    SizedBox(width: 10,),
+                    Icon(Icons.fullscreen),
+                  ],
+                ),
+                onTap: () {
+                  if(Platform.isIOS){
+                    Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute<dynamic>(
+                        builder: (BuildContext context) => ARiOSView(),
+                      ),
+                    );
+                  }
                 },
               )
             ],
