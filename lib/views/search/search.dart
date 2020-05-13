@@ -193,7 +193,13 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                               padding: EdgeInsets.only(left: 20),
                               child: Text('Blogs', style: AppTheme.body1, textAlign: TextAlign.left,),
                             ),
-                            Divider(color: AppTheme.dark_grey,)
+                            Divider(color: AppTheme.dark_grey,),
+                            resultCount <= 1 ?
+                            Padding(
+                              padding: EdgeInsets.only(top: 20, bottom: 20),
+                              child: Center(child: Text("No Blogs Found"),),
+                            ) :
+                            SizedBox(),
                           ],
                         );
                       }
