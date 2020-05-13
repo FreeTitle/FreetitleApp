@@ -145,26 +145,26 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   restorePage();
                 },
               ),
-              ListTile(
-                title: Row(
-                  children: <Widget>[
-                    SizedBox(width: 20,),
-                    Text('开启AR'),
-                    SizedBox(width: 10,),
-                    Icon(Icons.fullscreen),
-                  ],
-                ),
-                onTap: () {
-                  if(Platform.isIOS){
-                    Navigator.push<dynamic>(
-                      context,
-                      MaterialPageRoute<dynamic>(
-                        builder: (BuildContext context) => ARiOSView(),
-                      ),
-                    );
-                  }
-                },
-              )
+//              ListTile(
+//                title: Row(
+//                  children: <Widget>[
+//                    SizedBox(width: 20,),
+//                    Text('开启AR'),
+//                    SizedBox(width: 10,),
+//                    Icon(Icons.fullscreen),
+//                  ],
+//                ),
+//                onTap: () {
+//                  if(Platform.isIOS){
+//                    Navigator.push<dynamic>(
+//                      context,
+//                      MaterialPageRoute<dynamic>(
+//                        builder: (BuildContext context) => ARiOSView(),
+//                      ),
+//                    );
+//                  }
+//                },
+//              )
             ],
           );
         }
