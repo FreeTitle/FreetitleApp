@@ -90,9 +90,9 @@ class _ARiOSViewState extends State<ARiOSView> {
       controller.remove(node.name);
     }
     node = ARKitReferenceNode(
-      url: 'models.scnassets/model.dae',
+      url: 'models.scnassets/feather.dae',
       position: vector.Vector3(0, 0, 0),
-      scale: vector.Vector3(0.002, 0.002, 0.002),
+      scale: vector.Vector3(0.2, 0.2, 0.2),
     );
     controller.add(node, parentNodeName: anchor.nodeName);
   }
