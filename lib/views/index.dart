@@ -283,14 +283,15 @@ class _IndexPageState extends State<IndexPage> {
           bottomNavigationBar: new Theme(
             data: Theme.of(context).copyWith(
                 // sets the background color of the `BottomNavigationBar`
-                canvasColor: Theme.of(context).primaryColor,
+                canvasColor: Theme.of(context).primaryColorLight,
                 // sets the active color of the `BottomNavigationBar` if `Brightness` is light
-                primaryColor: AppTheme.primary,
-                unselectedWidgetColor: Theme.of(context).accentColor,
+                primaryColor: Theme.of(context).highlightColor,
+//                unselectedWidgetColor: Theme.of(context).accentColor,
             ),
               child: new BottomNavigationBar(
                 currentIndex: _pageIndex,
                 type: BottomNavigationBarType.fixed,
+                unselectedItemColor: Colors.white,
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),

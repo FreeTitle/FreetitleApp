@@ -131,26 +131,24 @@ class _ChatState extends State<Chat> {
     }
     return Scaffold(
       appBar: AppBar(
-//        brightness: Brightness.dark,
         centerTitle: true,
-        backgroundColor: AppTheme.white,
-        title: Text(widget.otherUsername, style: TextStyle(color: Colors.black),),
+        title: Text(widget.otherUsername),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Colors.black,
           onPressed: (){
             Navigator.of(context).popUntil((route) => route.isFirst);
           },
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.more_horiz, color: Colors.black,),
+            icon: Icon(Icons.more_horiz),
             onPressed: () {
 
             },
           )
         ],
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: FutureBuilder<bool>(
         future: getLocalChat(),
         builder: (BuildContext context, AsyncSnapshot<bool> localSnapshot) {
@@ -518,7 +516,7 @@ class _ChatScreenState extends State<ChatScreen>{
       inputTextStyle: TextStyle(fontSize: 16.0),
       inputContainerStyle: BoxDecoration(
         border: Border.all(width: 0.0),
-        color: Colors.white,
+        color: Theme.of(context).primaryColorLight,
       ),
       onLoadEarlier: () {
         print("loading...");

@@ -88,8 +88,13 @@ class _Home extends State<Home> {
                 ],
               ),
             ),
-            drawer: Drawer(
-              child: HomeDrawer(),
+            drawer: Theme(
+              data: Theme.of(context).copyWith(
+                canvasColor: Theme.of(context).primaryColor,
+              ),
+              child:  Drawer(
+                child: HomeDrawer(),
+              ),
             ),
             body: TabBarView(
               children: <Widget>[

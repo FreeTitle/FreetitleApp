@@ -139,7 +139,7 @@ class UserRepository {
     String avatarURL = userData['avatarUrl'];
     Image avatar = Image.network(avatarURL, fit: BoxFit.cover,);
     return Material(
-      color: color,
+      color: Theme.of(context).primaryColor,
       child: InkWell(
         onTap: () {
           Navigator.push<dynamic>(
@@ -176,7 +176,7 @@ class UserRepository {
               userName,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.grey,
+                color: Theme.of(context).accentColor,
                 fontSize: 18,
               ),
             ),

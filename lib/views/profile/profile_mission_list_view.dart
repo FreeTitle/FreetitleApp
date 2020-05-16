@@ -87,7 +87,7 @@ class _ProfileHorizontalMissionListViewState extends State<ProfileHorizontalMiss
                                 curve: Curves.fastOutSlowIn)));
                     animationController.forward();
 
-                    return HorizontalMissionView(
+                    return HorizontalMissionCard(
                       missionData: missionList[index],
                       missionID: missionIDs[index],
                       animation: animation,

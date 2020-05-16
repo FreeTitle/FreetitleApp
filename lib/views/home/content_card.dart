@@ -162,7 +162,7 @@ class _ContentCardState extends State<ContentCard>{
                       child: getImage(),
                     ),
                     Container(
-                      color: AppTheme.buildLightTheme().backgroundColor,
+                      color: Theme.of(context).primaryColorLight,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,

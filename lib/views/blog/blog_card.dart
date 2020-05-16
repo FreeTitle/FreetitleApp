@@ -119,7 +119,7 @@ class _BlogCard extends State<BlogCard>{
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.grey.withOpacity(0.6),
+                color: Theme.of(context).primaryColorLight.withOpacity(0.6),
                 offset: const Offset(4, 4),
                 blurRadius: 16,
               ),
@@ -136,15 +136,16 @@ class _BlogCard extends State<BlogCard>{
                       child: getBlogImage(),
                     ),
                     Container(
-                      color: AppTheme.buildLightTheme().backgroundColor,
+//                      color: AppTheme.buildLightTheme().backgroundColor,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
                             child: Container(
+                              color: Theme.of(context).primaryColorLight,
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                                padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 16),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,6 +154,7 @@ class _BlogCard extends State<BlogCard>{
                                       blogData['title'],
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
+                                        color: Theme.of(context).accentColor,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 22,
                                       ),

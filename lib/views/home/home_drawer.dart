@@ -60,7 +60,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Welcome to FreeTitle', style: AppTheme.headline,),
+                      Text('Welcome to FreeTitle', style: Theme.of(context).textTheme.headline1,),
                       SizedBox(height: 40,),
                       InkWell(
                         onTap: () {
@@ -71,23 +71,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             )
                           );
                         },
-                        child: Text('请登录', style:
-                          TextStyle( // h5 -> headline
-                            fontFamily: AppTheme.fontName,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            letterSpacing: 0.27,
-                            fontStyle: FontStyle.italic,
-                            decoration: TextDecoration.underline,
-                            color: AppTheme.darkerText,
-                          ),
-                        ),
+                        child: Text('请登录'),
                       )
                     ],
                   )
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.primary,
+                  color: Theme.of(context).highlightColor,
                 ),
               )
             ],
@@ -104,14 +94,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Welcome to FreeTitle', style: AppTheme.headline,),
+                      Text('Welcome to FreeTitle', style: Theme.of(context).textTheme.headline1,),
                       SizedBox(height: 50,),
                       Text('快捷操作')
                     ],
                   ),
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.primary,
+                  color: Theme.of(context).highlightColor,
                 ),
               ),
               ListTile(

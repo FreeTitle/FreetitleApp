@@ -74,7 +74,7 @@ with TickerProviderStateMixin {
                               curve: Curves.fastOutSlowIn)));
                   animationController.forward();
 
-                  return HorizontalMissionView(
+                  return HorizontalMissionCard(
                       missionData: missionList[index],
                       missionID: missionIDs[index],
                       animation: animation,
@@ -90,8 +90,8 @@ with TickerProviderStateMixin {
   }
 }
 
-class HorizontalMissionView extends StatelessWidget {
-  const HorizontalMissionView(
+class HorizontalMissionCard extends StatelessWidget {
+  const HorizontalMissionCard(
       {Key key,
         @required this.missionData,
         @required this.missionID,
@@ -156,7 +156,7 @@ class HorizontalMissionView extends StatelessWidget {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: HexColor('#F8FAFB'),
+                                color: Theme.of(context).primaryColorLight,
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(16.0)),
                                 boxShadow: <BoxShadow>[
@@ -184,7 +184,7 @@ class HorizontalMissionView extends StatelessWidget {
                                               fontWeight: FontWeight.w600,
                                               fontSize: 16,
                                               letterSpacing: 0.27,
-                                              color: AppTheme.darkerText,
+                                              color: Theme.of(context).accentColor,
                                             ),
                                           ),
                                         ],
@@ -471,7 +471,7 @@ class VerticalMissionCard extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: HexColor('#F8FAFB'),
+                        color: Theme.of(context).primaryColorLight,
                         borderRadius: const BorderRadius.all(
                             Radius.circular(16.0)),
                         boxShadow: <BoxShadow>[
@@ -504,7 +504,7 @@ class VerticalMissionCard extends StatelessWidget {
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 16,
                                                 letterSpacing: 0.27,
-                                                color: AppTheme.darkerText,
+                                                color: Theme.of(context).accentColor
                                               ),
                                             ),
                                           ),

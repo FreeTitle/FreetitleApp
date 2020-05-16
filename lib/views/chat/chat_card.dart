@@ -50,7 +50,7 @@ class ChatCard extends StatelessWidget {
 
     return Container(
         width: MediaQuery.of(context).size.width,
-        color: AppTheme.nearlyWhite,
+//        color: AppTheme.nearlyWhite,
         height: 100,
         child: InkWell(
           onTap: () {
@@ -62,6 +62,7 @@ class ChatCard extends StatelessWidget {
             );
           },
           child: Card(
+            color: Theme.of(context).primaryColorLight,
             child: Padding(
               padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
               child: Row(
@@ -87,7 +88,7 @@ class ChatCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(username, style: AppTheme.body2,),
+                      Text(username, style: Theme.of(context).textTheme.bodyText1,),
                       SizedBox(height: 10,),
                       Text(latestMessage.length > 19 ? latestMessage.substring(0, 18) + '...' : latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
                     ],

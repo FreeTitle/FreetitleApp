@@ -115,10 +115,10 @@ class PublicationTile extends StatelessWidget{
     return Container(
       decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-          color: AppTheme.white,
+          color: Theme.of(context).primaryColorLight,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Colors.grey.withOpacity(0.6),
+              color: Theme.of(context).primaryColorLight.withOpacity(0.6),
               offset: const Offset(4, 4),
               blurRadius: 8,
             ),
@@ -148,7 +148,7 @@ class PublicationTile extends StatelessWidget{
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                     letterSpacing: 0.27,
-                    color: AppTheme.darkerText,
+                    color: Theme.of(context).accentColor,
                   ),
                 ),
               ),
