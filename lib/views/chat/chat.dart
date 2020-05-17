@@ -22,7 +22,7 @@ class Chat extends StatefulWidget{
     @required this.chatID,
     @required this.otherUsername,
     this.indexState,
-    @required this.stream,
+    this.stream,
 //    this.sharedBlogID,
 //    this.sharedMissionID,
   }): assert(chatID != null), super(key:key);
