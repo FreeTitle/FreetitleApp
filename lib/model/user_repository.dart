@@ -111,14 +111,16 @@ class UserRepository {
 
   Future<void> signOut() async {
     SharedPreferences sharedPref;
-    SharedPreferences.getInstance().then((pref) {
+    await SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
-    sharedPref.remove('currentUser');
-    return Future.wait([
-      _firebaseAuth.signOut(),
-      _googleSignIn.signOut(),
-    ]);
+    await sharedPref.remove('currentUser');
+    await _firebaseAuth.signOut();
+    await _googleSignIn.signOut();
+//    return Future.wait([
+//      _firebaseAuth.signOut(),
+//      _googleSignIn.signOut(),
+//    ]);
   }
 
   Future<bool> isSignedIn() async {
