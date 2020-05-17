@@ -52,11 +52,14 @@ class _MyAppState extends State<MyApp> {
           title: 'FreeTitle',
           theme: ThemeData(
 //            brightness: Brightness.light,
-              primaryColor: AppTheme.white,
+              primaryColor: AppTheme.nearlyWhite,
               accentColor: Colors.black,
               highlightColor: Color(0xFF00BCD4),
-              primaryColorLight: AppTheme.nearlyWhite,
-              primaryColorDark: AppTheme.grey,
+              primaryColorLight: AppTheme.grey,
+              primaryColorDark: AppTheme.white,
+              appBarTheme: AppBarTheme(
+                color: Colors.white,
+              ),
               textTheme: TextTheme(
                 headline1: TextStyle( // h5 -> headline
                   fontWeight: FontWeight.bold,
@@ -81,24 +84,27 @@ class _MyAppState extends State<MyApp> {
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   letterSpacing: -0.05,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
                 // Italic text
                 subtitle1: TextStyle( // body2 -> body1
                   fontWeight: FontWeight.w400,
                   fontSize: 16,
                   letterSpacing: -0.05,
-                  color: Colors.white,
+                  color: Colors.black,
                   fontStyle: FontStyle.italic,
                 ),
               )
           ),
           darkTheme: ThemeData(
-            primaryColor: AppTheme.black,
+            primaryColor: Color(0xFF303030),
             accentColor: Colors.white,
-            primaryColorDark: AppTheme.nearlyBlack,
+            primaryColorDark: Colors.black,
             primaryColorLight: AppTheme.dark_grey,
             highlightColor: Color(0xFF00BCD4),
+            appBarTheme: AppBarTheme(
+              color: Colors.black,
+            ),
             iconTheme: IconThemeData(
               color: Colors.white,
             ),

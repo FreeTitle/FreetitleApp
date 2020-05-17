@@ -137,15 +137,17 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                   padding: const EdgeInsets.symmetric(horizontal: 9),
                   child: SearchBar<SearchResult>(
                     searchBarStyle: SearchBarStyle(
-                      backgroundColor: Theme.of(context).primaryColorLight
+                      backgroundColor: Theme.of(context).primaryColorDark,
                     ),
+                    textStyle: Theme.of(context).textTheme.bodyText1,
+                    icon: Icon(Icons.search, color: Theme.of(context).accentColor,),
                     onSearch: search,
                     hintText: 'Search FreeTitle',
                     placeHolder: Center(
-                      child: Text('Search'),
+                      child: Text('Search', style: Theme.of(context).textTheme.bodyText1,),
                     ),
                     emptyWidget: Center(
-                      child: Text('No results found'),
+                      child: Text('No results found', style: Theme.of(context).textTheme.bodyText1,),
                     ),
                     onError: (err) {
                       print(err);
@@ -158,7 +160,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                           children: <Widget>[
                             Padding(
                               padding: EdgeInsets.only(left: 20),
-                              child: Text('Users', style: AppTheme.body1, textAlign: TextAlign.left,),
+                              child: Text('Users', textAlign: TextAlign.left,),
                             ),
                             Divider(),
                             result.users.length != 0 ? Container(
@@ -182,7 +184,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 20),
-                              child: Text('Missions', style: AppTheme.body1, textAlign: TextAlign.left,),
+                              child: Text('Missions', textAlign: TextAlign.left,),
                             ),
                             Divider(),
                             result.missionIDs.length != 0 ? HorizontalMissionListView(
@@ -195,7 +197,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 20),
-                              child: Text('Blogs', style: AppTheme.body1, textAlign: TextAlign.left,),
+                              child: Text('Blogs', textAlign: TextAlign.left,),
                             ),
                             Divider(),
                             resultCount <= 1 ?

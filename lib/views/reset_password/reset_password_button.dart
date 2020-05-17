@@ -14,7 +14,8 @@ class ResetPasswordButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       onPressed: _onPressed,
-      child: Text('重置密码'),
+//      color: Theme.of(context).accentColor,
+      child: Text('重置密码', style: Theme.of(context).textTheme.bodyText1,),
     );
   }
 }

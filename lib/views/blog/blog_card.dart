@@ -119,7 +119,7 @@ class _BlogCard extends State<BlogCard>{
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Theme.of(context).primaryColorLight.withOpacity(0.6),
+                color: Theme.of(context).primaryColorLight.withOpacity(0.2),
                 offset: const Offset(4, 4),
                 blurRadius: 16,
               ),
@@ -143,7 +143,7 @@ class _BlogCard extends State<BlogCard>{
                         children: <Widget>[
                           Expanded(
                             child: Container(
-                              color: Theme.of(context).primaryColorLight,
+                              color: Theme.of(context).primaryColorDark,
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 16),
                                 child: Column(
@@ -350,11 +350,10 @@ class ChatBlogCard extends StatelessWidget {
 //          height: 70,
           width: 200,
           decoration: BoxDecoration(
-            color: AppTheme.white,
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.grey.withOpacity(0.6),
+                color: Theme.of(context).primaryColorLight.withOpacity(0.6),
                 offset: const Offset(4, 4),
                 blurRadius: 16,
               ),

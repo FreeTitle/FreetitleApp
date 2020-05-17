@@ -81,10 +81,11 @@ class _ResetEmailForm extends State<ResetEmailForm> {
                       keyboardType: TextInputType.emailAddress,
                       controller: _emailController,
                       decoration: InputDecoration(
-                        icon: Icon(Icons.email),
+                        icon: Icon(Icons.email, color: Theme.of(context).accentColor),
                         contentPadding:
                         EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                         labelText: 'Email',
+                        labelStyle: Theme.of(context).textTheme.bodyText1
                       ),
                       autocorrect: false,
                       autofocus: false,

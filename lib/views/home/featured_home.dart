@@ -115,10 +115,10 @@ class PublicationTile extends StatelessWidget{
     return Container(
       decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-          color: Theme.of(context).primaryColorLight,
+          color: Theme.of(context).primaryColorDark,
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Theme.of(context).primaryColorLight.withOpacity(0.6),
+              color: Theme.of(context).primaryColorLight.withOpacity(0.2),
               offset: const Offset(4, 4),
               blurRadius: 8,
             ),

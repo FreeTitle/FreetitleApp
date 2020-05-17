@@ -14,7 +14,7 @@ class ResetEmailButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       onPressed: _onPressed,
-      child: Text('重置邮箱'),
+      child: Text('重置邮箱', style: Theme.of(context).textTheme.bodyText1),
     );
   }
 }

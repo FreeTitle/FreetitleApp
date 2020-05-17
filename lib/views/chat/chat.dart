@@ -22,7 +22,7 @@ class Chat extends StatefulWidget{
     @required this.chatID,
     @required this.otherUsername,
     this.indexState,
-    this.stream,
+    @required this.stream,
 //    this.sharedBlogID,
 //    this.sharedMissionID,
   }): assert(chatID != null), super(key:key);
@@ -62,14 +62,16 @@ class _ChatState extends State<Chat> {
     getRemoteChat();
     getLocalChat();
     messages = List();
-    subscription = widget.stream.listen((stream) {
-      print(stream);
-      if(stream.containsKey(widget.chatID)){
-        if(stream[widget.chatID] != 0){
-          widget.indexState.unreadMessages[widget.chatID] = 0;
+    if(widget.stream != null){
+      subscription = widget.stream.listen((stream) {
+        print(stream);
+        if(stream.containsKey(widget.chatID)){
+          if(stream[widget.chatID] != 0){
+            widget.indexState.unreadMessages[widget.chatID] = 0;
+          }
         }
-      }
-    });
+      });
+    }
     super.initState();
   }
 
@@ -516,7 +518,7 @@ class _ChatScreenState extends State<ChatScreen>{
       inputTextStyle: TextStyle(fontSize: 16.0),
       inputContainerStyle: BoxDecoration(
         border: Border.all(width: 0.0),
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).primaryColorDark,
       ),
       onLoadEarlier: () {
         print("loading...");

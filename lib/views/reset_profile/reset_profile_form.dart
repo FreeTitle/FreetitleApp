@@ -91,10 +91,11 @@ class _ResetPUsernameForm extends State<ResetProfileForm> {
                       keyboardType: TextInputType.text,
                       controller: _usernameController,
                       decoration: InputDecoration(
-                        icon: Icon(Icons.verified_user),
+                        icon: Icon(Icons.verified_user, color: Theme.of(context).accentColor),
                         contentPadding:
                         EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                         labelText: '用户名',
+                        labelStyle: Theme.of(context).textTheme.bodyText1
                       ),
                       autocorrect: false,
                       autofocus: false,
@@ -108,10 +109,11 @@ class _ResetPUsernameForm extends State<ResetProfileForm> {
                       keyboardType: TextInputType.text,
                       controller: _statementController,
                       decoration: InputDecoration(
-                        icon: Icon(Icons.edit),
+                        icon: Icon(Icons.edit, color: Theme.of(context).accentColor),
                         contentPadding:
                         EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                         labelText: 'Statement',
+                        labelStyle: Theme.of(context).textTheme.bodyText1
                       ),
                       autocorrect: false,
                       autofocus: false,
@@ -122,10 +124,11 @@ class _ResetPUsernameForm extends State<ResetProfileForm> {
                       keyboardType: TextInputType.text,
                       controller: _campusController,
                       decoration: InputDecoration(
-                        icon: Icon(Icons.school),
+                        icon: Icon(Icons.school, color: Theme.of(context).accentColor),
                         contentPadding:
                         EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                         labelText: 'Campus',
+                        labelStyle: Theme.of(context).textTheme.bodyText1
                       ),
                       autocorrect: false,
                       autofocus: false,

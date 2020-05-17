@@ -15,12 +15,10 @@ class MyProfile extends StatefulWidget {
   const MyProfile(
   {Key key,
     this.userID,
-    this.isMyProfile,
     this.userName,
   }) : super(key: key);
 
   final String userID;
-  final bool isMyProfile;
   final String userName;
 
   @override
@@ -62,42 +60,6 @@ class _MyProfile extends State<MyProfile> {
     );
   }
 
-  Widget buildAppBarIconButton(){
-    if(widget.isMyProfile){
-      return Padding(
-        padding: EdgeInsets.only(right: 16),
-        child: IconButton(
-          icon: Icon(
-            Icons.settings,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.push<dynamic>(
-              context,
-              MaterialPageRoute<dynamic>(
-                builder: (BuildContext context) => SettingsPage(),
-              ),
-            );
-          },
-        ),
-      );
-    }
-    else{
-      return Padding(
-        padding: EdgeInsets.only(right: 16),
-        child: IconButton(
-          icon: Icon(
-            Icons.more_horiz,
-            color: Colors.black,
-          ),
-          onPressed: () {
-
-          },
-        )
-      );
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,25 +67,28 @@ class _MyProfile extends State<MyProfile> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: AppTheme.white,
 //          brightness: Brightness.dark,
-          title: Text(
-            widget.isMyProfile ? '我' : widget.userName,
-            style: TextStyle(
-              fontFamily: AppTheme.fontName,
-              color: Colors.black
-            ),
-          ),
-          leading: widget.isMyProfile ? SizedBox() : IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
+          title: Text('我'),
           actions: <Widget>[
-            buildAppBarIconButton(),
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: IconButton(
+                icon: Icon(
+                  Icons.settings,
+                ),
+                onPressed: () {
+                  Navigator.push<dynamic>(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => SettingsPage(),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
+        backgroundColor: Theme.of(context).primaryColor,
         body: StreamBuilder<DocumentSnapshot>(
           stream: Firestore.instance.collection('users').document(userID).snapshots(),
           builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
@@ -181,7 +146,7 @@ class _GetMyProfile extends State<GetMyProfile>{
         future: getData(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
           if(userID != null){
-            return MyProfile(userID: userID, isMyProfile: true, );
+            return MyProfile(userID: userID);
           }
           else{
             return Center(

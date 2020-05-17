@@ -14,6 +14,7 @@ class ResetProfileButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       onPressed: _onPressed,
+      color: Theme.of(context).accentColor,
       child: Text('修改账户'),
     );
   }

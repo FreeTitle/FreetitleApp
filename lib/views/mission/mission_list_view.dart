@@ -156,12 +156,12 @@ class HorizontalMissionCard extends StatelessWidget {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColorLight,
+                                color: Theme.of(context).primaryColorDark,
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(16.0)),
                                 boxShadow: <BoxShadow>[
                                   BoxShadow(
-                                      color: AppTheme.grey
+                                      color: Theme.of(context).primaryColorLight
                                           .withOpacity(0.2),
                                       offset: const Offset(0.0, 0.0),
                                       blurRadius: 6.0),
@@ -471,12 +471,12 @@ class VerticalMissionCard extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
+                        color: Theme.of(context).primaryColorDark,
                         borderRadius: const BorderRadius.all(
                             Radius.circular(16.0)),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                              color: AppTheme.grey
+                              color: Theme.of(context).primaryColorLight
                                   .withOpacity(0.2),
                               offset: const Offset(0.0, 0.0),
                               blurRadius: 6.0),

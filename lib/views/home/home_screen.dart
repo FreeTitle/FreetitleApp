@@ -70,7 +70,7 @@ class _Home extends State<Home> {
                 Container(
                     padding: EdgeInsets.only(right: 16),
                     child: IconButton(
-                        icon: Icon(Icons.camera_alt, color: Theme.of(context).primaryColor,),
+                        icon: Icon(Icons.camera_alt, color: Theme.of(context).primaryColorDark,),
                         onPressed: () {
 
                         }

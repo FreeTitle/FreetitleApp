@@ -41,6 +41,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
     _getLocal = getLocal();
     chatData = Map();
     unreadMessages = widget.indexState.unreadMessages;
+    // Use stream to listen to unread messages from index page
     widget.stream.listen((stream) {
       unreadMessages = stream;
       setState(() {

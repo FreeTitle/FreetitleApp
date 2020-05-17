@@ -27,15 +27,16 @@ class _ResetProfileScreenState extends State<ResetProfileScreen> {
     });
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.white,
+//          backgroundColor: Colors.white,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+            icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
-          title: Text('修改账户', style: TextStyle(color: Colors.black),)
+          title: Text('修改账户')
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         child: BlocProvider<ModifyAccountBloc>(
           bloc: _modifyAccountBloc,

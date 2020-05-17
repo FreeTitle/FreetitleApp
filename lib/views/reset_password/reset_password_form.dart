@@ -77,10 +77,11 @@ class _ResetPasswordForm extends State<ResetPasswordForm> {
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
-                      icon: Icon(Icons.lock),
+                      icon: Icon(Icons.lock, color: Theme.of(context).accentColor),
                       contentPadding:
                       EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                       labelText: '密码',
+                      labelStyle: Theme.of(context).textTheme.bodyText1
                     ),
                     obscureText: true,
                     autocorrect: false,
