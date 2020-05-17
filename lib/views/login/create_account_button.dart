@@ -9,6 +9,7 @@ class CreateAccountButton extends StatelessWidget {
     return FlatButton(
       child: Text(
         '创建账户',
+        style: Theme.of(context).textTheme.bodyText1,
       ),
       onPressed: () {
         Navigator.of(context).push(
