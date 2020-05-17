@@ -29,6 +29,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -72,7 +73,6 @@ class _BlogDetail extends State<BlogDetail> {
   void initState(){
     _userRepository = new UserRepository();
 
-
     SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
@@ -91,6 +91,14 @@ class _BlogDetail extends State<BlogDetail> {
     });
 
     _getBlogData = getBlogData();
+
+    HttpsCallable addview = CloudFunctions.instance.getHttpsCallable(functionName: 'addView');
+    dynamic resp = addview.call(<String, dynamic>{
+      'contentID': widget.blogID,
+      'contentType': 'blog'
+    }).then((value) => print("function called")).catchError((err) {
+      print('Got error $err');
+    });
     super.initState();
   }
 
@@ -450,6 +458,8 @@ class _BlogDetail extends State<BlogDetail> {
         userID = snap.uid;
     });
 
+    print(userID);
+
     blogData = Map();
     await Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) {
       blogData = snap.data;
@@ -532,7 +542,7 @@ class _BlogDetail extends State<BlogDetail> {
                 ),
                 backgroundColor: Theme.of(context).primaryColor,
                 body: Center(
-                  child: Text('Loadding Blog'),
+                  child: Text('Loading Blog'),
                 )
             );
           }

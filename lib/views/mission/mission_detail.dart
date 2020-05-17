@@ -26,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:freetitle/model/full_pdf_screen.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -76,6 +77,14 @@ class _MissionDetail extends State<MissionDetail>
 
     SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
+    });
+
+    HttpsCallable addview = CloudFunctions.instance.getHttpsCallable(functionName: 'addView');
+    dynamic resp = addview.call(<String, dynamic>{
+      'contentID': widget.missionID,
+      'contentType': 'mission'
+    }).then((value) => print("function called")).catchError((err) {
+      print('Got error $err');
     });
 
     super.initState();
