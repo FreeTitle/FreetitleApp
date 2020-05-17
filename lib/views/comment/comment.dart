@@ -80,7 +80,7 @@ class _CommentBoxState extends State<CommentBox>{
       );
     }
     else{
-      return Text(content['text']);
+      return Text(content['text'], style: Theme.of(context).textTheme.bodyText1);
     }
   }
 
@@ -327,6 +327,7 @@ class _CommentBoxState extends State<CommentBox>{
 
     return Center(
       child: Card(
+        color: Theme.of(context).primaryColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -376,7 +377,7 @@ class _CommentBoxState extends State<CommentBox>{
             ),
             Padding(
               padding: EdgeInsets.only(left: 24, bottom: 16),
-              child: Text(commentData['time'].toDate().toString().split('.')[0], style: AppTheme.body2,),
+              child: Text(commentData['time'].toDate().toString().split('.')[0], style: Theme.of(context).textTheme.subtitle1),
             ),
           ],
         ),

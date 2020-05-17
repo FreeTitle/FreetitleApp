@@ -1,5 +1,6 @@
 import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/algolias_search.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
     for(final uid in userIDs){
       var userSnap = await Firestore.instance.collection('users').document(uid).get();
       Map userData = userSnap.data;
-      users.add(_userRepository.getUserWidget(context, uid, userData, color: AppTheme.nearlyWhite));
+      users.add(_userRepository.getUserWidget(context, uid, userData));
     }
 
     // search matched user's blogs and missions
@@ -124,7 +125,7 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.nearlyWhite,
+      backgroundColor: Theme.of(context).primaryColor,
       body: SafeArea(
         child: Stack(
           children: <Widget>[
@@ -135,13 +136,18 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 9),
                   child: SearchBar<SearchResult>(
+                    searchBarStyle: SearchBarStyle(
+                      backgroundColor: Theme.of(context).primaryColorDark,
+                    ),
+                    textStyle: Theme.of(context).textTheme.bodyText1,
+                    icon: Icon(Icons.search, color: Theme.of(context).accentColor,),
                     onSearch: search,
                     hintText: 'Search FreeTitle',
                     placeHolder: Center(
-                      child: Text('Search'),
+                      child: Text('Search', style: Theme.of(context).textTheme.bodyText1,),
                     ),
                     emptyWidget: Center(
-                      child: Text('No results found'),
+                      child: Text('No results found', style: Theme.of(context).textTheme.bodyText1,),
                     ),
                     onError: (err) {
                       print(err);
@@ -154,9 +160,9 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                           children: <Widget>[
                             Padding(
                               padding: EdgeInsets.only(left: 20),
-                              child: Text('Users', style: AppTheme.body1, textAlign: TextAlign.left,),
+                              child: Text('Users', textAlign: TextAlign.left,),
                             ),
-                            Divider(color: AppTheme.dark_grey,),
+                            Divider(),
                             result.users.length != 0 ? Container(
                               padding: EdgeInsets.symmetric(horizontal: 20),
                               height: 70,
@@ -178,9 +184,9 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 20),
-                              child: Text('Missions', style: AppTheme.body1, textAlign: TextAlign.left,),
+                              child: Text('Missions', textAlign: TextAlign.left,),
                             ),
-                            Divider(color: AppTheme.dark_grey,),
+                            Divider(),
                             result.missionIDs.length != 0 ? HorizontalMissionListView(
                               missionIDs: result.missionIDs,
                               missionList: result.missions,
@@ -191,9 +197,9 @@ class _SearchView extends State<SearchView> with TickerProviderStateMixin {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 20),
-                              child: Text('Blogs', style: AppTheme.body1, textAlign: TextAlign.left,),
+                              child: Text('Blogs', textAlign: TextAlign.left,),
                             ),
-                            Divider(color: AppTheme.dark_grey,),
+                            Divider(),
                             resultCount <= 1 ?
                             Padding(
                               padding: EdgeInsets.only(top: 20, bottom: 20),

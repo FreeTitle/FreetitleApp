@@ -34,35 +34,27 @@ class _CoinPageState extends State<CoinPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('金币', style: TextStyle(color: Colors.black),),
+        title: Text('金币'),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("金币可以用来：", style: AppTheme.body1Bold,),
-            Text("给其他人的文章/活动/评论点赞（不限次数），高赞的文章/活动/评论会排名靠前，"),
-            Text("(开发中) 使用金币永久解锁那些被作者设为需要金币解锁的文章。"),
-            Text("做这些可以获取金币：", style: AppTheme.body1Bold,),
-            Text("文章/活动/评论被其他人点赞次数转化为收到的金币，"),
-            Text("新用户登录获得20金币，每日签到获得1金币，"),
-            Text("文章发布后过24小时未删除奖励10金币，"),
-            Text("(开发中) 设置文章为需要金币解锁，读者只能看到部分，解锁全文所消费金币归作者，"),
-            Text("(开发中) 转发至其他社交账号,"),
-            Text("(开发中) 通过分享邀请码让朋友注册，两人都收获金币，"),
-            Text("(开发中) 微信充值官方人员由于有权限通过其他账号发文，所以发布文章奖励结算时不奖励文章拥有人而奖励实际操作人。"),
+            Text("金币可以用来："),
+            Text("给其他人的文章/活动/评论点赞（不限次数），高赞的文章/活动/评论会排名靠前，", style: Theme.of(context).textTheme.bodyText1),
+            Text("(开发中) 使用金币永久解锁那些被作者设为需要金币解锁的文章。", style: Theme.of(context).textTheme.bodyText1),
+            SizedBox(height: 20,),
+            Text("做这些可以获取金币："),
+            Text("文章/活动/评论被其他人点赞次数转化为收到的金币，", style: Theme.of(context).textTheme.bodyText1),
+            Text("新用户登录获得20金币，每日签到获得1金币，", style: Theme.of(context).textTheme.bodyText1),
+            Text("文章发布后过24小时未删除奖励10金币，", style: Theme.of(context).textTheme.bodyText1),
+            Text("(开发中) 设置文章为需要金币解锁，读者只能看到部分，解锁全文所消费金币归作者，", style: Theme.of(context).textTheme.bodyText1),
+            Text("(开发中) 转发至其他社交账号,", style: Theme.of(context).textTheme.bodyText1),
+            Text("(开发中) 通过分享邀请码让朋友注册，两人都收获金币，", style: Theme.of(context).textTheme.bodyText1),
+            Text("(开发中) 微信充值官方人员由于有权限通过其他账号发文，所以发布文章奖励结算时不奖励文章拥有人而奖励实际操作人。", style: Theme.of(context).textTheme.bodyText1),
             SizedBox(height: 20,),
             FutureBuilder<bool>(
               future: getData(),

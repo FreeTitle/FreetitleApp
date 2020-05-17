@@ -26,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:freetitle/model/full_pdf_screen.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -76,6 +77,14 @@ class _MissionDetail extends State<MissionDetail>
 
     SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
+    });
+
+    HttpsCallable addview = CloudFunctions.instance.getHttpsCallable(functionName: 'addView');
+    dynamic resp = addview.call(<String, dynamic>{
+      'contentID': widget.missionID,
+      'contentType': 'mission'
+    }).then((value) => print("function called")).catchError((err) {
+      print('Got error $err');
     });
 
     super.initState();
@@ -144,7 +153,7 @@ class _MissionDetail extends State<MissionDetail>
           if(wechatDescription == null){
             wechatDescription = blockText;
           }
-          Widget curBlock = Text(blockText, style: AppTheme.body1,);
+          Widget curBlock = Text(blockText, style: Theme.of(context).textTheme.bodyText1);
           List<TextSpan> textLists = new List<TextSpan>();
           // handle embedded url
           if (blockText.contains('<a') || blockText.contains('<i>') || blockText.contains('<b>')){
@@ -158,12 +167,12 @@ class _MissionDetail extends State<MissionDetail>
                   text: ' ' + blockString.substring(boldItalicStart, boldItalicEnd),
                 )
                 );
-                processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
+                processText(blockString.substring(boldItalicEnd+9), context).forEach((block) {
                   textLists.add(block);
                 });
               }
               else{
-                processText(blockString).forEach((block) {
+                processText(blockString, context).forEach((block) {
                   textLists.add(block);
                 });
               }
@@ -397,13 +406,13 @@ class _MissionDetail extends State<MissionDetail>
         Row(
             children: <Widget>[
               Expanded(
-                  child: Divider(color: AppTheme.dark_grey,)
+                  child: Divider()
               ),
 
-              Text("Comments", style: AppTheme.title,),
+              Text("Comments"),
 
               Expanded(
-                  child: Divider(color: AppTheme.dark_grey,)
+                  child: Divider()
               ),
             ]
         )
@@ -515,10 +524,8 @@ class _MissionDetail extends State<MissionDetail>
             liked = true;
           }
 
-          return Container(
-            color: AppTheme.nearlyWhite,
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
+          return Scaffold(
+              backgroundColor: Theme.of(context).primaryColor,
               floatingActionButton: showFloatingAction
                   ? MissionFloatingButton(
                       state: this,
@@ -556,7 +563,7 @@ class _MissionDetail extends State<MissionDetail>
                         children: <Widget>[
                           Container(
                             decoration: BoxDecoration(
-                              color: AppTheme.nearlyWhite,
+                              color: Theme.of(context).primaryColor,
                               borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(32.0),
                                   topRight: Radius.circular(32.0)),
@@ -588,12 +595,7 @@ class _MissionDetail extends State<MissionDetail>
                                                 child: Text(
                                                   missionData['name'],
                                                   textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 22,
-                                                    letterSpacing: 0.27,
-                                                    color: AppTheme.darkerText,
-                                                  ),
+                                                  style: Theme.of(context).textTheme.headline1
                                                 ),
                                               ),
                                               Padding(
@@ -611,7 +613,7 @@ class _MissionDetail extends State<MissionDetail>
                                                 padding: EdgeInsets.only(top: 8, bottom: 0, left: 16, right: 16),
                                                 child: Text(
                                                   'We are looking for: ',
-                                                  style: AppTheme.body1,
+                                                  style: Theme.of(context).textTheme.bodyText1,
                                                 ),
                                               ),
                                               SingleChildScrollView(
@@ -785,8 +787,7 @@ class _MissionDetail extends State<MissionDetail>
                   ),
                 ],
               ),
-            ),
-          );
+            );
         }
         else {
           return Scaffold(

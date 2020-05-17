@@ -84,15 +84,16 @@ class _ContactListView extends State<ContactListView>{
     return Scaffold(
       appBar: AppBar(
 //        brightness: Brightness.dark,
-        backgroundColor: AppTheme.appbarColor,
-        title: Text('搜索用户', style: TextStyle(color: Colors.black)),
+//        backgroundColor: AppTheme.appbarColor,
+        title: Text('搜索用户'),
         leading: IconButton(
-          icon: Icon(Icons.clear, color: Colors.black,),
+          icon: Icon(Icons.clear),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: FutureBuilder<bool>(
         future: _getPlaceHolder,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {

@@ -21,15 +21,16 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
     });
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.white,
+//          backgroundColor: Colors.white,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+            icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
-          title: Text('修改邮箱', style: TextStyle(color: Colors.black),)
+          title: Text('修改邮箱')
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         child: BlocProvider<ModifyAccountBloc>(
           bloc: _modifyAccountBloc,

@@ -283,25 +283,26 @@ class _IndexPageState extends State<IndexPage> {
           bottomNavigationBar: new Theme(
             data: Theme.of(context).copyWith(
                 // sets the background color of the `BottomNavigationBar`
-                canvasColor: Theme.of(context).primaryColor,
+                canvasColor: Theme.of(context).primaryColorDark,
                 // sets the active color of the `BottomNavigationBar` if `Brightness` is light
-                primaryColor: AppTheme.primary,
-                unselectedWidgetColor: Theme.of(context).accentColor,
+                primaryColor: Theme.of(context).highlightColor,
+//                unselectedWidgetColor: Theme.of(context).accentColor,
             ),
               child: new BottomNavigationBar(
                 currentIndex: _pageIndex,
                 type: BottomNavigationBarType.fixed,
+                unselectedItemColor: Theme.of(context).accentColor,
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
-                    title: Text('主页', style: TextStyle(color: Theme.of(context).accentColor),),
+                    title: Text('主页', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                       icon: getNumUnread() != '0' ? Badge(
                         badgeContent: Text(getNumUnread(), style: TextStyle(color: Colors.white, fontSize: 12),),
                         child: Icon(Icons.chat),
                       ) :  Icon(Icons.chat),
-                      title: Text('私信', style: TextStyle(color: Theme.of(context).accentColor),),
+                      title: Text('私信', style: Theme.of(context).textTheme.bodyText1,),
                   ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.business),
@@ -310,11 +311,11 @@ class _IndexPageState extends State<IndexPage> {
 //            ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    title: Text('搜索', style: TextStyle(color: Theme.of(context).accentColor),),
+                    title: Text('搜索', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),
-                    title: Text('我的', style: TextStyle(color: Theme.of(context).accentColor),),
+                    title: Text('我的', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                 ],
                 onTap: onTabTapped,

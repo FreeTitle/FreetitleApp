@@ -87,16 +87,16 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
     typeList = widget.typeList;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppTheme.white,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(widget.title.length > 15 ? widget.title.substring(0, 15) +  '...' : widget.title, style: TextStyle(color: Colors.black),),
+        title: Text(widget.title.length > 15 ? widget.title.substring(0, 15) +  '...' : widget.title),
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: FutureBuilder<bool>(
         future: getContent(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {

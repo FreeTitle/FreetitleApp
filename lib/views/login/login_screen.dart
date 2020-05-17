@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     });
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
 //      appBar: AppBar(title: Text('登录')),
       body: BlocProvider<LoginBloc>(
         bloc: _loginBloc,

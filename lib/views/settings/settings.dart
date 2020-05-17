@@ -20,25 +20,23 @@ class SettingTab extends StatelessWidget{
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(8),
-      child: Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: AppTheme.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                bottomLeft: Radius.circular(8.0),
-                bottomRight: Radius.circular(8.0),
-                topRight: Radius.circular(8.0)),
-            boxShadow:  <BoxShadow>[
-              BoxShadow(
-                  color: AppTheme.grey.withOpacity(0.2),
-                  offset: Offset(1.1, 1.1),
-                  blurRadius: 10.0
-              ),
-            ],
-          ),
-          child: Material(
+//      child: Material(
+//          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          child: Container(
+            height: 50,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorDark,
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              boxShadow:  <BoxShadow>[
+                BoxShadow(
+                    color: Theme.of(context).primaryColorLight.withOpacity(0.2),
+                    offset: Offset(1.1, 1.1),
+                    blurRadius: 10.0
+                ),
+              ],
+            ),
             child: InkWell(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
               onTap: () {
                 callback();
               },
@@ -52,7 +50,7 @@ class SettingTab extends StatelessWidget{
               ),
             ),
           )
-      ),
+//      ),
     );
   }
 }
@@ -84,25 +82,23 @@ class _SettingsPageState extends State<SettingsPage> {
     settingsList.add(SizedBox(height: 30,));
     settingsList.add(Padding(
       padding: EdgeInsets.all(8),
-      child: Container(
+      child: Material(
+        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        child: Container(
           height: 50,
           decoration: BoxDecoration(
-            color: AppTheme.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                bottomLeft: Radius.circular(8.0),
-                bottomRight: Radius.circular(8.0),
-                topRight: Radius.circular(8.0)),
+            color: Theme.of(context).primaryColorDark,
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
             boxShadow:  <BoxShadow>[
               BoxShadow(
-                  color: AppTheme.grey.withOpacity(0.2),
+                  color:Theme.of(context).primaryColorLight.withOpacity(0.2),
                   offset: Offset(1.1, 1.1),
                   blurRadius: 10.0
               ),
             ],
           ),
-          child: Material(
             child: InkWell(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
               onTap: () {
                 BlocProvider.of<AuthenticationBloc>(context).dispatch(
                   LoggedOut(),
@@ -126,15 +122,14 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        backgroundColor: AppTheme.white,
-        title: Text('设置', style: TextStyle(color: Colors.black),),
+        title: Text('设置'),
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Container(
         child: ListView.builder(
             padding: EdgeInsets.only(
@@ -188,15 +183,15 @@ class _AccountSettingPageState extends State<AccountSettingPage>{
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
           ),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        backgroundColor: AppTheme.white,
-        title: Text('账号设置', style: TextStyle(color: Colors.black),),
+//        backgroundColor: AppTheme.white,
+        title: Text('账号设置'),
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Container(
         child: ListView.builder(
             padding: EdgeInsets.only(
