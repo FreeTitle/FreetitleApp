@@ -52,21 +52,98 @@ class _MyAppState extends State<MyApp> {
           title: 'FreeTitle',
           theme: ThemeData(
 //            brightness: Brightness.light,
-            primaryColor: AppTheme.white,
-            accentColor: Colors.black,
+              primaryColor: AppTheme.nearlyWhite,
+              accentColor: Colors.black,
+              highlightColor: Color(0xFF00BCD4),
+              primaryColorLight: AppTheme.grey,
+              primaryColorDark: AppTheme.white,
+              appBarTheme: AppBarTheme(
+                color: Colors.white,
+              ),
               textTheme: TextTheme(
-                headline: AppTheme.headline,
-                body1: AppTheme.body1,
-                body2: AppTheme.body2,
+                headline1: TextStyle( // h5 -> headline
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  letterSpacing: 0.27,
+                  color: Colors.black,
+                ),
+                headline2: TextStyle( // h6 -> title
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: 0.18,
+                  color: Colors.black,
+                ),
+                bodyText1: TextStyle( // body2 -> body1
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  letterSpacing: -0.05,
+                  color: Colors.black,
+                ),
+                // Bold text
+                bodyText2: TextStyle( // body2 -> body1
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: -0.05,
+                  color: Colors.black,
+                ),
+                // Italic text
+                subtitle1: TextStyle( // body2 -> body1
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  letterSpacing: -0.05,
+                  color: Colors.black,
+                  fontStyle: FontStyle.italic,
+                ),
               )
           ),
           darkTheme: ThemeData(
-            primaryColor: AppTheme.white,
-            accentColor: Colors.black,
+            primaryColor: Color(0xFF303030),
+            accentColor: Colors.white,
+            primaryColorDark: Colors.black,
+            primaryColorLight: AppTheme.dark_grey,
+            highlightColor: Color(0xFF00BCD4),
+            appBarTheme: AppBarTheme(
+              color: Colors.black,
+            ),
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+            dividerColor: Colors.white,
+            fontFamily: AppTheme.fontName,
             textTheme: TextTheme(
-              headline: AppTheme.headline,
-              body1: AppTheme.body1,
-              body2: AppTheme.body2,
+              headline1: TextStyle( // h5 -> headline
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                letterSpacing: 0.27,
+                color: Colors.white,
+              ),
+              headline2: TextStyle( // h6 -> title
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 0.18,
+                color: Colors.white,
+              ),
+              bodyText1: TextStyle( // body2 -> body1
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                letterSpacing: -0.05,
+                color: Colors.white,
+              ),
+              // Bold text
+              bodyText2: TextStyle( // body2 -> body1
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: -0.05,
+                color: Colors.white,
+              ),
+              // Italic text
+              subtitle1: TextStyle( // body2 -> body1
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                letterSpacing: -0.05,
+                color: Colors.white,
+                fontStyle: FontStyle.italic,
+              ),
             )
           ),
           home: SplashScreenPage(),

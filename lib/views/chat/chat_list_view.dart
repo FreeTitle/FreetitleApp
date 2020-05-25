@@ -41,6 +41,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
     _getLocal = getLocal();
     chatData = Map();
     unreadMessages = widget.indexState.unreadMessages;
+    // Use stream to listen to unread messages from index page
     widget.stream.listen((stream) {
       unreadMessages = stream;
       setState(() {
@@ -142,19 +143,18 @@ class _ChatListScreenState extends State<ChatListScreen>{
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('私信', style: TextStyle(color: Colors.black)),
+        title: Text('私信'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add, color: Colors.black,),
+            icon: Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).push(contactListRoute());
             },
           ),
           SizedBox(width: 10,),
         ],
-        backgroundColor: Colors.white,
-//        brightness: Brightness.light,
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: FutureBuilder<bool>(
         future: _getLocal,
         builder: (context, snapshot) {

@@ -62,14 +62,16 @@ class _ChatState extends State<Chat> {
     getRemoteChat();
     getLocalChat();
     messages = List();
-    subscription = widget.stream.listen((stream) {
-      print(stream);
-      if(stream.containsKey(widget.chatID)){
-        if(stream[widget.chatID] != 0){
-          widget.indexState.unreadMessages[widget.chatID] = 0;
+    if(widget.stream != null){
+      subscription = widget.stream.listen((stream) {
+        print(stream);
+        if(stream.containsKey(widget.chatID)){
+          if(stream[widget.chatID] != 0){
+            widget.indexState.unreadMessages[widget.chatID] = 0;
+          }
         }
-      }
-    });
+      });
+    }
     super.initState();
   }
 
@@ -131,26 +133,24 @@ class _ChatState extends State<Chat> {
     }
     return Scaffold(
       appBar: AppBar(
-//        brightness: Brightness.dark,
         centerTitle: true,
-        backgroundColor: AppTheme.white,
-        title: Text(widget.otherUsername, style: TextStyle(color: Colors.black),),
+        title: Text(widget.otherUsername),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Colors.black,
           onPressed: (){
             Navigator.of(context).popUntil((route) => route.isFirst);
           },
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.more_horiz, color: Colors.black,),
+            icon: Icon(Icons.more_horiz),
             onPressed: () {
 
             },
           )
         ],
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       body: FutureBuilder<bool>(
         future: getLocalChat(),
         builder: (BuildContext context, AsyncSnapshot<bool> localSnapshot) {
@@ -426,14 +426,14 @@ class _ChatScreenState extends State<ChatScreen>{
                   color: Colors.black87,
                 ),
               ),
-              if (message.image != null)
+              message.image != null ?
                 FadeInImage.memoryNetwork(
                   height: MediaQuery.of(context).size.height * 0.3,
                   width: MediaQuery.of(context).size.width * 0.7,
                   fit: BoxFit.contain,
                   image: message.image,
                   placeholder: kTransparentImage,
-                ),
+                ) : SizedBox(),
               Padding(
                 padding: EdgeInsets.only(top: 5.0),
                 child: Text(
@@ -518,7 +518,7 @@ class _ChatScreenState extends State<ChatScreen>{
       inputTextStyle: TextStyle(fontSize: 16.0),
       inputContainerStyle: BoxDecoration(
         border: Border.all(width: 0.0),
-        color: Colors.white,
+        color: Theme.of(context).primaryColorDark,
       ),
       onLoadEarlier: () {
         print("loading...");

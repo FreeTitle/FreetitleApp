@@ -81,15 +81,13 @@ class _CommentInputPage extends State<CommentInputPage> {
     print(targetID);
     return Scaffold(
       appBar: AppBar(
-        title: Text("发表评论", style: TextStyle(color: Colors.black),),
+        title: Text("发表评论"),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
-          color: Colors.black,
           onPressed: ()  {
             Navigator.of(context).pop();
           },
         ),
-        backgroundColor: AppTheme.white,
 //        brightness: Brightness.dark,
         actions: <Widget>[
           Padding(
@@ -269,13 +267,13 @@ class _CommentInputPage extends State<CommentInputPage> {
                 }
                 Navigator.pop(context);
               },
-              child: Text('发表', style: TextStyle(color: Colors.black),),
+              child: Text('发表', style: Theme.of(context).textTheme.bodyText1),
             )
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppTheme.primary,
+        backgroundColor: Theme.of(context).highlightColor,
         child: buildButtonIcon(),
         onPressed: () async {
           var _image = await ImagePicker.pickImage(source: ImageSource.gallery);

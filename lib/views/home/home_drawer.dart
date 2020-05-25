@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/ar/ar_ios.dart';
 import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/home/coin.dart';
 import 'package:freetitle/views/login/login.dart';
@@ -57,7 +60,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Welcome to FreeTitle', style: AppTheme.headline,),
+                      Text('Welcome to FreeTitle', style: Theme.of(context).textTheme.headline1,),
                       SizedBox(height: 40,),
                       InkWell(
                         onTap: () {
@@ -68,23 +71,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             )
                           );
                         },
-                        child: Text('请登录', style:
-                          TextStyle( // h5 -> headline
-                            fontFamily: AppTheme.fontName,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            letterSpacing: 0.27,
-                            fontStyle: FontStyle.italic,
-                            decoration: TextDecoration.underline,
-                            color: AppTheme.darkerText,
-                          ),
-                        ),
+                        child: Text('请登录'),
                       )
                     ],
                   )
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.primary,
+                  color: Theme.of(context).highlightColor,
                 ),
               )
             ],
@@ -101,14 +94,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Welcome to FreeTitle', style: AppTheme.headline,),
+                      Text('Welcome to FreeTitle', style: Theme.of(context).textTheme.headline1,),
                       SizedBox(height: 50,),
                       Text('快捷操作')
                     ],
                   ),
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.primary,
+                  color: Theme.of(context).highlightColor,
                 ),
               ),
               ListTile(
@@ -141,7 +134,27 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 onTap: () {
                   restorePage();
                 },
-              )
+              ),
+//              ListTile(
+//                title: Row(
+//                  children: <Widget>[
+//                    SizedBox(width: 20,),
+//                    Text('开启AR'),
+//                    SizedBox(width: 10,),
+//                    Icon(Icons.fullscreen),
+//                  ],
+//                ),
+//                onTap: () {
+//                  if(Platform.isIOS){
+//                    Navigator.push<dynamic>(
+//                      context,
+//                      MaterialPageRoute<dynamic>(
+//                        builder: (BuildContext context) => ARiOSView(),
+//                      ),
+//                    );
+//                  }
+//                },
+//              )
             ],
           );
         }

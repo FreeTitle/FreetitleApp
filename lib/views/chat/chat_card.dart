@@ -26,18 +26,18 @@ class ChatCard extends StatelessWidget {
   final Stream<Map> stream;
 
 
-  Widget buildTime(){
+  Widget buildTime(context){
     if(latestTime != null){
       var time = DateTime.fromMillisecondsSinceEpoch(latestTime);
       if(DateTime.now().day == time.day){
         String minute = time.minute < 10 ? '0' + time.minute.toString() : time.minute.toString();
-        return Text(time.hour.toString()+':'+ minute, style: AppTheme.body1);
+        return Text(time.hour.toString()+':'+ minute, style: Theme.of(context).textTheme.bodyText1);
       }
       else if (DateTime.now().day - time.day == 1){
-        return Text('昨天', style: AppTheme.body1,);
+        return Text('昨天', style: Theme.of(context).textTheme.bodyText1);
       }
       else{
-        return Text(time.month.toString() + '-' + time.day.toString(), style: AppTheme.body1);
+        return Text(time.month.toString() + '-' + time.day.toString(), style: Theme.of(context).textTheme.bodyText1);
       }
     }
     else{
@@ -50,7 +50,7 @@ class ChatCard extends StatelessWidget {
 
     return Container(
         width: MediaQuery.of(context).size.width,
-        color: AppTheme.nearlyWhite,
+//        color: AppTheme.nearlyWhite,
         height: 100,
         child: InkWell(
           onTap: () {
@@ -62,6 +62,7 @@ class ChatCard extends StatelessWidget {
             );
           },
           child: Card(
+            color: Theme.of(context).primaryColorDark,
             child: Padding(
               padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
               child: Row(
@@ -87,7 +88,7 @@ class ChatCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(username, style: AppTheme.body2,),
+                      Text(username, style: Theme.of(context).textTheme.bodyText1,),
                       SizedBox(height: 10,),
                       Text(latestMessage.length > 19 ? latestMessage.substring(0, 18) + '...' : latestMessage, style: TextStyle(fontWeight: FontWeight.w200),),
                     ],
@@ -95,7 +96,7 @@ class ChatCard extends StatelessWidget {
                   Spacer(),
                   Column(
                     children: <Widget>[
-                      buildTime(),
+                      buildTime(context),
                       unreadNum != null && unreadNum != 0 ? Badge(
                         badgeContent: Text(unreadNum.toString(), style: TextStyle(color: Colors.white, fontSize: 12),),
                         toAnimate: false,

@@ -42,7 +42,6 @@ class _ContactCard extends State<ContactCard>{
   Widget build(BuildContext context) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        color: AppTheme.nearlyWhite,
         height: 100,
         child: Column(
           children: <Widget>[
@@ -306,7 +305,7 @@ class _ContactCard extends State<ContactCard>{
                 ),
               ),
             ),
-            Divider(color: AppTheme.dark_grey,)
+            Divider()
           ],
         )
     );

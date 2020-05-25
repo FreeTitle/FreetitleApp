@@ -91,7 +91,6 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
         if(snapshot.connectionState == ConnectionState.done){
           return Container(
             child: Container(
-              color: Colors.white,
               child: Stack(
                 children: <Widget>[
                   UserInfoView(userData: userData, isMyProfile: widget.isMyProfile, userID: widget.userID,),
@@ -518,10 +517,10 @@ class UserContentView extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30.0),
-            color: Colors.white,
+//            color: Colors.white,
           ),
           child: Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: Theme.of(context).primaryColor,
             appBar: AppBar(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(
@@ -530,16 +529,16 @@ class UserContentView extends StatelessWidget {
               ),
               automaticallyImplyLeading: false,
               elevation: 20.0,
-              backgroundColor: Colors.white,
+//              backgroundColor: Colors.white,
               title: Theme(
                 data: ThemeData(
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                 ),
                 child: TabBar(
-                  labelColor: AppTheme.primary,
-                  unselectedLabelColor: Colors.black,
-                  indicatorColor: AppTheme.primary,
+                  labelColor: Theme.of(context).highlightColor,
+                  unselectedLabelColor: Theme.of(context).accentColor,
+                  indicatorColor:  Theme.of(context).highlightColor,
                   tabs: <Widget>[
                     Tab(child: Text('Blogs')),
                     Tab(child: Text('Missions')),

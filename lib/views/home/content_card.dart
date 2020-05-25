@@ -145,7 +145,7 @@ class _ContentCardState extends State<ContentCard>{
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.grey.withOpacity(0.6),
+                color: Theme.of(context).primaryColorLight.withOpacity(0.6),
                 offset: const Offset(4, 4),
                 blurRadius: 16,
               ),
@@ -162,7 +162,7 @@ class _ContentCardState extends State<ContentCard>{
                       child: getImage(),
                     ),
                     Container(
-                      color: AppTheme.buildLightTheme().backgroundColor,
+                      color: Theme.of(context).primaryColorDark,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,

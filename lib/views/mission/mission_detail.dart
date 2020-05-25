@@ -26,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:freetitle/model/full_pdf_screen.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class MissionDetail extends StatefulWidget {
   const MissionDetail(
@@ -76,6 +77,14 @@ class _MissionDetail extends State<MissionDetail>
 
     SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
+    });
+
+    HttpsCallable addview = CloudFunctions.instance.getHttpsCallable(functionName: 'addView');
+    dynamic resp = addview.call(<String, dynamic>{
+      'contentID': widget.missionID,
+      'contentType': 'mission'
+    }).then((value) => print("function called")).catchError((err) {
+      print('Got error $err');
     });
 
     super.initState();
@@ -144,7 +153,7 @@ class _MissionDetail extends State<MissionDetail>
           if(wechatDescription == null){
             wechatDescription = blockText;
           }
-          Widget curBlock = Text(blockText, style: AppTheme.body1,);
+          Widget curBlock = Text(blockText, style: Theme.of(context).textTheme.bodyText1);
           List<TextSpan> textLists = new List<TextSpan>();
           // handle embedded url
           if (blockText.contains('<a') || blockText.contains('<i>') || blockText.contains('<b>')){
@@ -158,12 +167,12 @@ class _MissionDetail extends State<MissionDetail>
                   text: ' ' + blockString.substring(boldItalicStart, boldItalicEnd),
                 )
                 );
-                processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
+                processText(blockString.substring(boldItalicEnd+9), context).forEach((block) {
                   textLists.add(block);
                 });
               }
               else{
-                processText(blockString).forEach((block) {
+                processText(blockString, context).forEach((block) {
                   textLists.add(block);
                 });
               }
@@ -397,13 +406,13 @@ class _MissionDetail extends State<MissionDetail>
         Row(
             children: <Widget>[
               Expanded(
-                  child: Divider(color: AppTheme.dark_grey,)
+                  child: Divider()
               ),
 
-              Text("Comments", style: AppTheme.title,),
+              Text("Comments"),
 
               Expanded(
-                  child: Divider(color: AppTheme.dark_grey,)
+                  child: Divider()
               ),
             ]
         )
@@ -515,17 +524,13 @@ class _MissionDetail extends State<MissionDetail>
             liked = true;
           }
 
-          return Container(
-            color: AppTheme.nearlyWhite,
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
+          return Scaffold(
+              backgroundColor: Theme.of(context).primaryColor,
               floatingActionButton: showFloatingAction
                   ? MissionFloatingButton(
                       state: this,
                       userID: userID,
                       missionID: widget.missionID,
-                      wechatDescription: wechatDescription,
-                      wechatThumbnailUrl: wechatThumbnailUrl,
                     )
                   : Container(),
               body: Stack(
@@ -558,7 +563,7 @@ class _MissionDetail extends State<MissionDetail>
                         children: <Widget>[
                           Container(
                             decoration: BoxDecoration(
-                              color: AppTheme.nearlyWhite,
+                              color: Theme.of(context).primaryColor,
                               borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(32.0),
                                   topRight: Radius.circular(32.0)),
@@ -590,12 +595,7 @@ class _MissionDetail extends State<MissionDetail>
                                                 child: Text(
                                                   missionData['name'],
                                                   textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 22,
-                                                    letterSpacing: 0.27,
-                                                    color: AppTheme.darkerText,
-                                                  ),
+                                                  style: Theme.of(context).textTheme.headline1
                                                 ),
                                               ),
                                               Padding(
@@ -613,7 +613,7 @@ class _MissionDetail extends State<MissionDetail>
                                                 padding: EdgeInsets.only(top: 8, bottom: 0, left: 16, right: 16),
                                                 child: Text(
                                                   'We are looking for: ',
-                                                  style: AppTheme.body1,
+                                                  style: Theme.of(context).textTheme.bodyText1,
                                                 ),
                                               ),
                                               SingleChildScrollView(
@@ -787,8 +787,7 @@ class _MissionDetail extends State<MissionDetail>
                   ),
                 ],
               ),
-            ),
-          );
+            );
         }
         else {
           return Scaffold(
@@ -861,15 +860,11 @@ class MissionFloatingButton extends StatefulWidget {
     @required this.state,
     @required this.userID,
     @required this.missionID,
-    @required this.wechatThumbnailUrl,
-    @required this.wechatDescription
   }) : super(key : key);
 
   final _MissionDetail state;
   final String userID;
   final String missionID;
-  final String wechatThumbnailUrl;
-  final String wechatDescription;
   
   _MissionFloatingButtonState createState() => _MissionFloatingButtonState();
 }
@@ -891,12 +886,12 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                 child: Text('分享至', style: AppTheme.body1),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Flexible(
                     flex: 2,
                     child: Container(
-                        height: 80,
+                        height: 60,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
@@ -904,7 +899,7 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                         child: Center(
                           child: IconButton(
                             icon: Icon(Icons.people,),
-                            iconSize: 50,
+                            iconSize: 40,
                             onPressed: () {
                               Navigator.push<dynamic>(
                                 context,
@@ -918,25 +913,54 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                     ),
                   ),
                   Flexible(
-                    flex: 1,
+                    flex: 2,
                     child: Container(
-                      height: 80,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipRRect(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(160.0)),
+                        child: InkWell(
+                          child: Image.asset('assets/icons/wechat.png', fit: BoxFit.cover,),
+                          onTap: () {
+                            shareToWeChat(
+                                WeChatShareWebPageModel(
+                                  "https://freetitle.us/missiondetail?id=${widget.missionID}",
+                                  title: mission['name'],
+                                  description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                  thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                )
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 60,
                       decoration: BoxDecoration(
                         color: Colors.black,
                         shape: BoxShape.circle,
                       ),
                       child: ClipRRect(
                           borderRadius:
-                          const BorderRadius.all(Radius.circular(80.0)),
+                          const BorderRadius.all(Radius.circular(160.0)),
                           child: InkWell(
-                            child: Image.asset('assets/icons/wechat.png', fit: BoxFit.fill,),
+                            child: Image.asset('assets/icons/wechat_timeline.png', fit: BoxFit.cover,),
                             onTap: () {
-                              shareToWeChat(WeChatShareWebPageModel(
-                                "https://freetitle.us/missiondetail?id=${widget.missionID}",
-                                title: mission['title'],
-                                description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
-                              ));
+                              shareToWeChat(
+                                  WeChatShareWebPageModel(
+                                    "https://freetitle.us/missiondetail?id=${widget.missionID}",
+                                    title: mission['name'],
+                                    scene: WeChatScene.TIMELINE,
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                  ));
                             },
                           )
                       ),
@@ -945,7 +969,34 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                   Flexible(
                     flex: 2,
                     child: Container(
-                      height: 80,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipRRect(
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(160.0)),
+                          child: InkWell(
+                            child: Image.asset('assets/icons/wechat_favorite.png', fit: BoxFit.cover,),
+                            onTap: () {
+                              shareToWeChat(
+                                  WeChatShareWebPageModel(
+                                    "https://freetitle.us/missiondetail?id=${widget.missionID}",
+                                    title: mission['name'],
+                                    scene: WeChatScene.FAVORITE,
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                  ));
+                            },
+                          )
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 60,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -953,9 +1004,9 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
                       child: Center(
                         child: IconButton(
                           icon: Icon(CupertinoIcons.share,),
-                          iconSize: 50,
+                          iconSize: 40,
                           onPressed: () {
-                            Share.share('请看Mission${mission['title']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
+                            Share.share('请看Mission${mission['name']}，点击https://freetitle.us/missiondetail?id=${widget.missionID}', subject: 'Look at this')
                                 .catchError((e) {
                               print('sharing error $e');
                             });
@@ -969,7 +1020,17 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
               Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: InkWell(
-                  child: Text('取消'),
+                  child: Container(
+                    width: 60,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      color: AppTheme.primary,
+                    ),
+                    child: Center(
+                        child: Text('取消', style: TextStyle(color: AppTheme.white),)
+                    ),
+                  ),
                   onTap: () {
                     Navigator.of(context).pop();
                   },
@@ -985,6 +1046,7 @@ class _MissionFloatingButtonState extends State<MissionFloatingButton> {
   @override
   Widget build(BuildContext context) {
     final userID = widget.userID;
+    print(widget.state.wechatThumbnailUrl);
     return SpeedDial(
       marginRight: 20,
       marginBottom: 80,

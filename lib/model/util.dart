@@ -41,10 +41,10 @@ class PlaceHolderCard extends StatelessWidget {
       child: Container(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-            color: AppTheme.white,
+            color: Theme.of(context).primaryColorDark,
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.grey.withOpacity(0.6),
+                color: Theme.of(context).primaryColorLight.withOpacity(0.8),
                 offset: const Offset(4, 4),
                 blurRadius: 16,
               ),
@@ -55,7 +55,7 @@ class PlaceHolderCard extends StatelessWidget {
             child: Container(
               child: Text(
                   text,
-                  style: AppTheme.body1,
+                  style: Theme.of(context).textTheme.bodyText1,
               ),
             ),
           ),
@@ -64,7 +64,7 @@ class PlaceHolderCard extends StatelessWidget {
   }
 }
 
-List<TextSpan> processText(blockText){
+List<TextSpan> processText(blockText, context){
   List<String> blockStrings = blockText.split('<');
   List<TextSpan> textLists = List();
   for(String blockString in blockStrings){
@@ -89,7 +89,7 @@ List<TextSpan> processText(blockText){
     else if (blockString.contains('b>') && !blockString.contains('/')){
       final boldStart = blockString.indexOf('b>')+2;
       textLists.add(TextSpan(
-          style: AppTheme.body1Bold,
+          style: Theme.of(context).textTheme.bodyText2,
           text: ' ' + blockString.substring(boldStart)
       ));
     }
@@ -98,7 +98,7 @@ List<TextSpan> processText(blockText){
         blockString = blockString.substring(3);
       }
       textLists.add(TextSpan(
-        style: AppTheme.body1,
+        style: Theme.of(context).textTheme.bodyText1,
         text: blockString,
       ),);
     }
@@ -174,18 +174,19 @@ void saveCurrentUser() async {
       userData['lastClaimTime'] = null;
       sharedPref.setString('currentUser', json.encode(userData));
     }
-  }
 
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  _firebaseMessaging.getToken().then((token) async {
-    print('FCM Token: $token');
-    await _userRepository.getUser().then((snap) {
-      String uid = snap.uid;
-      Firestore.instance.collection('users').document(uid).updateData({
-        'notificationToken': FieldValue.arrayUnion([token])
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+    _firebaseMessaging.getToken().then((token) async {
+      print('FCM Token: $token');
+      await _userRepository.getUser().then((snap) {
+        String uid = snap.uid;
+        Firestore.instance.collection('users').document(uid).updateData({
+          'notificationToken': FieldValue.arrayUnion([token])
+        });
       });
     });
-  });
+
+  }
 }
 
 

@@ -109,8 +109,9 @@ class _LoginFormState extends State<LoginForm> {
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          icon: Icon(Icons.email),
+                          icon: Icon(Icons.email, color: Theme.of(context).accentColor),
                           labelText: 'Email',
+                          labelStyle: Theme.of(context).textTheme.bodyText1,
                           contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                         ),
                         autovalidate: true,
@@ -123,9 +124,10 @@ class _LoginFormState extends State<LoginForm> {
                       TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
-                          icon: Icon(Icons.lock),
+                          icon: Icon(Icons.lock, color: Theme.of(context).accentColor),
                           contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                           labelText: '密码',
+                          labelStyle: Theme.of(context).textTheme.bodyText1
                         ),
                         obscureText: true,
                         autovalidate: true,
@@ -152,7 +154,7 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ],
                   ),
-                  Padding(
+                  Navigator.canPop(context) ? Padding(
                     padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top-20,),
                     child: SizedBox(
                       width: AppBar().preferredSize.height-8,
@@ -174,7 +176,6 @@ class _LoginFormState extends State<LoginForm> {
 //                          ),
                           child: Icon(
                             Icons.arrow_back_ios,
-                            color: Colors.black,
                           ),
                           onTap: () {
                             if(Navigator.canPop(context)){
@@ -184,7 +185,7 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                       ),
                     ),
-                  )
+                  ) : SizedBox(),
                 ],
               )
             ),

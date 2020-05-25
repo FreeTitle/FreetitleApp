@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:freetitle/views/index.dart';
-import 'package:freetitle/views/notification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 
@@ -22,7 +21,6 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     return IndexPage();
   }
 
-  // TODO 修改加载页面
   @override
   Widget build(BuildContext context) {
     return SplashScreen(
@@ -37,7 +35,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
           "加载中...",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
         styleTextUnderTheLoader: new TextStyle(),
         photoSize: 100.0,
         onClick: () {

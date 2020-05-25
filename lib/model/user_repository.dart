@@ -111,14 +111,16 @@ class UserRepository {
 
   Future<void> signOut() async {
     SharedPreferences sharedPref;
-    SharedPreferences.getInstance().then((pref) {
+    await SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
-    sharedPref.remove('currentUser');
-    return Future.wait([
-      _firebaseAuth.signOut(),
-      _googleSignIn.signOut(),
-    ]);
+    await sharedPref.remove('currentUser');
+    await _firebaseAuth.signOut();
+    await _googleSignIn.signOut();
+//    return Future.wait([
+//      _firebaseAuth.signOut(),
+//      _googleSignIn.signOut(),
+//    ]);
   }
 
   Future<bool> isSignedIn() async {
@@ -139,7 +141,7 @@ class UserRepository {
     String avatarURL = userData['avatarUrl'];
     Image avatar = Image.network(avatarURL, fit: BoxFit.cover,);
     return Material(
-      color: color,
+      color: Theme.of(context).primaryColor,
       child: InkWell(
         onTap: () {
           Navigator.push<dynamic>(
@@ -176,7 +178,7 @@ class UserRepository {
               userName,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.grey,
+                color: Theme.of(context).accentColor,
                 fontSize: 18,
               ),
             ),

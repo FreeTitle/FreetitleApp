@@ -17,7 +17,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/notification.dart';
 import 'package:badges/badges.dart';
-import 'package:notification_permissions/notification_permissions.dart';
 import 'dart:io';
 import 'package:fluwx/fluwx.dart';
 import 'package:flutter/services.dart';
@@ -66,16 +65,25 @@ class _IndexPageState extends State<IndexPage> {
 
     final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
 
-
-    firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: false
-        )
-    );
+    if(Platform.isIOS) {
+      firebaseMessaging.requestNotificationPermissions(
+          const IosNotificationSettings(
+              sound: true, badge: true, alert: true, provisional: false
+          )
+      );
+    }
 
     firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
-        print('onMessage called: $message');
+      onMessage: (Map<String, dynamic> incomeMessage) {
+        print('onMessage called: $incomeMessage');
+        var message;
+        if(Platform.isAndroid){
+          message = incomeMessage['data'];
+        }
+        else{
+          message = incomeMessage;
+        }
+
         if(message['blog'] != null){
           try{
             showDialog(
@@ -275,25 +283,26 @@ class _IndexPageState extends State<IndexPage> {
           bottomNavigationBar: new Theme(
             data: Theme.of(context).copyWith(
                 // sets the background color of the `BottomNavigationBar`
-                canvasColor: Theme.of(context).primaryColor,
+                canvasColor: Theme.of(context).primaryColorDark,
                 // sets the active color of the `BottomNavigationBar` if `Brightness` is light
-                primaryColor: AppTheme.primary,
-                unselectedWidgetColor: Theme.of(context).accentColor,
+                primaryColor: Theme.of(context).highlightColor,
+//                unselectedWidgetColor: Theme.of(context).accentColor,
             ),
               child: new BottomNavigationBar(
                 currentIndex: _pageIndex,
                 type: BottomNavigationBarType.fixed,
+                unselectedItemColor: Theme.of(context).accentColor,
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
-                    title: Text('主页', style: TextStyle(color: Theme.of(context).accentColor),),
+                    title: Text('主页', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                       icon: getNumUnread() != '0' ? Badge(
                         badgeContent: Text(getNumUnread(), style: TextStyle(color: Colors.white, fontSize: 12),),
                         child: Icon(Icons.chat),
                       ) :  Icon(Icons.chat),
-                      title: Text('私信', style: TextStyle(color: Theme.of(context).accentColor),),
+                      title: Text('私信', style: Theme.of(context).textTheme.bodyText1,),
                   ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.business),
@@ -302,11 +311,11 @@ class _IndexPageState extends State<IndexPage> {
 //            ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    title: Text('搜索', style: TextStyle(color: Theme.of(context).accentColor),),
+                    title: Text('搜索', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),
-                    title: Text('我的', style: TextStyle(color: Theme.of(context).accentColor),),
+                    title: Text('我的', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                 ],
                 onTap: onTabTapped,

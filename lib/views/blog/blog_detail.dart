@@ -29,6 +29,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class BlogDetail extends StatefulWidget{
   const BlogDetail(
@@ -72,7 +73,6 @@ class _BlogDetail extends State<BlogDetail> {
   void initState(){
     _userRepository = new UserRepository();
 
-
     SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
@@ -91,6 +91,14 @@ class _BlogDetail extends State<BlogDetail> {
     });
 
     _getBlogData = getBlogData();
+
+    HttpsCallable addview = CloudFunctions.instance.getHttpsCallable(functionName: 'addView');
+    dynamic resp = addview.call(<String, dynamic>{
+      'contentID': widget.blogID,
+      'contentType': 'blog'
+    }).then((value) => print("function called")).catchError((err) {
+      print('Got error $err');
+    });
     super.initState();
   }
 
@@ -111,7 +119,7 @@ class _BlogDetail extends State<BlogDetail> {
     }
     Padding title = new Padding(
       padding: EdgeInsets.only(top: 8.0, left: 24.0, right: 24.0),
-      child: Text(content['title'], style: AppTheme.headline,),
+      child: Text(content['title'], style: Theme.of(context).textTheme.headline1),
     );
     // Add title
     blogWidget.add(title);
@@ -134,7 +142,7 @@ class _BlogDetail extends State<BlogDetail> {
           if(wechatDescription == null){
             wechatDescription = blockText;
           }
-          Widget curBlock = Text(blockText, style: AppTheme.body1,);
+          Widget curBlock = Text(blockText, style: Theme.of(context).textTheme.bodyText1,);
           List<TextSpan> textLists = new List<TextSpan>();
           // handle embedded url
           if (blockText.contains('<a') || blockText.contains('<i>') || blockText.contains('<b>')){
@@ -148,15 +156,15 @@ class _BlogDetail extends State<BlogDetail> {
                     text: ' ' + blockString.substring(boldItalicStart, boldItalicEnd),
                   )
                 );
-                print(blockString);
+//                print(blockString);
                 if(boldItalicEnd+9 < blockString.length){
-                  processText(blockString.substring(boldItalicEnd+9)).forEach((block) {
+                  processText(blockString.substring(boldItalicEnd+9), context).forEach((block) {
                     textLists.add(block);
                   });
                 }
               }
               else{
-                processText(blockString).forEach((block) {
+                processText(blockString, context).forEach((block) {
                   textLists.add(block);
                 });
               }
@@ -182,7 +190,7 @@ class _BlogDetail extends State<BlogDetail> {
           blogWidget.add(
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 8.0, left: 24.0, right: 24.0),
-                child: Text(blockText, style: AppTheme.title,),
+                child: Text(blockText, style: Theme.of(context).textTheme.headline2,),
               )
           );
         }
@@ -223,7 +231,7 @@ class _BlogDetail extends State<BlogDetail> {
 //            pre += "width=\"${MediaQuery.of(context).size.width*0.85}\" height=\"230\"";
 //          }
 //          code = pre + code.substring(end);
-          print(code);
+//          print(code);
           if(code.contains('163')){
             int end = code.indexOf('>');
             String pre = code.substring(0, end-3);
@@ -238,7 +246,7 @@ class _BlogDetail extends State<BlogDetail> {
             pre = code.substring(0, end);
             pre += 'https:';
             code = pre + code.substring(end);
-            print(code);
+//            print(code);
             blogWidget.add(
               HtmlWidget(
                 code,
@@ -249,7 +257,7 @@ class _BlogDetail extends State<BlogDetail> {
           else{
             if(code.contains('bilibili')){
               String url = code.split('\"')[1];
-              print(url);
+//              print(url);
               url = 'https:'+url;
               blogWidget.add(
                   RichText(
@@ -269,7 +277,7 @@ class _BlogDetail extends State<BlogDetail> {
                   )
               );
               String url = code.split('\"')[1];
-              print(url);
+//              print(url);
               if(code.contains('youtube') || code.contains('youtu')){
                 blogWidget.add(
                     RichText(
@@ -389,13 +397,13 @@ class _BlogDetail extends State<BlogDetail> {
         Row(
             children: <Widget>[
               Expanded(
-                  child: Divider(color: AppTheme.dark_grey,)
+                  child: Divider()
               ),
 
-              Text("Comments", style: AppTheme.title,),
+              Text("Comments", style: Theme.of(context).textTheme.bodyText1),
 
               Expanded(
-                  child: Divider(color: AppTheme.dark_grey,)
+                  child: Divider()
               ),
             ]
         )
@@ -450,6 +458,8 @@ class _BlogDetail extends State<BlogDetail> {
         userID = snap.uid;
     });
 
+    print(userID);
+
     blogData = Map();
     await Firestore.instance.collection('blogs').document(widget.blogID).get().then((snap) {
       blogData = snap.data;
@@ -479,12 +489,12 @@ class _BlogDetail extends State<BlogDetail> {
               wechatThumbnailUrl = blogData['cover'];
             }
             return Scaffold(
-                backgroundColor: AppTheme.nearlyWhite,
+                backgroundColor: Theme.of(context).primaryColor,
                 appBar: AppBar(
 //                  brightness: Brightness.dark,
-                  title: Text('Blog正文', style: TextStyle(color: Colors.black),),
+                  title: Text('Blog正文'),
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+                    icon: Icon(Icons.arrow_back_ios),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -506,15 +516,12 @@ class _BlogDetail extends State<BlogDetail> {
 //                      ),
 //                    ),
 //                  ],
-                  backgroundColor: AppTheme.white,
-                  iconTheme: IconThemeData(color: Colors.white),
+//                  iconTheme: IconThemeData(color: Colors.white),
                 ),
                 floatingActionButton: showFloatingAction ? BlogFloatingButton(
                   state: this,
                   userID: userID,
                   blogID: widget.blogID,
-                  wechatDescription: wechatDescription,
-                  wechatThumbnailUrl: wechatThumbnailUrl,
                 ) : Container(),
                 resizeToAvoidBottomPadding: false,
                 body: SingleChildScrollView(
@@ -532,10 +539,10 @@ class _BlogDetail extends State<BlogDetail> {
           else {
             return Scaffold(
                 appBar: AppBar(
-                  backgroundColor: AppTheme.white,
                 ),
+                backgroundColor: Theme.of(context).primaryColor,
                 body: Center(
-                  child: Text('Loadding Blog'),
+                  child: Text('Loading Blog'),
                 )
             );
           }
@@ -551,15 +558,11 @@ class BlogFloatingButton extends StatefulWidget {
     @required this.state,
     @required this.userID,
     @required this.blogID,
-    @required this.wechatThumbnailUrl,
-    @required this.wechatDescription
   }) : super(key : key);
 
   final _BlogDetail state;
   final String userID;
   final String blogID;
-  final String wechatThumbnailUrl;
-  final String wechatDescription;
   
   _BlogFloatingButtonState createState() => _BlogFloatingButtonState();
 }
@@ -570,7 +573,7 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
     var shareSheetController = showModalBottomSheet(
         context: context,
         builder: (context) => Container(
-          color: AppTheme.nearlyWhite,
+          color: Theme.of(context).primaryColorLight,
           height: 200,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -578,23 +581,23 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(top: 8, bottom: 16),
-                child: Text('分享至', style: AppTheme.body1),
+                child: Text('分享至', style: Theme.of(context).textTheme.bodyText1),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Flexible(
                     flex: 2,
                     child: Container(
-                        height: 80,
+                        height: 60,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).primaryColor,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: IconButton(
                             icon: Icon(Icons.people,),
-                            iconSize: 50,
+                            iconSize: 40,
                             onPressed: () {
                               Navigator.push<dynamic>(
                                 context,
@@ -608,25 +611,54 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
                     ),
                   ),
                   Flexible(
-                    flex: 1,
+                    flex: 2,
                     child: Container(
-                      height: 80,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipRRect(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(160.0)),
+                        child: InkWell(
+                          child: Image.asset('assets/icons/wechat.png', fit: BoxFit.cover,),
+                          onTap: () {
+                            shareToWeChat(
+                              WeChatShareWebPageModel(
+                                "https://freetitle.us/blogdetail?id=${widget.blogID}",
+                                title: blog['title'],
+                                description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                              )
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 60,
                       decoration: BoxDecoration(
                         color: Colors.black,
                         shape: BoxShape.circle,
                       ),
                       child: ClipRRect(
                           borderRadius:
-                          const BorderRadius.all(Radius.circular(80.0)),
+                          const BorderRadius.all(Radius.circular(160.0)),
                           child: InkWell(
-                            child: Image.asset('assets/icons/wechat.png', fit: BoxFit.fill,),
+                            child: Image.asset('assets/icons/wechat_timeline.png', fit: BoxFit.cover,),
                             onTap: () {
-                              shareToWeChat(WeChatShareWebPageModel(
-                                "https://freetitle.us/blogdetail?id=${widget.blogID}",
-                                title: blog['title'],
-                                description: widget.wechatDescription != null ? widget.wechatDescription : "点击阅读全文",
-                                thumbnail: widget.wechatThumbnailUrl != null ? WeChatImage.network(widget.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
-                              ));
+                              shareToWeChat(
+                                  WeChatShareWebPageModel(
+                                    "https://freetitle.us/blogdetail?id=${widget.blogID}",
+                                    title: blog['title'],
+                                    scene: WeChatScene.TIMELINE,
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                  ));
                             },
                           )
                       ),
@@ -635,15 +667,42 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
                   Flexible(
                     flex: 2,
                     child: Container(
-                      height: 80,
+                      height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipRRect(
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(160.0)),
+                          child: InkWell(
+                            child: Image.asset('assets/icons/wechat_favorite.png', fit: BoxFit.cover,),
+                            onTap: () {
+                              shareToWeChat(
+                                  WeChatShareWebPageModel(
+                                    "https://freetitle.us/blogdetail?id=${widget.blogID}",
+                                    title: blog['title'],
+                                    scene: WeChatScene.FAVORITE,
+                                    description: widget.state.wechatDescription != null ? widget.state.wechatDescription : "点击阅读全文",
+                                    thumbnail: widget.state.wechatThumbnailUrl != null ? WeChatImage.network(widget.state.wechatThumbnailUrl) : WeChatImage.network('https://freetitle.us/static/media/background_bw.b784d709.png'),
+                                  ));
+                            },
+                          )
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: IconButton(
                           icon: Icon(CupertinoIcons.share,),
-                          iconSize: 50,
+                          iconSize: 40,
                           onPressed: () {
                             Share.share('请看博客${blog['title']}，点击https://freetitle.us/blogdetail?id=${widget.blogID}', subject: 'Look at this')
                                 .catchError((e) {
@@ -659,7 +718,17 @@ class _BlogFloatingButtonState extends State<BlogFloatingButton> {
               Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: InkWell(
-                  child: Text('取消'),
+                  child: Container(
+                    width: 60,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                      color: AppTheme.primary,
+                    ),
+                    child: Center(
+                      child: Text('取消', style: TextStyle(color: AppTheme.white),)
+                    ),
+                  ),
                   onTap: () {
                     Navigator.of(context).pop();
                   },

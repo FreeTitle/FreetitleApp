@@ -23,7 +23,7 @@ class UserCard extends StatelessWidget{
           left: 24, right: 24, top: 16, bottom: 18),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.white,
+          color: Theme.of(context).primaryColorDark,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(8.0),
               bottomLeft: Radius.circular(8.0),
@@ -57,7 +57,6 @@ class UserCard extends StatelessWidget{
                               userData['displayName'].length > 15 ? userData['displayName'].substring(0,15)+'...' : userData['displayName'],
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.grey,
                                 fontSize: 24,
                               ),
                             ),
@@ -94,13 +93,6 @@ class UserCard extends StatelessWidget{
                                         child: Text(
                                           'Coins',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontFamily: AppTheme.fontName,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 16,
-                                            letterSpacing: -0.1,
-                                            color: AppTheme.grey.withOpacity(0.5),
-                                          ),
                                         ),
                                       ),
                                       Row(
@@ -123,13 +115,7 @@ class UserCard extends StatelessWidget{
                                             child: Text(
                                               userData['coins'] != null ? userData['coins'].toString() : '0',
                                               textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontFamily: AppTheme.fontName,
-                                                fontWeight:
-                                                FontWeight.w600,
-                                                fontSize: 16,
-                                                color: AppTheme.darkerText,
-                                              ),
+                                              style: Theme.of(context).textTheme.bodyText1,
                                             ),
                                           ),
                                         ],
@@ -166,13 +152,7 @@ class UserCard extends StatelessWidget{
                                         child: Text(
                                           'Campus',
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontFamily: AppTheme.fontName,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 16,
-                                            letterSpacing: -0.1,
-                                            color: AppTheme.grey.withOpacity(0.5),
-                                          ),
+
                                         ),
                                       ),
                                       Padding(
@@ -182,13 +162,7 @@ class UserCard extends StatelessWidget{
                                         child: Text(
                                           userData['campus'] != null ? userData['campus'].toString() : '',
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            fontFamily: AppTheme.fontName,
-                                            fontWeight:
-                                            FontWeight.w600,
-                                            fontSize: 16,
-                                            color: AppTheme.darkerText,
-                                          ),
+                                          style: Theme.of(context).textTheme.bodyText1
                                         ),
                                       ),
                                     ],
@@ -222,14 +196,7 @@ class UserCard extends StatelessWidget{
                                         padding: EdgeInsets.only(left: 4, bottom: 4),
                                         child: Text(
                                           'Info',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontFamily: AppTheme.fontName,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 16,
-                                            letterSpacing: -0.1,
-                                            color: AppTheme.grey.withOpacity(0.5),
-                                          ),
+                                          textAlign: TextAlign.center
                                         ),
                                       ),
                                       Padding(
@@ -239,13 +206,7 @@ class UserCard extends StatelessWidget{
                                         child: Text(
                                           userData['statement'] != null ? userData['statement'].toString() : 'Nothing',
                                           textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            fontFamily: AppTheme.fontName,
-                                            fontWeight:
-                                            FontWeight.w600,
-                                            fontSize: 16,
-                                            color: AppTheme.darkerText,
-                                          ),
+                                          style: Theme.of(context).textTheme.bodyText1
                                         ),
                                       ),
                                     ],
@@ -348,14 +309,7 @@ class UserCard extends StatelessWidget{
                       children: <Widget>[
                         Text(
                           'Blogs',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: AppTheme.fontName,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            letterSpacing: -0.2,
-                            color: AppTheme.darkText,
-                          ),
+                          textAlign: TextAlign.center
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
@@ -391,12 +345,7 @@ class UserCard extends StatelessWidget{
                           child: Text(
                             userData['blogs'] != null ? userData['blogs'].length.toString() : '0',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: AppTheme.fontName,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
-                              color: AppTheme.grey.withOpacity(0.5),
-                            ),
+                            style: Theme.of(context).textTheme.bodyText1
                           ),
                         ),
                       ],
@@ -413,14 +362,7 @@ class UserCard extends StatelessWidget{
                           children: <Widget>[
                             Text(
                               'Missions',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: AppTheme.fontName,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                letterSpacing: -0.2,
-                                color: AppTheme.darkText,
-                              ),
+                              textAlign: TextAlign.center
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
@@ -456,13 +398,7 @@ class UserCard extends StatelessWidget{
                               child: Text(
                                 userData['missions'] != null ? userData['missions'].length.toString() : '0',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: AppTheme.fontName,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                  color: AppTheme.grey
-                                      .withOpacity(0.5),
-                                ),
+                                style: Theme.of(context).textTheme.bodyText1
                               ),
                             ),
                           ],
@@ -481,13 +417,6 @@ class UserCard extends StatelessWidget{
                           children: <Widget>[
                             Text(
                               'Bookmarks',
-                              style: TextStyle(
-                                fontFamily: AppTheme.fontName,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                letterSpacing: -0.2,
-                                color: AppTheme.darkText,
-                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(
@@ -524,13 +453,7 @@ class UserCard extends StatelessWidget{
                               child: Text(
                                 userData['bookmarks'] != null ? userData['bookmarks'].length.toString() : '0',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: AppTheme.fontName,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                  color: AppTheme.grey
-                                      .withOpacity(0.5),
-                                ),
+                                style: Theme.of(context).textTheme.bodyText1
                               ),
                             ),
                           ],
