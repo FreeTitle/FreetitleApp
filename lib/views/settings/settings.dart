@@ -4,6 +4,7 @@ import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/views/reset_email/reset_email.dart';
 import 'package:freetitle/views/reset_password/reset_password.dart';
+import 'package:freetitle/views/settings/about_us.dart';
 
 class SettingTab extends StatelessWidget{
   const SettingTab(
@@ -71,6 +72,14 @@ class _SettingsPageState extends State<SettingsPage> {
       }),
     );
   }
+  void getAboutUsPage() {
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return AboutUsPage();
+      }),
+    );
+  }
 
 
   @override
@@ -78,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
     List<Widget> settingsList = List();
     settingsList.add(SettingTab(text: "修改账号", callback: getAccountSetting,));
     settingsList.add(SettingTab(text: '推送设置', callback: () {}));
-    settingsList.add(SettingTab(text: 'About Us', callback: () {}));
+    settingsList.add(SettingTab(text: 'About Us', callback: getAboutUsPage,));
     settingsList.add(SizedBox(height: 30,));
     settingsList.add(Padding(
       padding: EdgeInsets.all(8),
