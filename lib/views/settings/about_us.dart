@@ -2,21 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 
 class AboutUsPage extends StatelessWidget {
-  final intro =
-      'FreeTitle浮樂态度是一个留学生的艺术交流平台。我们来自北美各大院校，旨在为所有热爱艺术、设计、电影、戏剧、摄影等泛艺术专业的朋友提供了一个自由的创作空间。在这里，我们不仅可以分享自己的作品，还可以发起自己的项目招募志同道合的小伙伴。';
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
         title: Text('About Us'),
       ),
       body: Column(
@@ -25,7 +15,7 @@ class AboutUsPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(
                 vertical: screenSize.height / 15,
                 horizontal: screenSize.width / 10),
-            child: Text(intro,
+            child: Text('FreeTitle浮樂态度是一个留学生的艺术交流平台。我们来自北美各大院校，旨在为所有热爱艺术、设计、电影、戏剧、摄影等泛艺术专业的朋友提供了一个自由的创作空间。在这里，我们不仅可以分享自己的作品，还可以发起自己的项目招募志同道合的小伙伴。',
                 textAlign: TextAlign.justify,
                 style: Theme.of(context)
                     .textTheme
@@ -72,13 +62,6 @@ class AboutUsPage extends StatelessWidget {
                                 .textTheme
                                 .bodyText1
                                 .merge(TextStyle(color: Colors.grey)),
-                            // style: TextStyle(
-                            //   // grey body text 1
-                            //   fontWeight: FontWeight.w400,
-                            //   fontSize: 14,
-                            //   letterSpacing: -0.05,
-                            //   color: Colors.black45,
-                            // )
                           )),
                       Padding(
                         padding: EdgeInsets.only(top: 15.0),
@@ -100,13 +83,6 @@ class AboutUsPage extends StatelessWidget {
                                 .textTheme
                                 .bodyText1
                                 .merge(TextStyle(color: Colors.grey)),
-                            // style: TextStyle(
-                            //   // grey body text 1
-                            //   fontWeight: FontWeight.w400,
-                            //   fontSize: 14,
-                            //   letterSpacing: -0.05,
-                            //   color: Colors.black45,
-                            // )
                           )),
                     ]))),
             Container(
