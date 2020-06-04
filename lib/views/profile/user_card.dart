@@ -21,20 +21,20 @@ class UserCard extends StatefulWidget {
 }
 
 class _UserCardState extends State<UserCard> {
+  bool isEditButtonPressed = true;
+  double editButtonRightPos = 24;
+  double editButtonTopPos = 16;
   Widget build(BuildContext context) {
-    bool _first = true;
-    double _right = 24;
-    double _top = 16;
     final userData = widget.userData;
     final userID = widget.userID;
     return Stack(children: <Widget>[
       AnimatedPositioned(
           duration: const Duration(milliseconds: 500),
-          right: _right,
-          top: _top,
+          right: editButtonRightPos,
+          top: editButtonTopPos,
           child: InkWell(
               onTap: () {
-                if (_first == false) {
+                if (isEditButtonPressed == false) {
                   Navigator.push<dynamic>(context,
                       MaterialPageRoute(builder: (context) {
                     return ResetProfileScreen(
@@ -48,10 +48,9 @@ class _UserCardState extends State<UserCard> {
                   }));
                 } else {
                   setState(() {
-                    _top = 40;
-                    _right = 13;
-                    _first = false;
-                    //
+                    editButtonTopPos = 10;
+                    editButtonRightPos = 13;
+                    isEditButtonPressed = false;
                   });
                 }
               },
@@ -62,13 +61,21 @@ class _UserCardState extends State<UserCard> {
                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
                   color: AppTheme.primary,
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                  ),
-                ),
-              ))),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 5,
+                      right: 5,
+                      child: Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
+                )
+              )
+          )
+      ),
       Padding(
         padding:
             const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 18),
@@ -79,7 +86,7 @@ class _UserCardState extends State<UserCard> {
                 topLeft: Radius.circular(8.0),
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0),
-                topRight: Radius.circular(68.0)),
+                topRight: Radius.circular(100.0)),
             boxShadow: <BoxShadow>[
               BoxShadow(
                   color: AppTheme.grey.withOpacity(0.2),
