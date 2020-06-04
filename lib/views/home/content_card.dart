@@ -28,8 +28,8 @@ class _AnimatedContentCardState extends State<AnimatedContentCard>{
   Widget build(BuildContext context) {
     final animation = widget.animation;
     final animationController = widget.animationController;
-    final blogData = widget.contentData;
-    final blogID = widget.contentID;
+    final contentData = widget.contentData;
+    final contentID = widget.contentID;
 
     return AnimatedBuilder(
       animation: animationController,
@@ -40,7 +40,7 @@ class _AnimatedContentCardState extends State<AnimatedContentCard>{
               transform: Matrix4.translationValues(
                   0.0, 50 * (1.0 - animation.value), 0.0
               ),
-              child: ContentCard(contentID: blogID, contentData: blogData, contentType: widget.contentType,)
+              child: ContentCard(contentID: contentID, contentData: contentData, contentType: widget.contentType,)
           ),
         );
       },
@@ -83,12 +83,12 @@ class _ContentCardState extends State<ContentCard>{
 
   Image getImage(){
     Image img;
-    final blogData = widget.contentData;
-    if (blogData.containsKey('cover')){
-      img = Image.network(blogData['cover'], fit: BoxFit.cover,);
+    final contentData = widget.contentData;
+    if (contentData.containsKey('cover')){
+      img = Image.network(contentData['cover'], fit: BoxFit.cover,);
     }
-    else if(blogData['article'] != null){
-      for(var block in blogData['article']['blocks']){
+    else if(contentData['article'] != null){
+      for(var block in contentData['article']['blocks']){
         if(block['type'] == "image"){
           if(block['data']['file']['url'] != null){
             img = Image.network(block['data']['file']['url'], fit: BoxFit.cover,);

@@ -297,7 +297,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername, ),
+          builder: (BuildContext context) => ChatScreen(chatID: chatID, otherUsername: otherUsername, ),
         )
     );
   }
@@ -361,7 +361,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername,),
+          builder: (BuildContext context) => ChatScreen(chatID: chatID, otherUsername: otherUsername,),
         )
     );
   }

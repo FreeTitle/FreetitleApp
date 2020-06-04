@@ -57,7 +57,7 @@ class ChatCard extends StatelessWidget {
             Navigator.push<dynamic>(
                 context,
                 MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: username, indexState: indexState, stream: stream,),
+                  builder: (BuildContext context) => ChatScreen(chatID: chatID, otherUsername: username, indexState: indexState, stream: stream,),
                 )
             );
           },
