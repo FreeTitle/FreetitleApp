@@ -6,6 +6,7 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/chat/chat_list_view.dart';
 import 'package:freetitle/views/mission/mission_detail.dart';
+import 'package:freetitle/views/profile/my_profile.dart';
 import 'package:freetitle/views/profile/team_profile.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';

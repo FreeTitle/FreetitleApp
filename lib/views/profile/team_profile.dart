@@ -17,7 +17,6 @@ class MyViewState extends State<MyView> {
     Tab(text: '成员管理'),
   ];
   var userType = "团队";
-
   List userName = [
     "AH",
     "MC",
@@ -34,6 +33,8 @@ class MyViewState extends State<MyView> {
     "MC",
     "KD",
     "AL",
+    "AH",
+    "MC",
   ];
   List<Widget> buildAvatarList(userName) {
     List<Widget> avatarList = List();
@@ -63,12 +64,23 @@ class MyViewState extends State<MyView> {
         Expanded(
           child: FittedBox(
             fit: BoxFit.fill, // otherwise the logo will be tiny
-            child: IconButton(
-              color: Colors.grey,
-              hoverColor: Colors.black38,
-              highlightColor: Colors.black,
-              icon: Icon(Icons.add),
-              onPressed: () {},
+            child: new Material(
+              type: MaterialType.transparency,
+              child: Ink(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[350], width: 5.0),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  iconSize: 50,
+                  color: Colors.grey,
+                  highlightColor: Colors.grey,
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    print("add clicked");
+                  },
+                ),
+              ),
             ),
           ),
         ),
@@ -86,16 +98,22 @@ class MyViewState extends State<MyView> {
         Expanded(
           child: FittedBox(
             fit: BoxFit.fill, // otherwise the logo will be tiny
-            child: Ink(
-              decoration: ShapeDecoration(
-                color: Colors.blue,
-                shape: CircleBorder(),
-              ),
-              child: IconButton(
-                color: Colors.grey,
-                hoverColor: Colors.black38,
-                icon: Icon(Icons.remove),
-                onPressed: () {},
+            child: new Material(
+              type: MaterialType.transparency,
+              child: Ink(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[350], width: 5.0),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  iconSize: 50,
+                  color: Colors.grey,
+                  highlightColor: Colors.grey,
+                  icon: Icon(Icons.remove),
+                  onPressed: () {
+                    print("remove clicked");
+                  },
+                ),
               ),
             ),
           ),
@@ -115,6 +133,10 @@ class MyViewState extends State<MyView> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var avatarList = buildAvatarList(userName);
+    var factor = 13.0;
+    if (screenSize.height < 800) {
+      factor = 10.5;
+    }
     return DefaultTabController(
         length: 2,
         initialIndex: 1,
@@ -195,23 +217,24 @@ class MyViewState extends State<MyView> {
                             ],
                           ),
                           SizedBox(
-                            height: 10,
+                            height: 12,
                           ),
                           Flexible(
                             child: SizedBox(
                               child: GridView.count(
                                 physics: new NeverScrollableScrollPhysics(),
                                 crossAxisCount: 5,
-                                mainAxisSpacing: 5,
-                                crossAxisSpacing: 5,
+                                mainAxisSpacing: 4,
+                                crossAxisSpacing: 3,
                                 children: avatarList,
                               ),
                             ),
                           )
                         ],
                       ),
-                      height:
-                          (62 + (avatarList.length / 5).ceil().toDouble() * 69),
+                      height: 62 +
+                          (avatarList.length / 5).ceil().toDouble() *
+                              (screenSize.height / factor),
                       padding: EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: Theme.of(context).primaryColorDark,
