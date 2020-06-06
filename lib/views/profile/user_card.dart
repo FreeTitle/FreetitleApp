@@ -24,9 +24,11 @@ class _UserCardState extends State<UserCard> {
   bool isEditButtonPressed = true;
   double editButtonRightPos = 24;
   double editButtonTopPos = 16;
+
   Widget build(BuildContext context) {
     final userData = widget.userData;
     final userID = widget.userID;
+    String userType = userData['isGroupAccount'] != null ? '团队主页' : '个人主页';
     return Stack(children: <Widget>[
       AnimatedPositioned(
           duration: const Duration(milliseconds: 500),
@@ -46,6 +48,11 @@ class _UserCardState extends State<UserCard> {
                           userData['campus'] != null ? userData['campus'] : '',
                     );
                   }));
+                  setState(() {
+                    editButtonTopPos = 16;
+                    editButtonRightPos = 24;
+                    isEditButtonPressed = !isEditButtonPressed;
+                  });
                 } else {
                   setState(() {
                     editButtonTopPos = 10;
@@ -55,27 +62,24 @@ class _UserCardState extends State<UserCard> {
                 }
               },
               child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  color: AppTheme.primary,
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      top: 5,
-                      right: 5,
-                      child: Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                )
-              )
-          )
-      ),
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    color: AppTheme.primary,
+                  ),
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        top: 5,
+                        right: 5,
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  )))),
       Padding(
         padding:
             const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 18),
@@ -338,35 +342,28 @@ class _UserCardState extends State<UserCard> {
                             ),
                             InkWell(
                               onTap: () {
-                                Navigator.push<dynamic>(
-                                  context,
-                                  MaterialPageRoute(builder: (context) {
-                                    return ResetProfileScreen(
-                                      username: userData['displayName'],
-                                      statement: userData['statement'] != null
-                                          ? userData['statement'].toString()
-                                          : '',
-                                      campus: userData['campus'] != null
-                                          ? userData['campus']
-                                          : '',
-                                    );
-                                  }),
-                                );
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute<dynamic>(
+                                        builder: (BuildContext context) =>
+                                            Profile(
+                                              userID: userID,
+                                              isMyProfile: true,
+                                            )));
                               },
                               child: Container(
-                                width: 60,
-                                height: 30,
+                                width: 130,
+                                height: 50,
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8.0)),
-                                  color: AppTheme.primary,
-                                ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    border: Border.all(color: AppTheme.primary)
+                                    // color: AppTheme.primary.withOpacity(0.2)
+                                    ),
                                 child: Center(
-                                  child: Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                    child: Text(userType,
+                                        style: TextStyle(
+                                            color: AppTheme.primary))),
                               ),
                             )
                           ],
