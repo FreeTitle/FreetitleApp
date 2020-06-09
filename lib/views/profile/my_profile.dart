@@ -59,35 +59,11 @@ class _MyProfile extends State<MyProfile> {
       physics: ClampingScrollPhysics(),
     );
   }
-
-
+  
   @override
   Widget build(BuildContext context) {
     final userID = widget.userID;
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-//          brightness: Brightness.dark,
-          title: Text('我'),
-          actions: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: IconButton(
-                icon: Icon(
-                  Icons.settings,
-                ),
-                onPressed: () {
-                  Navigator.push<dynamic>(
-                    context,
-                    MaterialPageRoute<dynamic>(
-                      builder: (BuildContext context) => SettingsPage(),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
         backgroundColor: Theme.of(context).primaryColor,
         body: StreamBuilder<DocumentSnapshot>(
           stream: Firestore.instance.collection('users').document(userID).snapshots(),

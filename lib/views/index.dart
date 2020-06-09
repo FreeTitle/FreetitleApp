@@ -7,6 +7,7 @@ import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/chat/chat_list_view.dart';
 import 'package:freetitle/views/mission/mission_detail.dart';
 import 'package:freetitle/views/profile/my_profile.dart';
+import 'package:freetitle/views/profile/team_profile.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
@@ -60,7 +61,7 @@ class _IndexPageState extends State<IndexPage> {
       Home(),
       ChatListScreen(indexState: this, stream: streamController.stream,),
       SearchView(),
-      GetMyProfile(),
+      MyView(),
     ];
 
     final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
