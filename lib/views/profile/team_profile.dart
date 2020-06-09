@@ -185,7 +185,7 @@ class MyViewState extends State<MyView> {
     }
     groupList.add(
       Container(
-        padding: EdgeInsets.only(bottom: 115, top: 5, left: 10, right: 10),
+        padding: EdgeInsets.only(bottom: 96, top: 5, left: 5, right: 5),
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 10),
           height: 10,
@@ -195,11 +195,10 @@ class MyViewState extends State<MyView> {
               Spacer(),
               Material(
                 type: MaterialType.transparency,
-              child: IconButton(
-                  alignment: Alignment.centerRight,
+                child: InkWell(
                   highlightColor: Colors.transparent,
-                  icon: Icon(Icons.keyboard_arrow_right),
-                  onPressed: () {},
+                  child: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {},
                 ),
               ),
             ],
@@ -401,7 +400,7 @@ class MyViewState extends State<MyView> {
                     Container(
                       width: screenSize.width,
                       height: 400,
-                      padding: EdgeInsets.symmetric(horizontal: 15),
+                      padding: EdgeInsets.symmetric(horizontal: 20),
                       child: SizedBox(
                         child: GridView.count(
                           physics: new NeverScrollableScrollPhysics(),

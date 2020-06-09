@@ -38,7 +38,7 @@ class MyGroupState extends State<MyGroup> {
             child: FittedBox(
               fit: BoxFit.fill, // otherwise the logo will be tiny
               child: CircleAvatar(
-                radius: 25,
+                radius: 14,
                 backgroundColor: Colors.orange[100],
                 child: Text(i),
               ),
@@ -91,29 +91,31 @@ class MyGroupState extends State<MyGroup> {
               ),
             ],
           ),
-          Row(
+          Container(
+          padding: EdgeInsets.symmetric(vertical: 5),
+          child: Row(
             children: <Widget>[
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(left: 8),
-                width: 100,
-                height: 50,
+                // width: 100,
+                height: 28,
                 child: RowSuper(
                   children: buildAvatarList(userName),
-                  innerDistance: -14.0,
+                  innerDistance: -12.0,
                 ),
               ),
               Spacer(),
               Material(
                 type: MaterialType.transparency,
-                child: IconButton(
-                  alignment: Alignment.centerRight,
+                child: InkWell(
                   highlightColor: Colors.transparent,
-                  icon: Icon(Icons.keyboard_arrow_right),
-                  onPressed: () {},
+                  child: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {},
                 ),
               ),
             ],
+          ),
           ),
           Padding(
             padding: EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 6),
@@ -143,7 +145,7 @@ class MyGroupState extends State<MyGroup> {
           ),
         ],
       ),
-      margin: EdgeInsets.only(left: 9, right: 9, top: 5),
+      margin: EdgeInsets.only(left: 5, right: 5, top: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorDark,
         borderRadius: BorderRadius.only(
