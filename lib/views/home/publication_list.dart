@@ -50,17 +50,20 @@ class _PublicationView extends State<PublicationView> with TickerProviderStateMi
         var contentType = widget.typeList[index];
         if(contentType == 'blog'){
           await Firestore.instance.collection('blogs').document(contentID).get().then((snap) {
-            contentList.add(snap.data);
+            if(snap.data != null)
+              contentList.add(snap.data);
           });
         }
         else if(contentType == 'mission'){
           await Firestore.instance.collection('missions').document(contentID).get().then((snap) {
-            contentList.add(snap.data);
+            if(snap.data != null)
+              contentList.add(snap.data);
           });
         }
         else if(contentType == 'publication'){
           await Firestore.instance.collection('publications').document(contentID).get().then((snap) {
-            contentList.add(snap.data);
+            if(snap.data != null)
+              contentList.add(snap.data);
           });
         }
       }

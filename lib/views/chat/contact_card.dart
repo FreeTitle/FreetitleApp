@@ -291,7 +291,7 @@ class _ContactCard extends State<ContactCard>{
                         child: ClipRRect(
                           borderRadius:
                           const BorderRadius.all(Radius.circular(80.0)),
-                          child: Image.network(widget.otherAvatar, fit: BoxFit.fill,),
+                          child: Image.network(widget.otherAvatar, fit: BoxFit.cover,),
                         ),
                       ),
                     ),
