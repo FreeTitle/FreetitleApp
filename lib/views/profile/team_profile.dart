@@ -185,7 +185,7 @@ class MyViewState extends State<MyView> {
     }
     groupList.add(
       Container(
-        padding: EdgeInsets.only(bottom: 120, top: 5, left: 10, right: 10),
+        padding: EdgeInsets.only(bottom: 115, top: 5, left: 10, right: 10),
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 10),
           height: 10,
