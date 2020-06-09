@@ -23,6 +23,9 @@ class MyGroupState extends State<MyGroup> {
   List userName = [
     "AH",
     "MC",
+    "AH",
+    "MC",
+    "MC",
   ];
   List<Widget> buildAvatarList(userName) {
     List<Widget> avatarList = List();
@@ -35,7 +38,7 @@ class MyGroupState extends State<MyGroup> {
             child: FittedBox(
               fit: BoxFit.fill, // otherwise the logo will be tiny
               child: CircleAvatar(
-                radius: 15,
+                radius: 25,
                 backgroundColor: Colors.orange[100],
                 child: Text(i),
               ),
@@ -91,19 +94,22 @@ class MyGroupState extends State<MyGroup> {
           Row(
             children: <Widget>[
               Container(
+                alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(left: 8),
-                width: 80,
-                height: 30,
+                width: 100,
+                height: 50,
                 child: RowSuper(
                   children: buildAvatarList(userName),
-                  innerDistance: -12.0,
+                  innerDistance: -14.0,
                 ),
               ),
               Spacer(),
               Material(
                 type: MaterialType.transparency,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_right),
+                  alignment: Alignment.centerRight,
+                  highlightColor: Colors.transparent,
+                  icon: Icon(Icons.keyboard_arrow_right),
                   onPressed: () {},
                 ),
               ),
@@ -137,7 +143,7 @@ class MyGroupState extends State<MyGroup> {
           ),
         ],
       ),
-      margin: EdgeInsets.only(left: 10, top: 10),
+      margin: EdgeInsets.only(left: 9, right: 9, top: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorDark,
         borderRadius: BorderRadius.only(

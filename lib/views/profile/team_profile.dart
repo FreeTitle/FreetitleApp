@@ -19,6 +19,38 @@ class MyViewState extends State<MyView> {
     Tab(text: '成员管理'),
   ];
   var userType = "团队";
+
+  /////----Start of dummy data----///
+  List groupNameList = ["摄影组", "后期组", "外场组"];
+  List groupMemberList = [
+    [
+      "AH",
+      "MC",
+      "KD",
+      "AL",
+      "TY",
+      "DT",
+    ],
+    [
+      "AH",
+      "MC",
+      "KD",
+      "AL",
+      "TY",
+      "DT",
+    ],
+    [
+      "AH",
+      "MC",
+      "KD",
+    ]
+  ];
+  List groupNotesList = [
+    "Purchase equipment before 11/1",
+    "None",
+    "Some other stuffs"
+  ];
+
   List userName = [
     "AH",
     "MC",
@@ -37,7 +69,15 @@ class MyViewState extends State<MyView> {
     "AL",
     "AH",
     "MC",
+    "AH",
+    "MC",
+    "KD",
+    "AL",
+    "TY",
+    "DT",
   ];
+
+  /////----End of dummy data----///
   List<Widget> buildAvatarList(userName) {
     List<Widget> avatarList = List();
     for (var i in userName) {
@@ -73,10 +113,10 @@ class MyViewState extends State<MyView> {
                 radius: Radius.circular(15),
                 strokeWidth: 3,
                 dashPattern: [10, 8],
-                color: Theme.of(context).highlightColor, 
+                color: Theme.of(context).highlightColor,
                 child: IconButton(
                   iconSize: 50,
-                  color: Theme.of(context).highlightColor, 
+                  color: Theme.of(context).highlightColor,
                   highlightColor: Colors.grey,
                   icon: Icon(Icons.add),
                   onPressed: () {
@@ -133,11 +173,62 @@ class MyViewState extends State<MyView> {
     return avatarList;
   }
 
+  // Builds the list for displaying department group info
+  List<Widget> buildGroupList(groupNameList, groupMemberList, groupNotesList) {
+    List<Widget> groupList = List();
+    for (int i = 0; i < groupNameList.length; i++) {
+      groupList.add(MyGroup(
+        groupName: groupNameList[i],
+        groupMember: groupMemberList[i],
+        groupNotes: groupNotesList[i],
+      ));
+    }
+    groupList.add(
+      Container(
+        padding: EdgeInsets.only(bottom: 120, top: 5, left: 10, right: 10),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          height: 10,
+          child: Row(
+            children: <Widget>[
+              Text("添加新的分组"),
+              Spacer(),
+              Material(
+                type: MaterialType.transparency,
+              child: IconButton(
+                  alignment: Alignment.centerRight,
+                  highlightColor: Colors.transparent,
+                  icon: Icon(Icons.keyboard_arrow_right),
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorDark,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(7.0),
+                bottomLeft: Radius.circular(7.0),
+                bottomRight: Radius.circular(7.0),
+                topRight: Radius.circular(7.0)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: AppTheme.grey.withOpacity(0.2),
+                  offset: Offset(1.1, 1.1),
+                  blurRadius: 10.0),
+            ],
+          ),
+        ),
+      ),
+    );
+    return groupList;
+  }
+
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var avatarList = buildAvatarList(userName);
-    var factor = 13.0;
+    var factor = 12.7;
     if (screenSize.height < 800) {
       factor = 10.5;
     }
@@ -183,7 +274,7 @@ class MyViewState extends State<MyView> {
                     child: Column(
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.only(left:25, right: 25, top: 25),
+                      padding: EdgeInsets.only(left: 25, right: 25, top: 25),
                       child: Container(
                         child: Column(
                           children: <Widget>[
@@ -225,22 +316,68 @@ class MyViewState extends State<MyView> {
                             SizedBox(
                               height: 12,
                             ),
-                            Flexible(
-                              child: SizedBox(
-                                child: GridView.count(
-                                  physics: new NeverScrollableScrollPhysics(),
-                                  crossAxisCount: 5,
-                                  mainAxisSpacing: 4,
-                                  crossAxisSpacing: 3,
-                                  children: avatarList,
+                            Container(
+                              height:
+                                  (avatarList.length / 5).ceil().toDouble() *
+                                      (screenSize.height / factor),
+                              child: Flexible(
+                                child: SizedBox(
+                                  child: GridView.count(
+                                    physics: new NeverScrollableScrollPhysics(),
+                                    crossAxisCount: 5,
+                                    mainAxisSpacing: 4,
+                                    crossAxisSpacing: 3,
+                                    children: avatarList,
+                                  ),
                                 ),
                               ),
-                            )
+                            ),
+                            SizedBox(
+                              height: 2,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
+                              child: Divider(
+                                thickness: 2,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.notifications,
+                                    color: Colors.grey[600],
+                                    semanticLabel: "notifications",
+                                  ),
+                                  Text(
+                                    "群公告",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Text(
+                                "群公告群公告群公告群公告群公告群公告群公告群公告群公告群公告群公告群公告群公告群公告群公告群公告",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
                           ],
                         ),
-                        height: 62 +
-                            (avatarList.length / 5).ceil().toDouble() *
-                                (screenSize.height / factor),
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Theme.of(context).primaryColorDark,
@@ -258,31 +395,22 @@ class MyViewState extends State<MyView> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 14,
+                    ),
                     Container(
-                    height: 300,
-                    width: screenSize.width,
-                    padding: EdgeInsets.symmetric(horizontal: 15),
+                      width: screenSize.width,
+                      height: 400,
+                      padding: EdgeInsets.symmetric(horizontal: 15),
                       child: SizedBox(
                         child: GridView.count(
                           physics: new NeverScrollableScrollPhysics(),
                           crossAxisCount: 2,
-                          mainAxisSpacing: 50,
-                          crossAxisSpacing: 20,
-                          childAspectRatio: 1.1,
-                          children: [
-                            MyGroup(
-                              groupName: "摄影组",
-                              groupMember: [
-                                "AH",
-                                "MC",
-                                "KD",
-                                "AL",
-                                "TY",
-                              ],
-                              groupNotes: "无",
-                            )
-                          ],
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 5,
+                          childAspectRatio: 1.15,
+                          children: buildGroupList(
+                              groupNameList, groupMemberList, groupNotesList),
                         ),
                       ),
                     ),
