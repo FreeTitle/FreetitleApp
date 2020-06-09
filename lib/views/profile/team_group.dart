@@ -38,7 +38,7 @@ class MyGroupState extends State<MyGroup> {
             child: FittedBox(
               fit: BoxFit.fill, // otherwise the logo will be tiny
               child: CircleAvatar(
-                radius: 14,
+                radius: 15,
                 backgroundColor: Colors.orange[100],
                 child: Text(i),
               ),
@@ -99,7 +99,7 @@ class MyGroupState extends State<MyGroup> {
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(left: 8),
                 // width: 100,
-                height: 28,
+                height: 30,
                 child: RowSuper(
                   children: buildAvatarList(userName),
                   innerDistance: -12.0,
@@ -118,7 +118,7 @@ class MyGroupState extends State<MyGroup> {
           ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 6),
+            padding: EdgeInsets.only(left: 8, right: 8, top: 3, bottom: 6),
             child: Divider(height: 2, color: Theme.of(context).accentColor),
           ),
           Container(

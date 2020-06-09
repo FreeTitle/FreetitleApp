@@ -187,21 +187,24 @@ class MyViewState extends State<MyView> {
       Container(
         padding: EdgeInsets.only(bottom: 96, top: 5, left: 5, right: 5),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10),
           height: 10,
-          child: Row(
-            children: <Widget>[
-              Text("添加新的分组"),
-              Spacer(),
-              Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  highlightColor: Colors.transparent,
-                  child: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: () {},
+              highlightColor: Colors.transparent,
+              child: 
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                children: <Widget>[
+                  Text("添加新的分组"),
+                  Spacer(),
+                  Icon(Icons.keyboard_arrow_right),
+                ],
               ),
-            ],
+              ),
+            ),
           ),
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColorDark,
