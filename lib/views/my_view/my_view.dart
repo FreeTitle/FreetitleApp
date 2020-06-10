@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:freetitle/views/profile/profile_blog_list_view.dart';
+import 'package:freetitle/views/profile/team_profile.dart';
 import 'package:freetitle/views/profile/title_view.dart';
 import 'package:freetitle/views/profile/user_card.dart';
 import 'package:flutter/services.dart';
@@ -11,8 +12,67 @@ import 'package:freetitle/views/profile/profile_mission_list_view.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/settings/settings.dart';
 
-class MyProfile extends StatefulWidget {
-  const MyProfile(
+class MyView extends StatefulWidget {
+  MyViewState createState() => MyViewState();
+}
+
+class MyViewState extends State<MyView> {
+  final List<Tab> myTabs = <Tab>[
+    Tab(text: '基本信息'),
+    Tab(text: '成员管理'),
+  ];
+  var userType = "团队";
+
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return DefaultTabController(
+        length: 2,
+        initialIndex: 0,
+        child: Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(userType),
+            actions: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.settings,
+                  ),
+                  onPressed: () {
+                    Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute<dynamic>(
+                        builder: (BuildContext context) => SettingsPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+            bottom: TabBar(
+              labelColor: AppTheme.primary,
+              unselectedLabelColor: Theme.of(context).accentColor,
+              indicatorColor: AppTheme.primary,
+              tabs: myTabs,
+            ),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              GetMyProfile(),
+              TeamManagement(),
+            ],
+          ),
+        ));
+  }
+}
+
+class MyInfo extends StatefulWidget {
+  const MyInfo(
   {Key key,
     this.userID,
     this.userName,
@@ -23,11 +83,11 @@ class MyProfile extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _MyProfile();
+    return _MyInfoState();
   }
 }
 
-class _MyProfile extends State<MyProfile> {
+class _MyInfoState extends State<MyInfo> {
 
   Widget buildProfileList(userData){
 
@@ -122,7 +182,7 @@ class _GetMyProfile extends State<GetMyProfile>{
         future: getData(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
           if(userID != null){
-            return MyProfile(userID: userID);
+            return MyInfo(userID: userID);
           }
           else{
             return Center(
