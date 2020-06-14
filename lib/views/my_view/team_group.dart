@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/views/settings/settings.dart';
 
@@ -6,42 +7,53 @@ import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/main.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 
-class MyGroup extends StatefulWidget {
-  const MyGroup({
+class SubGroup extends StatefulWidget {
+  const SubGroup({
     Key key,
     this.groupName,
     this.groupMember,
     this.groupNotes,
   }) : super(key: key);
-  MyGroupState createState() => MyGroupState();
+  SubGroupState createState() => SubGroupState();
   final groupName;
   final groupMember; // Can be greater than 5
   final groupNotes;
 }
 
-class MyGroupState extends State<MyGroup> {
-  List userName = [
-    "AH",
-    "MC",
-    "AH",
-    "MC",
-    "MC",
-  ];
-  List<Widget> buildAvatarList(userName) {
+class SubGroupState extends State<SubGroup> {
+
+  List avatarUrls;
+
+  Future<bool> getAvatar() async {
+    avatarUrls = List();
+    for(final uid in widget.groupMember){
+      await Firestore.instance.collection('users').document(uid).get().then((snap) {
+        if(snap.data != null){
+          avatarUrls.add(snap.data['avatarUrl']);
+        }
+      });
+    }
+    return true;
+  }
+
+
+  List<Widget> buildAvatarList(avatarUrls) {
     List<Widget> avatarList = List();
-    for (var i in userName) {
+    for (final avatarUrl in avatarUrls) {
       avatarList.add(
         Flex(
         direction: Axis.horizontal,
         children: <Widget>[
-          Expanded(
-            child: FittedBox(
-              fit: BoxFit.fill, // otherwise the logo will be tiny
-              child: CircleAvatar(
-                radius: 15,
-                backgroundColor: Colors.orange[100],
-                child: Text(i),
-              ),
+          Container(
+            height: 30,
+            width: 30,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+            ),
+            child: ClipRRect(
+              borderRadius:
+              const BorderRadius.all(Radius.circular(80.0)),
+              child: Image.network(avatarUrl, fit: BoxFit.cover,),
             ),
           ),
         ],
@@ -98,12 +110,21 @@ class MyGroupState extends State<MyGroup> {
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(left: 8),
-                // width: 100,
                 height: 30,
-                child: RowSuper(
-                  children: buildAvatarList(userName),
-                  innerDistance: -12.0,
-                ),
+                child: FutureBuilder<bool>(
+                  future: getAvatar(),
+                  builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+                    if(snapshot.connectionState == ConnectionState.done){
+                      return RowSuper(
+                        children: buildAvatarList(avatarUrls.length > 5 ? avatarUrls.sublist(0, 5) : avatarUrls),
+                        innerDistance: -12.0,
+                      );
+                    }
+                    else{
+                      return SizedBox();
+                    }
+                  },
+                )
               ),
               Spacer(),
               Material(
@@ -111,7 +132,9 @@ class MyGroupState extends State<MyGroup> {
                 child: InkWell(
                   highlightColor: Colors.transparent,
                   child: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
+                  onTap: () {
+
+                  },
                 ),
               ),
             ],

@@ -48,6 +48,7 @@ class _MyAppState extends State<MyApp> {
       child: Provider<UserRepository>.value(
         value: _userRepository,
         child: MaterialApp(
+          color: Theme.of(context).primaryColorDark,
           debugShowCheckedModeBanner: false,
           title: 'FreeTitle',
           theme: ThemeData(

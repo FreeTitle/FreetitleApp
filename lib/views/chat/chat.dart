@@ -15,9 +15,9 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-class Chat extends StatefulWidget{
+class ChatScreen extends StatefulWidget{
 
-  const Chat(
+  const ChatScreen(
   { Key key,
     @required this.chatID,
     @required this.otherUsername,
@@ -37,11 +37,11 @@ class Chat extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-    return _ChatState();
+    return _ChatScreenState();
   }
 }
 
-class _ChatState extends State<Chat> {
+class _ChatScreenState extends State<ChatScreen> {
 
   ChatUser user;
   String uid;
@@ -77,7 +77,8 @@ class _ChatState extends State<Chat> {
 
   @override
   void dispose() {
-    subscription.cancel();
+    if(subscription != null)
+      subscription.cancel();
     super.dispose();
   }
 
@@ -186,10 +187,10 @@ class _ChatState extends State<Chat> {
                             });
                             messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
                             saveLocalChat(messages);
-                            return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                            return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
                           }
                           else{
-                            return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                            return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
                           }
                       }
                     },
@@ -214,7 +215,7 @@ class _ChatState extends State<Chat> {
                         messages.add(message);
                       }
                     });
-                    return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                    return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
                   }
                   else{
                     return Center(
@@ -237,9 +238,9 @@ class _ChatState extends State<Chat> {
 }
 
 
-class ChatScreen extends StatefulWidget {
+class Chat extends StatefulWidget {
 
-  const ChatScreen(
+  const Chat(
   {Key key,
     this.chatID,
     this.user,
@@ -251,10 +252,10 @@ class ChatScreen extends StatefulWidget {
   final user;
   final avatar;
   final messages;
-  _ChatScreenState createState() => _ChatScreenState();
+  _ChatState createState() => _ChatState();
 }
 
-class _ChatScreenState extends State<ChatScreen>{
+class _ChatState extends State<Chat>{
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
 
   ScrollController _scrollController;
