@@ -392,7 +392,8 @@ class MyViewState extends State<MyView> {
                             BoxShadow(
                                 color: AppTheme.grey.withOpacity(0.2),
                                 offset: Offset(1.1, 1.1),
-                                blurRadius: 10.0),
+                                blurRadius: 10.0,
+                            ),
                           ],
                         ),
                       ),
