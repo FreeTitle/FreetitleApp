@@ -26,11 +26,11 @@ class AddRemovePage extends StatefulWidget {
 }
 
 class _AddRemovePage extends State<AddRemovePage> {
+  String isToggled;
   Algolia algolia = AlgoliaSearch.algolia;
-  bool unchecked = true;
   SharedPreferences sharedPref;
   List contactList;
-
+  int selected = 0;
   Future<bool> _getPlaceHolder;
 
   @override
@@ -49,8 +49,16 @@ class _AddRemovePage extends State<AddRemovePage> {
 
       if (jsonChats != null) {
         jsonChats.forEach((chat) {
+          print(json.decode(chat));
           contactList.add(json.decode(chat));
+
+          //var toggled = new Map();
+          //toggled["isToggled"] = false;
+          //contactList.add(toggled);
         });
+      }
+      for (var index = 0; index < contactList.length; index++) {
+        contactList[index][isToggled] = true;
       }
     });
     return true;
@@ -97,6 +105,25 @@ class _AddRemovePage extends State<AddRemovePage> {
 //        brightness: Brightness.dark,
 //        backgroundColor: AppTheme.appbarColor,
           title: Text('添加成员'),
+          actions: <Widget>[
+            Container(
+              width: 90,
+              padding: EdgeInsets.only(right: 20, bottom: 8, top: 13),
+              child: FloatingActionButton.extended(
+                  onPressed: () {
+                    print('确认');
+                  },
+                  backgroundColor: selected == 0 ? Colors.white : Colors.green,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                      side: selected == 0
+                          ? BorderSide(color: Colors.grey, width: 1.2)
+                          : BorderSide(color: Colors.transparent, width: 1.0)),
+                  label: Text('确认(' + selected.toString() + ')',
+                      style: TextStyle(
+                          color: selected == 0 ? Colors.grey : Colors.white))),
+            )
+          ],
         ),
         backgroundColor: Theme.of(context).primaryColor,
         body: FutureBuilder<bool>(
@@ -118,22 +145,33 @@ class _AddRemovePage extends State<AddRemovePage> {
                         return Expanded(
                             child: Row(children: <Widget>[
                           Container(
-                              width: 40,
-                              height: 40,
+                              width: 30,
+                              height: 30,
                               child: FloatingActionButton(
                                 onPressed: () {
                                   setState(() {
-                                    unchecked = !unchecked;
+                                    contactList[index][isToggled] =
+                                        !contactList[index][isToggled];
+                                    contactList[index][isToggled]
+                                        ? selected -= 1
+                                        : selected += 1;
                                   });
                                 },
                                 child: Icon(Icons.done,
-                                    color: unchecked
+                                    color: contactList[index][isToggled]
                                         ? Colors.transparent
                                         : Colors.white),
-                                backgroundColor:
-                                    unchecked ? Colors.white : Colors.green,
+                                backgroundColor: contactList[index][isToggled]
+                                    ? Colors.transparent
+                                    : Colors.green,
                                 elevation: 0.0,
                                 heroTag: null,
+                                shape: CircleBorder(
+                                    side: contactList[index][isToggled]
+                                        ? BorderSide(
+                                            color: Colors.grey, width: 1.0)
+                                        : BorderSide(
+                                            color: Colors.green, width: 1.0)),
                               )),
                           Expanded(
                               child: ContactCard(
@@ -153,21 +191,29 @@ class _AddRemovePage extends State<AddRemovePage> {
                       return Expanded(
                           child: Row(children: <Widget>[
                         Container(
-                            width: 40,
-                            height: 40,
+                            width: 30,
+                            height: 30,
                             child: FloatingActionButton(
                               onPressed: () {
                                 setState(() {
                                   result._check = !result._check;
+                                  result._check ? selected -= 1 : selected += 1;
                                 });
                               },
                               child: Icon(Icons.done,
                                   color: result._check
                                       ? Colors.transparent
                                       : Colors.white),
-                              backgroundColor:
-                                  result._check ? Colors.white : Colors.green,
+                              backgroundColor: result._check
+                                  ? Colors.transparent
+                                  : Colors.green,
                               elevation: 0.0,
+                              shape: CircleBorder(
+                                  side: result._check
+                                      ? BorderSide(
+                                          color: Colors.grey, width: 1.0)
+                                      : BorderSide(
+                                          color: Colors.green, width: 1.0)),
                               heroTag: null,
                             )),
                         Expanded(
