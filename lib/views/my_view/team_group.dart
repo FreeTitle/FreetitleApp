@@ -137,7 +137,7 @@ class SubGroupState extends State<SubGroup> {
                     Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
-                          builder: (BuildContext context) => GroupContent(),
+                          builder: (BuildContext context) => GroupContent(groupMember: widget.groupMember, groupName: widget.groupName),
                         )
                     );
                   },

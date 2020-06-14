@@ -1,20 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class GroupContent extends StatefulWidget {
+  const GroupContent({
+    this.groupMember,
+    this.groupName,
+  });
+
   GroupContentState createState() => GroupContentState();
+  final groupMember;
+  final groupName;
 }
 
-class GroupContentState extends State<GroupContent> {
-  var groupName = "摄影组";
-  List groupUserName_ = ["UN", "HG", "KK"];
 
-  List<Widget> buildUserList(groupUserName, groupUserURL) {
-    List<Widget> userList = List();
-    for (int i = 0; i < groupUserName.length; i++) {
+class GroupContentState extends State<GroupContent> {
+
+  List<String> avatarUrls;
+  List<String> displayNames;
+
+  Future<bool> getUser(userIDs) async {
+    displayNames = List();
+    avatarUrls = List();
+    for (final userID in userIDs) {
+      await Firestore.instance
+          .collection('users')
+          .document(userID)
+          .get()
+          .then((snap) {
+        if (snap.data != null) {
+          displayNames.add(snap.data['displayName']);
+          avatarUrls.add(snap.data['avatarUrl']);
+        }
+      });
+    }
+    return true;
+  }
+
+
+  List<Widget> userList;
+  List<Widget> buildUserList() {
+    userList = List();
+    for (int i = 0; i < displayNames.length; i++) {
       print(i);
-      print(groupUserName[i]);
+      print(displayNames[i]);
       userList.add(
         Column(
           children: <Widget>[
@@ -22,11 +53,22 @@ class GroupContentState extends State<GroupContent> {
               padding: EdgeInsets.symmetric(horizontal: 40),
               child: Row(
                 children: <Widget>[
-                  CircleAvatar(
-                    child: Text(groupUserName[i]),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipRRect(
+                      borderRadius:
+                      const BorderRadius.all(Radius.circular(80.0)),
+                      child: Image.network(avatarUrls[i], fit: BoxFit.cover,),
+                    ),
                   ),
                   SizedBox(width: 20),
-                  Text(groupUserName[i])
+                  Text(displayNames[i].length >= 18
+                  ? displayNames[i].substring(0, 18) + '...'
+                  : displayNames[i])
                 ],
               ),
             ),
@@ -56,7 +98,7 @@ class GroupContentState extends State<GroupContent> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(groupName),
+        title: Text(widget.groupName),
       ),
       body: Column(
         children: <Widget>[
@@ -158,8 +200,18 @@ class GroupContentState extends State<GroupContent> {
             ),
           ),
           Divider(color: Colors.black),
-          Column(
-            children: buildUserList(groupUserName_, null),
+          FutureBuilder<bool>(
+            future: getUser(widget.groupMember),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot){
+              if(snapshot.connectionState == ConnectionState.done){
+                return Column(
+                  children: buildUserList(),
+                );
+              }
+              else{
+                return SizedBox();
+              }
+            },
           ),
           SizedBox(height: 200),
           Container(
