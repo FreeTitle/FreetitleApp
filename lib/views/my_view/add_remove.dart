@@ -11,16 +11,18 @@ import 'package:freetitle/views/chat/chat_list_view.dart';
 import 'package:freetitle/views/chat/contact_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:freetitle/views/my_view/team_management.dart';
 
 class AddRemovePage extends StatefulWidget {
   const AddRemovePage({
     Key key,
-    this.sharedBlogID,
-    this.sharedMissionID,
+    this.userID,
+    this.userData,
   }) : super(key: key);
 
-  final String sharedBlogID;
-  final String sharedMissionID;
+  final String userID;
+  final String userData;
 
   _AddRemovePage createState() => _AddRemovePage();
 }
@@ -30,7 +32,7 @@ class _AddRemovePage extends State<AddRemovePage> {
   Algolia algolia = AlgoliaSearch.algolia;
   SharedPreferences sharedPref;
   List contactList;
-  int selected = 0;
+  List<String> userSelected = [];
   Future<bool> _getPlaceHolder;
 
   @override
@@ -111,17 +113,34 @@ class _AddRemovePage extends State<AddRemovePage> {
               padding: EdgeInsets.only(right: 20, bottom: 8, top: 13),
               child: FloatingActionButton.extended(
                   onPressed: () {
-                    print('确认');
+                    print(widget.userID);
+                    print(userSelected[0]);
+                    HttpsCallable addMemberToGroup = CloudFunctions.instance
+                        .getHttpsCallable(functionName: 'addMemberToGroup');
+                    dynamic resp = addMemberToGroup
+                        .call(<String, dynamic>{
+                          'groupID': widget.userID,
+                          'users': [
+                            {"uid": userSelected[0], "role": 'member'}
+                          ],
+                        })
+                        .then((value) => print("function called"))
+                        .catchError((err) {
+                          print('Got error $err');
+                        });
                   },
-                  backgroundColor: selected == 0 ? Colors.white : Colors.green,
+                  backgroundColor:
+                      userSelected == null ? Colors.white : Colors.green,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      side: selected == 0
+                      side: userSelected == null
                           ? BorderSide(color: Colors.grey, width: 1.2)
                           : BorderSide(color: Colors.transparent, width: 1.0)),
-                  label: Text('确认(' + selected.toString() + ')',
+                  label: Text('确认(' + userSelected.length.toString() + ')',
                       style: TextStyle(
-                          color: selected == 0 ? Colors.grey : Colors.white))),
+                          color: userSelected == null
+                              ? Colors.grey
+                              : Colors.white))),
             )
           ],
         ),
@@ -153,8 +172,10 @@ class _AddRemovePage extends State<AddRemovePage> {
                                     contactList[index][isToggled] =
                                         !contactList[index][isToggled];
                                     contactList[index][isToggled]
-                                        ? selected -= 1
-                                        : selected += 1;
+                                        ? userSelected.remove(
+                                            contactList[index]['otherUserID'])
+                                        : userSelected.add(
+                                            contactList[index]['otherUserID']);
                                   });
                                 },
                                 child: Icon(Icons.done,
@@ -178,8 +199,6 @@ class _AddRemovePage extends State<AddRemovePage> {
                             otherAvatar: contactList[index]['avatar'],
                             otherUserID: contactList[index]['otherUserID'],
                             otherUsername: contactList[index]['displayName'],
-                            sharedBlogID: widget.sharedBlogID,
-                            sharedMissionID: widget.sharedMissionID,
                           )),
                         ]));
                       },
@@ -197,7 +216,9 @@ class _AddRemovePage extends State<AddRemovePage> {
                               onPressed: () {
                                 setState(() {
                                   result._check = !result._check;
-                                  result._check ? selected -= 1 : selected += 1;
+                                  result._check
+                                      ? userSelected.remove(result.uid)
+                                      : userSelected.add(result.uid);
                                 });
                               },
                               child: Icon(Icons.done,
@@ -221,8 +242,6 @@ class _AddRemovePage extends State<AddRemovePage> {
                           otherAvatar: result.avatarUrl,
                           otherUsername: result.name,
                           otherUserID: result.uid,
-                          sharedBlogID: widget.sharedBlogID,
-                          sharedMissionID: widget.sharedMissionID,
                         ))
                       ]));
                     },

@@ -149,7 +149,7 @@ class _TeamManagementState extends State<TeamManagement> {
                     Navigator.push<dynamic>(
                       context,
                       MaterialPageRoute(builder: (context) {
-                        return AddRemovePage();
+                        return AddRemovePage(userID: widget.userID);
                       }),
                     );
                   },
