@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:freetitle/views/my_view/add_remove.dart';
+import 'package:freetitle/views/my_view/add_member.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:freetitle/views/settings/settings.dart';
-
+import 'remove_member.dart';
 import 'my_view.dart';
 import 'team_group.dart';
 
@@ -149,7 +149,7 @@ class _TeamManagementState extends State<TeamManagement> {
                     Navigator.push<dynamic>(
                       context,
                       MaterialPageRoute(builder: (context) {
-                        return AddRemovePage(userID: widget.userID);
+                        return AddMemberPage(userID: widget.userID);
                       }),
                     );
                   },
@@ -189,7 +189,17 @@ class _TeamManagementState extends State<TeamManagement> {
                   highlightColor: Colors.grey,
                   icon: Icon(Icons.remove),
                   onPressed: () {
-                    print("remove clicked");
+                    Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return RemoveMemberPage(
+                          userID: widget.userID,
+                          member: members,
+                          displayNames: displayNames,
+                          avatarUrls: avatarUrls,
+                        );
+                      }),
+                    );
                   },
                 ),
               ),

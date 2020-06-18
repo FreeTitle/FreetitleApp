@@ -14,24 +14,29 @@ import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:freetitle/views/my_view/team_management.dart';
 
-class AddRemovePage extends StatefulWidget {
-  const AddRemovePage({
+class RemoveMemberPage extends StatefulWidget {
+  const RemoveMemberPage({
     Key key,
     this.userID,
-    this.userData,
+    this.member,
+    this.displayNames,
+    this.avatarUrls,
   }) : super(key: key);
 
   final String userID;
-  final String userData;
+  final List member;
+  final List<String> displayNames;
+  final List<String> avatarUrls;
 
-  _AddRemovePage createState() => _AddRemovePage();
+  _RemoveMemberPage createState() => _RemoveMemberPage();
 }
 
-class _AddRemovePage extends State<AddRemovePage> {
+class _RemoveMemberPage extends State<RemoveMemberPage> {
   String isToggled;
+
   Algolia algolia = AlgoliaSearch.algolia;
   SharedPreferences sharedPref;
-  List contactList;
+  List<bool> contactList = [];
   List<String> userSelected = [];
   Future<bool> _getPlaceHolder;
 
@@ -43,26 +48,10 @@ class _AddRemovePage extends State<AddRemovePage> {
   }
 
   Future<bool> getPlaceHolder() async {
-    await SharedPreferences.getInstance().then((pref) {
-      sharedPref = pref;
-      List<String> jsonChats;
-      jsonChats = sharedPref.getStringList('chatlist');
-      contactList = List();
+    for (var index = 0; index <= widget.member.length; index++) {
+      contactList.add(true);
+    }
 
-      if (jsonChats != null) {
-        jsonChats.forEach((chat) {
-          print(json.decode(chat));
-          contactList.add(json.decode(chat));
-
-          //var toggled = new Map();
-          //toggled["isToggled"] = false;
-          //contactList.add(toggled);
-        });
-      }
-      for (var index = 0; index < contactList.length; index++) {
-        contactList[index][isToggled] = true;
-      }
-    });
     return true;
   }
 
@@ -102,43 +91,45 @@ class _AddRemovePage extends State<AddRemovePage> {
 
   @override
   Widget build(BuildContext context) {
+    var member = widget.member;
     return Scaffold(
         appBar: AppBar(
-//        brightness: Brightness.dark,
-//        backgroundColor: AppTheme.appbarColor,
-          title: Text('添加成员'),
+          title: Text('删除成员'),
           actions: <Widget>[
             Container(
               width: 90,
               padding: EdgeInsets.only(right: 20, bottom: 8, top: 13),
               child: FloatingActionButton.extended(
                   onPressed: () {
-                    print(widget.userID);
-                    print(userSelected[0]);
-                    HttpsCallable addMemberToGroup = CloudFunctions.instance
-                        .getHttpsCallable(functionName: 'addMemberToGroup');
-                    dynamic resp = addMemberToGroup
-                        .call(<String, dynamic>{
-                          'groupID': widget.userID,
-                          'users': [
-                            {"uid": userSelected[0], "role": 'member'}
-                          ],
-                        })
-                        .then((value) => print("function called"))
-                        .catchError((err) {
-                          print('Got error $err');
-                        });
+                    userSelected.forEach((element) {
+                      HttpsCallable addMemberToGroup = CloudFunctions.instance
+                          .getHttpsCallable(functionName: 'addMemberToGroup');
+                      dynamic resp = addMemberToGroup
+                          .call(<String, dynamic>{
+                            'groupID': widget.userID,
+                            'users': [
+                              {"uid": element, "role": 'member'}
+                            ],
+                          })
+                          .then((value) => print("function called"))
+                          .catchError((err) {
+                            print('Got error $err');
+                          });
+                    });
+                    setState(() {
+                      userSelected = [];
+                    });
                   },
                   backgroundColor:
-                      userSelected == null ? Colors.white : Colors.green,
+                      userSelected.length == 0 ? Colors.white : Colors.green,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      side: userSelected == null
+                      side: userSelected.length == 0
                           ? BorderSide(color: Colors.grey, width: 1.2)
                           : BorderSide(color: Colors.transparent, width: 1.0)),
                   label: Text('确认(' + userSelected.length.toString() + ')',
                       style: TextStyle(
-                          color: userSelected == null
+                          color: userSelected.length == 0
                               ? Colors.grey
                               : Colors.white))),
             )
@@ -156,11 +147,14 @@ class _AddRemovePage extends State<AddRemovePage> {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: SearchBar<ContactSearchResult>(
                     onSearch: searchContact,
-                    hintText: 'Search by user name',
+                    hintText: 'Remove by user name',
                     placeHolder: ListView.builder(
-                      itemCount: contactList.length,
+                      itemCount: member.length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
+                        print(contactList);
+                        print(member);
+                        print(widget.displayNames);
                         return Expanded(
                             child: Row(children: <Widget>[
                           Container(
@@ -169,26 +163,23 @@ class _AddRemovePage extends State<AddRemovePage> {
                               child: FloatingActionButton(
                                 onPressed: () {
                                   setState(() {
-                                    contactList[index][isToggled] =
-                                        !contactList[index][isToggled];
-                                    contactList[index][isToggled]
-                                        ? userSelected.remove(
-                                            contactList[index]['otherUserID'])
-                                        : userSelected.add(
-                                            contactList[index]['otherUserID']);
+                                    contactList[index] = !contactList[index];
+                                    contactList[index]
+                                        ? userSelected.remove(member[index])
+                                        : userSelected.add(member[index]);
                                   });
                                 },
                                 child: Icon(Icons.done,
-                                    color: contactList[index][isToggled]
+                                    color: contactList[index]
                                         ? Colors.transparent
                                         : Colors.white),
-                                backgroundColor: contactList[index][isToggled]
+                                backgroundColor: contactList[index]
                                     ? Colors.transparent
                                     : Colors.green,
                                 elevation: 0.0,
                                 heroTag: null,
                                 shape: CircleBorder(
-                                    side: contactList[index][isToggled]
+                                    side: contactList[index]
                                         ? BorderSide(
                                             color: Colors.grey, width: 1.0)
                                         : BorderSide(
@@ -196,9 +187,9 @@ class _AddRemovePage extends State<AddRemovePage> {
                               )),
                           Expanded(
                               child: ContactCard(
-                            otherAvatar: contactList[index]['avatar'],
-                            otherUserID: contactList[index]['otherUserID'],
-                            otherUsername: contactList[index]['displayName'],
+                            otherAvatar: widget.avatarUrls[index],
+                            otherUserID: member[index],
+                            otherUsername: widget.displayNames[index],
                           )),
                         ]));
                       },
