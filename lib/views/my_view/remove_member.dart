@@ -32,11 +32,9 @@ class RemoveMemberPage extends StatefulWidget {
 }
 
 class _RemoveMemberPage extends State<RemoveMemberPage> {
-  String isToggled;
-
   Algolia algolia = AlgoliaSearch.algolia;
   SharedPreferences sharedPref;
-  List<bool> contactList = [];
+  List contactList = [];
   List<String> userSelected = [];
   Future<bool> _getPlaceHolder;
 
@@ -49,7 +47,12 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
 
   Future<bool> getPlaceHolder() async {
     for (var index = 0; index <= widget.member.length; index++) {
-      contactList.add(true);
+      contactList.add({
+        'avatar': widget.avatarUrls[index],
+        'displayName': widget.displayNames[index],
+        'UserID': widget.member[index],
+        'isToggled': true,
+      });
     }
 
     return true;
@@ -59,33 +62,23 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
   ///  Input: String search - text to be searched
   ///  Return: Future<List<ContactSearchResult>> that will be used to build
   ///    contact list
-  Future<List<ContactSearchResult>> searchContact(String search) async {
-    // Query Algolia to get matched users
-    AlgoliaQuery query =
-        algolia.instance.instance.index('users').search(search);
-    AlgoliaQuerySnapshot snap = await query.getObjects();
-    List userIDs = List();
-    snap.hits.forEach((h) {
-      userIDs.add(h.objectID);
-    });
-
-    List users = List();
-
-    for (var uid in userIDs) {
-      await Firestore.instance
-          .collection('users')
-          .document(uid)
-          .get()
-          .then((snap) {
-        if (snap.data.isNotEmpty) {
-          users.add([snap.data['avatarUrl'], snap.data['displayName']]);
+  Future<List> searchContact(String search) async {
+    List result = [];
+    if (search.isNotEmpty) {
+      contactList.forEach((element) {
+        if (element['displayName']
+            .toLowerCase()
+            .contains(search.toLowerCase())) {
+          result.add(element);
         }
       });
     }
-
-    return List.generate(users.length, (int index) {
+    return List.generate(result.length, (int index) {
       return ContactSearchResult(
-          users[index][0], users[index][1], userIDs[index], true);
+          result[index]['avatar'],
+          result[index]['displayName'],
+          result[index]['UserID'],
+          result[index]['isToggled']);
     });
   }
 
@@ -145,7 +138,7 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
                 height: MediaQuery.of(context).size.height,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: SearchBar<ContactSearchResult>(
+                  child: SearchBar(
                     onSearch: searchContact,
                     hintText: 'Remove by user name',
                     placeHolder: ListView.builder(
@@ -163,23 +156,26 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
                               child: FloatingActionButton(
                                 onPressed: () {
                                   setState(() {
-                                    contactList[index] = !contactList[index];
-                                    contactList[index]
-                                        ? userSelected.remove(member[index])
-                                        : userSelected.add(member[index]);
+                                    contactList[index]['isToggled'] =
+                                        !contactList[index]['isToggled'];
+                                    contactList[index]['isToggled']
+                                        ? userSelected.remove(
+                                            contactList[index]['UserID'])
+                                        : userSelected
+                                            .add(contactList[index]['UserID']);
                                   });
                                 },
                                 child: Icon(Icons.done,
-                                    color: contactList[index]
+                                    color: contactList[index]['isToggled']
                                         ? Colors.transparent
                                         : Colors.white),
-                                backgroundColor: contactList[index]
+                                backgroundColor: contactList[index]['isToggled']
                                     ? Colors.transparent
                                     : Colors.green,
                                 elevation: 0.0,
                                 heroTag: null,
                                 shape: CircleBorder(
-                                    side: contactList[index]
+                                    side: contactList[index]['isToggled']
                                         ? BorderSide(
                                             color: Colors.grey, width: 1.0)
                                         : BorderSide(
@@ -187,9 +183,9 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
                               )),
                           Expanded(
                               child: ContactCard(
-                            otherAvatar: widget.avatarUrls[index],
-                            otherUserID: member[index],
-                            otherUsername: widget.displayNames[index],
+                            otherAvatar: contactList[index]['avatar'],
+                            otherUserID: contactList[index]['UserID'],
+                            otherUsername: contactList[index]['displayName'],
                           )),
                         ]));
                       },
@@ -197,7 +193,7 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
                     emptyWidget: Center(
                       child: Text('未找到用户'),
                     ),
-                    onItemFound: (ContactSearchResult result, int index) {
+                    onItemFound: (result, int index) {
                       return Expanded(
                           child: Row(children: <Widget>[
                         Container(
@@ -230,10 +226,9 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
                             )),
                         Expanded(
                             child: ContactCard(
-                          otherAvatar: result.avatarUrl,
-                          otherUsername: result.name,
-                          otherUserID: result.uid,
-                        ))
+                                otherAvatar: result.avatarUrl,
+                                otherUsername: result.name,
+                                otherUserID: result.uid))
                       ]));
                     },
                   ),
