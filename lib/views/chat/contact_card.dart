@@ -156,7 +156,7 @@ class _ContactCard extends State<ContactCard>{
                                 sharedPref = pref;
                               });
                               List<String> chatJson = List();
-                              chatJson = sharedPref.getStringList('chatlist');
+                              chatJson = sharedPref.getStringList('chatlist' + userID);
                               int index;
                               for(index = 0;index < chatJson.length;index++) {
                                 Map chat = json.decode(chatJson[index]);

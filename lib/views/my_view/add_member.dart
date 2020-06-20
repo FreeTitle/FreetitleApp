@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:freetitle/views/my_view/team_management.dart';
+import 'package:freetitle/model/user_repository.dart';
 
 class AddMemberPage extends StatefulWidget {
   const AddMemberPage({
@@ -35,6 +36,8 @@ class _AddMemberPage extends State<AddMemberPage> {
   List<String> userSelected = [];
   Future<bool> _getPlaceHolder;
 
+  UserRepository _userRepository = UserRepository();
+
   @override
   void initState() {
     _getPlaceHolder = getPlaceHolder();
@@ -43,10 +46,17 @@ class _AddMemberPage extends State<AddMemberPage> {
   }
 
   Future<bool> getPlaceHolder() async {
+
+    String userID;
+    await _userRepository.getUser().then((snap) {
+      if(snap != null)
+        userID = snap.uid;
+    });
+
     await SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
       List<String> jsonChats;
-      jsonChats = sharedPref.getStringList('chatlist');
+      jsonChats = sharedPref.getStringList('chatlist' + userID);
       contactList = List();
 
       if (jsonChats != null) {

@@ -55,6 +55,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
     await SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
     });
+    sharedPref.remove('chatlist');
     return true;
   }
 
@@ -174,7 +175,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
                     jsonChats.add(json.encode(chatData[id]));
                   }
 
-                  sharedPref.setStringList('chatlist', jsonChats);
+                  sharedPref.setStringList('chatlist'+userID, jsonChats);
                   List chatDataValue = chatData.values.toList().where((chat) => chat['delete'] == false).toList();
                   chatDataValue.sort((a, b) => b['lastMessageTime'].compareTo(a['lastMessageTime']));
                   return ListView.builder(
@@ -224,7 +225,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
                                                   jsonChats.add(json.encode(chatData[id]));
                                                 }
 
-                                                sharedPref.setStringList('chatlist', jsonChats);
+                                                sharedPref.setStringList('chatlist'+userID, jsonChats);
                                                 setState(() {
 
                                                 });
@@ -245,8 +246,9 @@ class _ChatListScreenState extends State<ChatListScreen>{
                 }
                 else{
                   List<String> jsonChats;
-                  jsonChats = sharedPref.getStringList('chatlist');
+                  jsonChats = sharedPref.getStringList('chatlist'+userID);
                   List chatList = List();
+                  print(jsonChats);
                   if(jsonChats != null){
                     jsonChats.forEach((chat) {
                       chatList.add(json.decode(chat));
@@ -304,7 +306,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
                                                 jsonChats.add(json.encode(chatData[id]));
                                               }
 
-                                              sharedPref.setStringList('chatlist', jsonChats);
+                                              sharedPref.setStringList('chatlist'+userID, jsonChats);
                                               setState(() {
 
                                               });
