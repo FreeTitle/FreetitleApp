@@ -124,8 +124,7 @@ class _TeamManagementState extends State<TeamManagement> {
         Container(
                   height: 50,
                   width: 50,
-        child: Expanded(
-          child: FittedBox(
+        child: FittedBox(
             fit: BoxFit.fill, // otherwise the logo will be tiny
             child: new Material(
               type: MaterialType.transparency,
@@ -148,7 +147,6 @@ class _TeamManagementState extends State<TeamManagement> {
             ),
           ),
         ),
-        ),
         SizedBox(height: 4,),
         Text("Add",
             style: TextStyle(
@@ -164,8 +162,7 @@ class _TeamManagementState extends State<TeamManagement> {
         Container(
                   height: 50,
                   width: 50,
-        child: Expanded(
-          child: FittedBox(
+        child: FittedBox(
             fit: BoxFit.fill, // otherwise the logo will be tiny
             child: new Material(
               type: MaterialType.transparency,
@@ -187,7 +184,6 @@ class _TeamManagementState extends State<TeamManagement> {
               ),
             ),
           ),
-        ),
         ),
         SizedBox(height: 4,),
         Text("Remove",

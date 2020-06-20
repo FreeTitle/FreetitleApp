@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:freetitle/views/my_view/group_content.dart';
+import 'package:freetitle/views/my_view/subgroup_view.dart';
 import 'package:freetitle/views/settings/settings.dart';
 
 import 'package:flutter/material.dart';
@@ -137,7 +137,7 @@ class SubGroupState extends State<SubGroup> {
                     Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
-                          builder: (BuildContext context) => GroupContent(groupMember: widget.groupMember, groupName: widget.groupName),
+                          builder: (BuildContext context) => SubGroupContent(groupMember: widget.groupMember, groupName: widget.groupName),
                         )
                     );
                   },
