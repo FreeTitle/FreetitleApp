@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:freetitle/views/my_view/subgroup_view.dart';
 import 'package:freetitle/views/settings/settings.dart';
 
 import 'package:flutter/material.dart';
@@ -133,7 +134,12 @@ class SubGroupState extends State<SubGroup> {
                   highlightColor: Colors.transparent,
                   child: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
-
+                    Navigator.push<dynamic>(
+                        context,
+                        MaterialPageRoute<dynamic>(
+                          builder: (BuildContext context) => SubGroupContent(groupMember: widget.groupMember, groupName: widget.groupName),
+                        )
+                    );
                   },
                 ),
               ),
