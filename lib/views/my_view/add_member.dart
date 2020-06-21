@@ -109,28 +109,25 @@ class _AddMemberPage extends State<AddMemberPage> {
               padding: EdgeInsets.only(right: 20, bottom: 8, top: 13),
               child: FloatingActionButton.extended(
                   onPressed: () {
+                    List userstoAdd = List();
                     userSelected.forEach((element) {
-                      print(element);
-                      HttpsCallable addMemberToGroup = CloudFunctions.instance
-                          .getHttpsCallable(functionName: 'addMemberToGroup');
-                      dynamic resp = addMemberToGroup
-                          .call(<String, dynamic>{
-                            'groupID': widget.userID,
-                            'users': [
-                              {"uid": element, "role": 'member'}
-                            ],
-                          })
-                          .then((value) => print("function called"))
-                          .catchError((err) {
-                            print('Got error $err');
-                          });
+                      userstoAdd.add({'uid': element, 'role': 'member'});
                     });
-                    // Navigator.push<dynamic>(context,
-                    //     MaterialPageRoute(builder: (context) {
-                    //   return TeamManagement(
-                    //     userID: widget.userID,
-                    //   );
-                    // }));
+                    print(userstoAdd);
+                    HttpsCallable addMemberToGroup = CloudFunctions.instance
+                        .getHttpsCallable(functionName: 'addMemberToGroup');
+                    dynamic resp = addMemberToGroup
+                        .call(<String, dynamic>{
+                          'groupID': widget.userID,
+                          'users': userstoAdd,
+                        })
+                        .then((value) => print("function called"))
+                        .catchError((err) {
+                          print('Got error $err');
+                        });
+                    setState(() {
+                      userSelected = [];
+                    });
                   },
                   backgroundColor:
                       userSelected.length == 0 ? Colors.white : Colors.green,
