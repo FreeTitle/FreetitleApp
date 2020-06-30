@@ -2,11 +2,11 @@ import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/model/algolias_search.dart';
+import 'package:freetitle/model/util/algolias_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/model/util.dart';
+import 'package:freetitle/model/util/util.dart';
 
 class SearchView extends StatefulWidget {
 

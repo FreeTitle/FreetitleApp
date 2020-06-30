@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/model/util.dart';
+import 'package:freetitle/model/util/util.dart';
 import 'package:freetitle/views/messages/messages_screen.dart';
 import 'package:freetitle/views/projects/projects_screen.dart';
 import 'package:freetitle/views/my_view/my_view.dart';

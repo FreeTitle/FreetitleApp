@@ -5,7 +5,7 @@ import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
-import 'package:freetitle/model/util.dart';
+import 'package:freetitle/model/util/util.dart';
 
 class LoginForm extends StatefulWidget {
 

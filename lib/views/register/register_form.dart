@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/register/register.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:freetitle/model/util.dart';
+import 'package:freetitle/model/util/util.dart';
 
 class RegisterForm extends StatefulWidget {
   State<RegisterForm> createState() => _RegisterFormState();

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/model/util.dart';
+import 'package:freetitle/model/util/util.dart';
 import 'package:flutter/services.dart';
 import 'package:palette_generator/palette_generator.dart';
 
