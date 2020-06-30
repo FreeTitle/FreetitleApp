@@ -172,7 +172,7 @@ void saveCurrentUser() async {
       assert(userRef.uid == userDataRef.documentID);
       userData['uid'] = userRef.uid;
       userData['lastClaimTime'] = null;
-      sharedPref.setString('currentUser', json.encode(userData));
+      await sharedPref.setString('currentUser', json.encode(userData));
     }
 
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -242,7 +242,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
   });
 
   List<String> chatJson = List();
-  chatJson = sharedPref.getStringList('chatlist');
+  chatJson = sharedPref.getStringList('chatlist' + userID);
   int index;
   for(index = 0;index < chatJson.length;index++) {
     Map chat = json.decode(chatJson[index]);
@@ -292,12 +292,12 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
     chat['delete'] = false;
 
     chatJson[index] = json.encode(chat);
-    sharedPref.setStringList('chatlist', chatJson);
+    sharedPref.setStringList('chatlist' + userID, chatJson);
 
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername, ),
+          builder: (BuildContext context) => ChatScreen(chatID: chatID, otherUsername: otherUsername, ),
         )
     );
   }
@@ -345,7 +345,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
 
     // 将聊天存入本地
     List<String> chatJson;
-    chatJson = sharedPref.getStringList('chatlist');
+    chatJson = sharedPref.getStringList('chatlist' + userID);
 
     chatJson.add(json.encode({
       'id': chatID,
@@ -356,12 +356,12 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
       'displayName': otherUsername,
       'delete': false,
     }));
-    sharedPref.setStringList('chatlist', chatJson);
+    sharedPref.setStringList('chatlist' + userID, chatJson);
     // 进入聊天界面
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => Chat(chatID: chatID, otherUsername: otherUsername,),
+          builder: (BuildContext context) => ChatScreen(chatID: chatID, otherUsername: otherUsername,),
         )
     );
   }

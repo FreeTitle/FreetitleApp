@@ -122,8 +122,6 @@ class _Home extends State<Home> {
                           return SingleChildScrollView(
                             controller: _scrollController,
                             child: Container(
-//                              color: AppTheme.nearlyWhite,
-//                                            height: MediaQuery.of(context).size.height,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[

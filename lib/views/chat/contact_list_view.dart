@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:algolia/algolia.dart';
 import 'package:freetitle/model/algolias_search.dart';
+import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/chat/contact_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -30,6 +31,8 @@ class _ContactListView extends State<ContactListView>{
   List contactList;
   Future<bool> _getPlaceHolder;
 
+  UserRepository _userRepository = UserRepository();
+
   @override
   void initState() {
     _getPlaceHolder = getPlaceHolder();
@@ -37,10 +40,16 @@ class _ContactListView extends State<ContactListView>{
   }
 
   Future<bool> getPlaceHolder() async {
+    String userID;
+    await _userRepository.getUser().then((snap) {
+      if(snap != null)
+        userID = snap.uid;
+    });
+
     await SharedPreferences.getInstance().then((pref) {
       sharedPref = pref;
       List<String> jsonChats;
-      jsonChats = sharedPref.getStringList('chatlist');
+      jsonChats = sharedPref.getStringList('chatlist' + userID);
       contactList = List();
       if(jsonChats != null){
         jsonChats.forEach((chat) {

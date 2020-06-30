@@ -9,6 +9,7 @@ import 'package:freetitle/views/blog/blog_detail.dart';
 import 'package:freetitle/views/home/coin.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:freetitle/views/mission/mission_detail.dart';
+import 'package:freetitle/views/settings/about_us.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeDrawer extends StatefulWidget {
@@ -133,6 +134,23 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 ),
                 onTap: () {
                   restorePage();
+                },
+              ),
+              ListTile(
+                title: Row(
+                  children: <Widget>[
+                    SizedBox(width: 20,),
+                    Text('About Us'),
+                    SizedBox(width: 10,),
+                    Icon(Icons.info_outline),],
+                ),
+                onTap: () {
+                  Navigator.push<dynamic>(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                      builder: (BuildContext context) => AboutUsPage(),
+                    ),
+                  );
                 },
               ),
 //              ListTile(

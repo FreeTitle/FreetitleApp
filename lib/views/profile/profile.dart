@@ -117,6 +117,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
           );
         }else{
           return Scaffold(
+            backgroundColor: Theme.of(context).primaryColorDark,
             body:  Center(
               child: Text('加载中'),
             ),

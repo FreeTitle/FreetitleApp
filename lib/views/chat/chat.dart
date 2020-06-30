@@ -15,9 +15,9 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-class Chat extends StatefulWidget{
+class ChatScreen extends StatefulWidget{
 
-  const Chat(
+  const ChatScreen(
   { Key key,
     @required this.chatID,
     @required this.otherUsername,
@@ -37,11 +37,11 @@ class Chat extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-    return _ChatState();
+    return _ChatScreenState();
   }
 }
 
-class _ChatState extends State<Chat> {
+class _ChatScreenState extends State<ChatScreen> {
 
   ChatUser user;
   String uid;
@@ -56,6 +56,8 @@ class _ChatState extends State<Chat> {
   List<ChatMessage> messages;
 
   StreamSubscription subscription;
+
+  UserRepository _userRepository = UserRepository();
 
   @override
   void initState() {
@@ -77,31 +79,34 @@ class _ChatState extends State<Chat> {
 
   @override
   void dispose() {
-    subscription.cancel();
+    if(subscription != null)
+      subscription.cancel();
     super.dispose();
   }
 
   Future<bool> getLocalChat() async {
-    await SharedPreferences.getInstance().then((pref) {
-      sharedPref = pref;
-    });
-    String jsonUser = sharedPref.getString('currentUser');
-    Map currentUser = json.decode(jsonUser);
-    uid = currentUser['uid'];
-    name = currentUser['displayName'];
-    avatar = currentUser['avatarUrl'];
-    user = ChatUser(name: name, avatar: avatar, uid: uid);
+    sharedPref = await SharedPreferences.getInstance();
+//    String jsonUser = sharedPref.getString('currentUser');
+//    Map currentUser = json.decode(jsonUser);
+//    uid = currentUser['uid'];
+//    name = currentUser['displayName'];
+//    avatar = currentUser['avatarUrl'];
+//    user = ChatUser(name: name, avatar: avatar, uid: uid);
     return true;
   }
 
   Future<bool> getRemoteChat() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+//    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+    await _userRepository.getUser().then((snap) {
+      if(snap != null)
+        uid = snap.uid;
+    });
     await Firestore.instance.collection('users').document(uid).get().then((snap) {
       name = snap.data['displayName'];
       avatar = snap.data['avatarUrl'];
     });
     user = ChatUser(name: name, avatar: avatar, uid: uid);
-
+    print("remote $user");
     return true;
   }
 
@@ -155,10 +160,11 @@ class _ChatState extends State<Chat> {
         future: getLocalChat(),
         builder: (BuildContext context, AsyncSnapshot<bool> localSnapshot) {
           if(localSnapshot.connectionState == ConnectionState.done) {
-            print(user);
+//            print(user);
             return FutureBuilder(
               future: getRemoteChat(),
               builder: (BuildContext context, AsyncSnapshot<bool> remoteSnapshot){
+                print('here $user');
                 if(remoteSnapshot.connectionState == ConnectionState.done){
                   return StreamBuilder<QuerySnapshot>(
                     stream: Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().snapshots(),
@@ -186,10 +192,10 @@ class _ChatState extends State<Chat> {
                             });
                             messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
                             saveLocalChat(messages);
-                            return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                            return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
                           }
                           else{
-                            return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                            return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
                           }
                       }
                     },
@@ -214,7 +220,7 @@ class _ChatState extends State<Chat> {
                         messages.add(message);
                       }
                     });
-                    return ChatScreen(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
+                    return Chat(chatID: widget.chatID, user: user, avatar: avatar, messages: messages,);
                   }
                   else{
                     return Center(
@@ -237,9 +243,9 @@ class _ChatState extends State<Chat> {
 }
 
 
-class ChatScreen extends StatefulWidget {
+class Chat extends StatefulWidget {
 
-  const ChatScreen(
+  const Chat(
   {Key key,
     this.chatID,
     this.user,
@@ -251,10 +257,10 @@ class ChatScreen extends StatefulWidget {
   final user;
   final avatar;
   final messages;
-  _ChatScreenState createState() => _ChatScreenState();
+  _ChatState createState() => _ChatState();
 }
 
-class _ChatScreenState extends State<ChatScreen>{
+class _ChatState extends State<Chat>{
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
 
   ScrollController _scrollController;

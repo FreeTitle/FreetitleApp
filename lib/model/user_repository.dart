@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:freetitle/views/profile/my_profile.dart';
+import 'package:freetitle/views/my_view/my_view.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';

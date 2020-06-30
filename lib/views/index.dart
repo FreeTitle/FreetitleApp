@@ -6,7 +6,8 @@ import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
 import 'package:freetitle/views/chat/chat_list_view.dart';
 import 'package:freetitle/views/mission/mission_detail.dart';
-import 'package:freetitle/views/profile/my_profile.dart';
+import 'package:freetitle/views/my_view/my_view.dart';
+import 'package:freetitle/views/my_view/team_management.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
@@ -60,7 +61,7 @@ class _IndexPageState extends State<IndexPage> {
       Home(),
       ChatListScreen(indexState: this, stream: streamController.stream,),
       SearchView(),
-      GetMyProfile(),
+      MyView(),
     ];
 
     final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
@@ -295,14 +296,14 @@ class _IndexPageState extends State<IndexPage> {
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
-                    title: Text('主页', style: Theme.of(context).textTheme.bodyText1,),
+                    title: Text('Home', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                       icon: getNumUnread() != '0' ? Badge(
                         badgeContent: Text(getNumUnread(), style: TextStyle(color: Colors.white, fontSize: 12),),
                         child: Icon(Icons.chat),
                       ) :  Icon(Icons.chat),
-                      title: Text('私信', style: Theme.of(context).textTheme.bodyText1,),
+                      title: Text('Messages', style: Theme.of(context).textTheme.bodyText1,),
                   ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.business),
@@ -311,11 +312,11 @@ class _IndexPageState extends State<IndexPage> {
 //            ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    title: Text('搜索', style: Theme.of(context).textTheme.bodyText1,),
+                    title: Text('Explore', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),
-                    title: Text('我的', style: Theme.of(context).textTheme.bodyText1,),
+                    title: Text('My', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                 ],
                 onTap: onTabTapped,
