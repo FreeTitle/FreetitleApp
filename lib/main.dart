@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/blog/blog_detail.dart';
-import 'package:freetitle/views/notification.dart';
 import 'package:freetitle/views/splash_screen.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

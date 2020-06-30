@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/home/coin.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:freetitle/views/reset_profile/reset_profile.dart';
 
@@ -128,12 +127,7 @@ class _UserCardState extends State<UserCard> {
                             ),
                             InkWell(
                               onTap: () {
-                                Navigator.push<dynamic>(
-                                    context,
-                                    MaterialPageRoute<dynamic>(
-                                      builder: (BuildContext context) =>
-                                          CoinPage(),
-                                    ));
+
                               },
                               child: Row(
                                 children: <Widget>[

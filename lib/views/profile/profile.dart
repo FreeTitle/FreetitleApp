@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/model/util.dart';
-import 'package:freetitle/views/chat/chat.dart';
-import 'package:freetitle/views/mission/mission_list_view.dart';
-import 'package:freetitle/views/profile/profile_blog_list_view.dart';
 import 'package:flutter/services.dart';
 import 'package:palette_generator/palette_generator.dart';
 
@@ -463,10 +460,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                   right: MediaQuery.of(context).padding.right + 30,
                   child: InkWell(
                     onTap: () async {
-                      UserRepository _userRepository = UserRepository();
-                      final thisUser = await _userRepository.getUser();
-                      final uid = thisUser.uid;
-                      launchChat(context, uid, widget.userID, userData['avatarUrl'], userData['displayName']);
+
                     },
                     child: Container(
                       width: 60,
@@ -550,31 +544,7 @@ class UserContentView extends StatelessWidget {
             ),
             body: TabBarView(
               children: <Widget>[
-                ProfileBlogList(
-                  animationController: animationController,
-                  scrollController: scrollController,
-                  blogIDs: blogIDs,
-                  blogList: blogList,
-                ),
-                missionIDs.length != 0 ? SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: VerticalMissionListView(
-                      missionList: missionList,
-                      missionIDs: missionIDs,
-                    ),
-                  ),
-                ) : SingleChildScrollView(
-                  controller: scrollController,
-                  child: PlaceHolderCard(text: 'No missions yet', height: 200.0,)
-                ),
-                ProfileBlogList(
-                  animationController: animationController,
-                  scrollController: scrollController,
-                  blogIDs: bookmarkIDs,
-                  blogList: bookmarkList,
-                ),
+
               ],
             ),
           ),
@@ -583,51 +553,3 @@ class UserContentView extends StatelessWidget {
     );
   }
 }
-
-//class ContentPage extends StatelessWidget {
-//  final _name;
-//
-//  ContentPage(this._name, this.scrollController);
-//
-//  final scrollController;
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    final items = List<String>.generate(20, (i) => "$_name ${i + 1}");
-//
-//    return ListView.builder(
-//        controller: scrollController,
-//        itemCount: items.length,
-//        itemBuilder: (context, idx) {
-//          return Container(
-//            decoration: BoxDecoration(
-//              border: Border(
-//                top: BorderSide(width: 1.0, color: Colors.black),
-//              ),
-//            ),
-//            child: ListTile(
-//              // thumbnail
-//              leading: Container(
-//                width: 40.0,
-//                height: 30.0,
-//                decoration: BoxDecoration(
-//                  shape: BoxShape.circle,
-//                  image: DecorationImage(
-//                    image: AssetImage('assets/logo.png'),
-//                  ),
-//                ),
-//              ),
-//              title: Container(
-//                child: Align(
-//                  alignment: Alignment.topLeft,
-//                  child: Text(
-//                    items[idx],
-//                  ),
-//                ),
-//              ),
-//            ),
-//          );
-//        },
-//      );
-//  }
-//}

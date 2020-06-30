@@ -3,11 +3,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/views/profile/profile.dart';
 import 'package:freetitle/views/settings/settings.dart';
-
 import 'my_view.dart';
 import 'team_group.dart';
-import 'package:freetitle/views/my_view/add_member.dart';
-import 'package:freetitle/views/my_view/remove_member.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/main.dart';
@@ -141,12 +138,7 @@ class _TeamManagementState extends State<TeamManagement> {
                   highlightColor: Colors.grey,
                   icon: Icon(Icons.add),
                   onPressed: () {
-                    Navigator.push<dynamic>(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return AddMemberPage(userID: widget.userID);
-                      }),
-                    );
+
                   },
                 ),
               ),
@@ -184,17 +176,7 @@ class _TeamManagementState extends State<TeamManagement> {
                   highlightColor: Colors.grey,
                   icon: Icon(Icons.remove),
                   onPressed: () {
-                    Navigator.push<dynamic>(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return RemoveMemberPage(
-                          userID: widget.userID,
-                          member: members,
-                          displayNames: displayNames,
-                          avatarUrls: avatarUrls,
-                        );
-                      }),
-                    );
+
                   },
                 ),
               ),

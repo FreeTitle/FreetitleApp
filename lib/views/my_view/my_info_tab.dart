@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:freetitle/views/profile/profile_blog_list_view.dart';
 import 'package:freetitle/views/my_view/title_view.dart';
 import 'package:freetitle/views/my_view/user_card.dart';
-import 'package:freetitle/views/profile/profile_mission_list_view.dart';
 
 
 class MyInfo extends StatefulWidget {
@@ -32,13 +30,11 @@ class _MyInfoState extends State<MyInfo> {
       titleTxt: 'My Missions',
       subTxt: '',
     ));
-    profileWidget.add(ProfileHorizontalMissionListView(ownerID: userID, missionIDs: userData['missions'],));
     profileWidget.add(SizedBox(height: 10,));
     profileWidget.add(TitleView(
       titleTxt: 'My Blogs',
       subTxt: '',
     ));
-    profileWidget.add(ProfileBlogListView(ownerID: userID,));
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.only(
