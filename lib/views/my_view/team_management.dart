@@ -6,7 +6,8 @@ import 'package:freetitle/views/settings/settings.dart';
 
 import 'my_view.dart';
 import 'team_group.dart';
-
+import 'package:freetitle/views/my_view/add_member.dart';
+import 'package:freetitle/views/my_view/remove_member.dart';
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/main.dart';
@@ -107,7 +108,7 @@ class _TeamManagementState extends State<TeamManagement> {
                     child: Image.network(avatarUrl, fit: BoxFit.cover,),
                   ),
                 ),
-                SizedBox(height: 4,),
+                SizedBox(height: 3,),
                 Text(displayName.length >= 7 ? displayName.substring(0, 7) + '...' : displayName,
                     style: TextStyle(
                       color: Theme.of(context).accentColor,
@@ -140,7 +141,12 @@ class _TeamManagementState extends State<TeamManagement> {
                   highlightColor: Colors.grey,
                   icon: Icon(Icons.add),
                   onPressed: () {
-                    print("add clicked");
+                    Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return AddMemberPage(userID: widget.userID);
+                      }),
+                    );
                   },
                 ),
               ),
@@ -178,7 +184,17 @@ class _TeamManagementState extends State<TeamManagement> {
                   highlightColor: Colors.grey,
                   icon: Icon(Icons.remove),
                   onPressed: () {
-                    print("remove clicked");
+                    Navigator.push<dynamic>(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return RemoveMemberPage(
+                          userID: widget.userID,
+                          member: members,
+                          displayNames: displayNames,
+                          avatarUrls: avatarUrls,
+                        );
+                      }),
+                    );
                   },
                 ),
               ),
@@ -295,7 +311,7 @@ class _TeamManagementState extends State<TeamManagement> {
                                     SizedBox(
                                       width: 10,
                                     ),
-                                    Text("全部成员",
+                                    Text("Members",
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyText1
@@ -327,7 +343,7 @@ class _TeamManagementState extends State<TeamManagement> {
                                 ),
                                 Container(
                                   height:
-                                  (members.length / 5).ceil().toDouble() *
+                                  ((members.length+2) / 5).ceil().toDouble() *
                                       (screenSize.height / factor),
                                   child: FutureBuilder<bool>(
                                     future: getUser(members),

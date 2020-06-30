@@ -172,7 +172,7 @@ void saveCurrentUser() async {
       assert(userRef.uid == userDataRef.documentID);
       userData['uid'] = userRef.uid;
       userData['lastClaimTime'] = null;
-      sharedPref.setString('currentUser', json.encode(userData));
+      await sharedPref.setString('currentUser', json.encode(userData));
     }
 
     FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -242,7 +242,7 @@ void launchChat(context, userID, otherUserID, otherUsername, otherUserAvatar, {s
   });
 
   List<String> chatJson = List();
-  chatJson = sharedPref.getStringList('chatlist' + userID + userID);
+  chatJson = sharedPref.getStringList('chatlist' + userID);
   int index;
   for(index = 0;index < chatJson.length;index++) {
     Map chat = json.decode(chatJson[index]);

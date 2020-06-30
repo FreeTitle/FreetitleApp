@@ -57,6 +57,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   StreamSubscription subscription;
 
+  UserRepository _userRepository = UserRepository();
+
   @override
   void initState() {
     getRemoteChat();
@@ -83,26 +85,28 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<bool> getLocalChat() async {
-    await SharedPreferences.getInstance().then((pref) {
-      sharedPref = pref;
-    });
-    String jsonUser = sharedPref.getString('currentUser');
-    Map currentUser = json.decode(jsonUser);
-    uid = currentUser['uid'];
-    name = currentUser['displayName'];
-    avatar = currentUser['avatarUrl'];
-    user = ChatUser(name: name, avatar: avatar, uid: uid);
+    sharedPref = await SharedPreferences.getInstance();
+//    String jsonUser = sharedPref.getString('currentUser');
+//    Map currentUser = json.decode(jsonUser);
+//    uid = currentUser['uid'];
+//    name = currentUser['displayName'];
+//    avatar = currentUser['avatarUrl'];
+//    user = ChatUser(name: name, avatar: avatar, uid: uid);
     return true;
   }
 
   Future<bool> getRemoteChat() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+//    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+    await _userRepository.getUser().then((snap) {
+      if(snap != null)
+        uid = snap.uid;
+    });
     await Firestore.instance.collection('users').document(uid).get().then((snap) {
       name = snap.data['displayName'];
       avatar = snap.data['avatarUrl'];
     });
     user = ChatUser(name: name, avatar: avatar, uid: uid);
-
+    print("remote $user");
     return true;
   }
 
@@ -156,10 +160,11 @@ class _ChatScreenState extends State<ChatScreen> {
         future: getLocalChat(),
         builder: (BuildContext context, AsyncSnapshot<bool> localSnapshot) {
           if(localSnapshot.connectionState == ConnectionState.done) {
-            print(user);
+//            print(user);
             return FutureBuilder(
               future: getRemoteChat(),
               builder: (BuildContext context, AsyncSnapshot<bool> remoteSnapshot){
+                print('here $user');
                 if(remoteSnapshot.connectionState == ConnectionState.done){
                   return StreamBuilder<QuerySnapshot>(
                     stream: Firestore.instance.collection('chat').document(widget.chatID).collection('messages').reference().snapshots(),

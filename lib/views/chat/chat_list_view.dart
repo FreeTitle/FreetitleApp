@@ -144,7 +144,7 @@ class _ChatListScreenState extends State<ChatListScreen>{
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('私信'),
+        title: Text('Messages'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),

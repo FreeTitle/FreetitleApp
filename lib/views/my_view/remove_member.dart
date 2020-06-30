@@ -145,11 +145,10 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
                       itemCount: member.length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        print(contactList);
-                        print(member);
-                        print(widget.displayNames);
-                        return Expanded(
-                            child: Row(children: <Widget>[
+//                        print(contactList);
+//                        print(member);
+//                        print(widget.displayNames);
+                        return Row(children: <Widget>[
                           Container(
                               width: 30,
                               height: 30,
@@ -187,7 +186,7 @@ class _RemoveMemberPage extends State<RemoveMemberPage> {
                             otherUserID: contactList[index]['UserID'],
                             otherUsername: contactList[index]['displayName'],
                           )),
-                        ]));
+                        ]);
                       },
                     ),
                     emptyWidget: Center(

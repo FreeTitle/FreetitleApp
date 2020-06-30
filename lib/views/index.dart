@@ -296,14 +296,14 @@ class _IndexPageState extends State<IndexPage> {
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
-                    title: Text('主页', style: Theme.of(context).textTheme.bodyText1,),
+                    title: Text('Home', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                       icon: getNumUnread() != '0' ? Badge(
                         badgeContent: Text(getNumUnread(), style: TextStyle(color: Colors.white, fontSize: 12),),
                         child: Icon(Icons.chat),
                       ) :  Icon(Icons.chat),
-                      title: Text('私信', style: Theme.of(context).textTheme.bodyText1,),
+                      title: Text('Messages', style: Theme.of(context).textTheme.bodyText1,),
                   ),
 //            BottomNavyBarItem(
 //              icon: Icon(Icons.business),
@@ -312,11 +312,11 @@ class _IndexPageState extends State<IndexPage> {
 //            ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.search),
-                    title: Text('搜索', style: Theme.of(context).textTheme.bodyText1,),
+                    title: Text('Explore', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.person),
-                    title: Text('我的', style: Theme.of(context).textTheme.bodyText1,),
+                    title: Text('My', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                 ],
                 onTap: onTabTapped,

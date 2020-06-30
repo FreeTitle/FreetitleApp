@@ -110,37 +110,34 @@ class _AddMemberPage extends State<AddMemberPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-//        brightness: Brightness.dark,
-//        backgroundColor: AppTheme.appbarColor,
           title: Text('添加成员'),
           actions: <Widget>[
             Container(
               width: 90,
               padding: EdgeInsets.only(right: 20, bottom: 8, top: 13),
               child: FloatingActionButton.extended(
-                  onPressed: () {
+                  onPressed: () async {
+                    List userSelectedMap = List();
                     userSelected.forEach((element) {
-                      print(element);
-                      HttpsCallable addMemberToGroup = CloudFunctions.instance
-                          .getHttpsCallable(functionName: 'addMemberToGroup');
-                      dynamic resp = addMemberToGroup
-                          .call(<String, dynamic>{
-                            'groupID': widget.userID,
-                            'users': [
-                              {"uid": element, "role": 'member'}
-                            ],
-                          })
-                          .then((value) => print("function called"))
-                          .catchError((err) {
-                            print('Got error $err');
-                          });
+                      userSelectedMap.add({"uid": element, "role": "member"});
                     });
+                    HttpsCallable addMemberToGroup = CloudFunctions.instance
+                        .getHttpsCallable(functionName: 'addMemberToGroup');
+
+                    HttpsCallableResult result = await addMemberToGroup
+                        .call(<String, dynamic>{
+                      'groupID': widget.userID,
+                      'users': userSelectedMap,
+                    });
+
+                    print(result.data);
                     // Navigator.push<dynamic>(context,
                     //     MaterialPageRoute(builder: (context) {
                     //   return TeamManagement(
                     //     userID: widget.userID,
                     //   );
                     // }));
+                    Navigator.of(context).pop();
                   },
                   backgroundColor:
                       userSelected.length == 0 ? Colors.white : Colors.green,
@@ -174,8 +171,7 @@ class _AddMemberPage extends State<AddMemberPage> {
                       itemCount: contactList.length,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (BuildContext context, int index) {
-                        return Expanded(
-                            child: Row(children: <Widget>[
+                        return Row(children: <Widget>[
                           Container(
                               width: 30,
                               height: 30,
@@ -213,15 +209,14 @@ class _AddMemberPage extends State<AddMemberPage> {
                             otherUserID: contactList[index]['otherUserID'],
                             otherUsername: contactList[index]['displayName'],
                           )),
-                        ]));
+                        ]);
                       },
                     ),
                     emptyWidget: Center(
                       child: Text('未找到用户'),
                     ),
                     onItemFound: (ContactSearchResult result, int index) {
-                      return Expanded(
-                          child: Row(children: <Widget>[
+                      return Row(children: <Widget>[
                         Container(
                             width: 30,
                             height: 30,
@@ -256,7 +251,7 @@ class _AddMemberPage extends State<AddMemberPage> {
                           otherUsername: result.name,
                           otherUserID: result.uid,
                         ))
-                      ]));
+                      ]);
                     },
                   ),
                 ),
