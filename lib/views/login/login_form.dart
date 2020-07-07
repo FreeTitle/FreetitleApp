@@ -81,7 +81,7 @@ class _LoginFormState extends State<LoginForm> {
           returnDialog('登录', '谷歌登录失败,请重试', 5);
         if (state.isSuccess) {
           BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
-          saveCurrentUser();
+//          saveCurrentUser();
           if(Navigator.canPop(context)){
             Navigator.of(context).pop();
           }

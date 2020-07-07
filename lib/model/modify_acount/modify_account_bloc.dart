@@ -10,7 +10,7 @@ import 'package:freetitle/model/validators.dart';
 
 class ModifyAccountBloc extends Bloc<ModifyAccountEvent, ModifyAccountState> {
   UserRepository _userRepository;
-  final reference = Firestore.instance.collection('users');
+//  final reference = Firestore.instance.collection('users');
 
   ModifyAccountBloc({@required UserRepository userRepository})
       : assert(userRepository != null ),
