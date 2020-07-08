@@ -148,7 +148,10 @@ class ProjectPostState extends State<ProjectPost> {
                           child: Material(
                             type: MaterialType.transparency,
                             child: InkWell(
-                              onTap: () => setState(() => pressAttention = !pressAttention),
+                              onTap: () {
+                                setState(() => pressAttention = !pressAttention);
+                                print("Project save pressed");
+                              },
                               highlightColor: Colors.transparent,
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
@@ -228,7 +231,9 @@ class ProjectPostState extends State<ProjectPost> {
                   iconSize: 22,
                   icon: Icon(Icons.share),
                   color: Colors.white,
-                  onPressed: () {},
+                  onPressed: () {
+                    print("Project share pressed");
+                  },
                 ),
               ),
               ),
