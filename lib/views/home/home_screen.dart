@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freetitle/views/post/project_post.dart';
+import 'package:freetitle/views/post/event_post.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -56,6 +58,45 @@ class _Home extends State<Home> {
           },
         ),
       ),
+      body: SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 20),
+            alignment: Alignment.centerLeft,
+            child: Image.asset(
+                'assets/label_event.png',
+                scale: 2,
+              ),),
+          SingleChildScrollView(
+            child: Row(children: <Widget>[
+              EventPost(),
+              EventPost(),
+              EventPost(),
+              EventPost(),
+              EventPost(),
+            ],),
+            scrollDirection: Axis.horizontal,
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 20),
+            alignment: Alignment.centerLeft,
+            child: Image.asset(
+                'assets/label_project.png',
+                scale: 2,
+              ),),
+          Column(
+            children: <Widget>[
+              ProjectPost(),
+              ProjectPost(),
+              ProjectPost(),
+              ProjectPost(),
+              ProjectPost(),
+            ],
+          ),
+        ],
+      ),
+    )
     );
   }
 
