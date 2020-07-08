@@ -256,7 +256,7 @@ class _IndexPageState extends State<IndexPage> {
 //      print('request error: $err');
 //    });
 
-    saveCurrentUser();
+//    saveCurrentUser();
 
     super.initState();
   }

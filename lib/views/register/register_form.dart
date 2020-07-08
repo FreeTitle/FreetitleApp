@@ -65,7 +65,7 @@ class _RegisterFormState extends State<RegisterForm> {
       bloc: _registerBloc,
       listener: (BuildContext context, RegisterState state) {
         if (state.isSuccess) {
-          saveCurrentUser();
+//          saveCurrentUser();
           BlocProvider.of<AuthenticationBloc>(context).dispatch(LoggedIn());
           Navigator.of(context).pop();
         }
