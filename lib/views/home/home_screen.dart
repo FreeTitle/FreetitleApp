@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freetitle/views/post_detail/blog_post_detail.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -13,7 +14,6 @@ class Home extends StatefulWidget {
 }
 
 class _Home extends State<Home> {
-
   List blogList;
   List blogIDs;
   List missionList;
@@ -21,8 +21,7 @@ class _Home extends State<Home> {
   ScrollController _scrollController;
 
   @override
-  void initState(){
-
+  void initState() {
     _scrollController = ScrollController(initialScrollOffset: 0.0);
     super.initState();
   }
@@ -49,14 +48,26 @@ class _Home extends State<Home> {
           child: Container(
             width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
-            child: Text('FreeTitle', style: TextStyle(color: Theme.of(context).accentColor),),
+            child: Text(
+              'FreeTitle',
+              style: TextStyle(color: Theme.of(context).accentColor),
+            ),
           ),
           onTap: () {
             _scrollController.jumpTo(0);
           },
         ),
       ),
+      body: FlatButton(
+        child: Text('Navigate'),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              return BlogPostDetail();
+            }),
+          );
+        },
+      ),
     );
   }
-
 }
