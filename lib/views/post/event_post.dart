@@ -57,7 +57,10 @@ class EventPostState extends State<EventPost> {
                               iconSize: 28,
                               color: Colors.teal[200],
                               icon: pressAttention ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
-                              onPressed: () => setState(() => pressAttention = !pressAttention),
+                              onPressed: () {
+                                setState(() => pressAttention = !pressAttention);
+                                print("Event like pressed");
+                              },
                             ),
                           ),
                         ),
@@ -97,7 +100,9 @@ class EventPostState extends State<EventPost> {
                     iconSize: 20,
                     icon: Icon(Icons.share),
                     color: Colors.white,
-                    onPressed: () {},
+                    onPressed: () {
+                      print("Event share button pressed");
+                    },
                   ),
                 ),
               ),
