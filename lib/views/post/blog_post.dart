@@ -43,12 +43,6 @@ class _BlogPostState extends State<BlogPost> {
                               ],
                             )),
                         Container(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Text(
-                                'Un Chien Andalou has no plot in the conventional sense of the word. The chronology of the film is disjointed, jumping from the initial at…. Read more ',
-                                style: TextStyle(
-                                    fontSize: 10, color: Colors.grey))),
-                        Container(
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(8.0)),
@@ -59,6 +53,17 @@ class _BlogPostState extends State<BlogPost> {
                                 child: Image.asset(
                                     'assets/images/blogpost_.png',
                                     fit: BoxFit.fill))),
+                        Container(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Text(
+                                'Un Chien Andalou has no plot in the conventional',
+                                style: Theme.of(context).textTheme.bodyText1)),
+                        Container(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Text(
+                                'Un Chien Andalou has no plot in the conventional sense of the word. The chronology of the film is disjointed, jumping from the initial atThe chronology of the film is disjointed, jumping from the initial at…. Read more ',
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.grey))),
                         Container(
                             padding: EdgeInsets.only(top: 10),
                             child: Row(
