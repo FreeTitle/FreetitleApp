@@ -23,7 +23,7 @@ class PostTitle extends StatelessWidget {
                 borderRadius:
                 const BorderRadius.all(Radius.circular(25.0)),
                 child: Image.asset(
-                  'assets/event.png',
+                  'assets/placeholders/event.png',
                   fit: BoxFit.cover,
                 ),
               ),

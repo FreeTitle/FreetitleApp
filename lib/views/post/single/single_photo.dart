@@ -32,7 +32,7 @@ class SinglePhoto extends StatelessWidget {
           width: 400,
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(13.0)),
-            child: Image.asset('assets/event.png', fit: BoxFit.cover),
+            child: Image.asset('assets/placeholders/event.png', fit: BoxFit.cover),
           ),
         ),
       ],

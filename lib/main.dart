@@ -7,7 +7,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/bloc/authentication_bloc/bloc.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/model/simple_bloc_delegate.dart';
+import 'package:freetitle/bloc/simple_bloc_delegate.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';

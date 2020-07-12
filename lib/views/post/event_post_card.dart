@@ -22,7 +22,7 @@ class _EventPostCardState extends State<EventPostCard> {
               width: 210,
               height: 250,
               child: Image.asset(
-                'assets/event.png',
+                'assets/placeholders/event.png',
                 scale: 0.1,
               ),
             ),

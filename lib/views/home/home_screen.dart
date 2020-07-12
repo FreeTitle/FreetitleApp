@@ -44,67 +44,90 @@ class _Home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: AppBar(
-          centerTitle: true,
-          iconTheme: IconThemeData(color: Theme.of(context).accentColor),
-          title: InkWell(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              alignment: Alignment.center,
-              child: Text(
-                'FreeTitle',
-                style: TextStyle(color: Theme.of(context).accentColor),
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            centerTitle: true,
+            iconTheme: IconThemeData(color: Theme.of(context).accentColor),
+            title: InkWell(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                alignment: Alignment.center,
+                child: Text(
+                  'FreeTitle',
+                  style: TextStyle(color: Theme.of(context).accentColor),
+                ),
               ),
+              onTap: () {
+                _scrollController.jumpTo(0);
+              },
             ),
-            onTap: () {
-              _scrollController.jumpTo(0);
-            },
-          ),
-        ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: 20),
-              alignment: Alignment.centerLeft,
-              child: Image.asset(
-                  'assets/label_event.png',
-                  scale: 2,
-                ),),
-            SingleChildScrollView(
-              child: Row(children: <Widget>[
-                EventPostCard(),
-                EventPostCard(),
-                EventPostCard(),
-                EventPostCard(),
-                EventPostCard(),
-              ],),
-              scrollDirection: Axis.horizontal,
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 20),
-              alignment: Alignment.centerLeft,
-              child: Image.asset(
-                  'assets/label_project.png',
-                  scale: 2,
-                ),),
-            Column(
-              children: <Widget>[
-                ProjectPostCard(),
-                ProjectPostCard(),
-                ProjectPostCard(),
-                ProjectPostCard(),
-                ProjectPostCard(),
-                PostCard(type:'single-photo'),
-                PostCard(type:'blog'),
-                PostCard(type:'multi-photo'),
+            bottom: TabBar(
+              labelColor: AppTheme.primary,
+              unselectedLabelColor: Theme.of(context).accentColor,
+              indicatorColor: AppTheme.primary,
+              tabs: <Widget>[
+                Tab(child: Text('Opportunities')),
+                Tab(child: Text('Posts')),
               ],
             ),
-          ],
-        ),
-      )
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      alignment: Alignment.centerLeft,
+                      child: Image.asset(
+                        'assets/placeholders/label_event.png',
+                        scale: 2,
+                      ),),
+                    SingleChildScrollView(
+                      child: Row(children: <Widget>[
+                        EventPostCard(),
+                        EventPostCard(),
+                        EventPostCard(),
+                        EventPostCard(),
+                        EventPostCard(),
+                      ],),
+                      scrollDirection: Axis.horizontal,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      alignment: Alignment.centerLeft,
+                      child: Image.asset(
+                        'assets/placeholders/label_project.png',
+                        scale: 2,
+                      ),),
+                    Column(
+                      children: <Widget>[
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    PostCard(type:'single-photo'),
+                    PostCard(type:'blog'),
+                    PostCard(type:'multi-photo'),
+                  ],
+                ),
+              )
+            ],
+          )
+      ),
     );
   }
 }
