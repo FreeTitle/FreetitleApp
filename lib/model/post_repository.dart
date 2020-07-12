@@ -4,12 +4,21 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:freetitle/model/comment_repository.dart';
 import 'package:freetitle/model/user_repository.dart';
 
+enum PostType {
+  single_photo_video,
+  multiple_photo,
+  pure_text,
+  blog,
+  event,
+  project
+}
+
 class PostModel {
   
   String postID;
   String ownerID;
   Timestamp createTime;
-  String type;
+  PostType type;
   List<String> labelIDs;
   String content;
   Map missionSpec;
@@ -20,7 +29,7 @@ class PostModel {
 
   PostModel({String ownerID,
     Timestamp createTime,
-    String type,
+    PostType type,
     List<String> labelIDs,
     String content,
     Map<String, String> missionSpec,
@@ -49,13 +58,38 @@ class PostModel {
     createTime = postData['createTime'];
     type = postData['type'];
     labelIDs = postData['labelIDs'];
-    content = postData['content'];
     missionSpec = postData['missionSpec'];
     forwardedPostID = postData['forwardedPostID'];
     likes = postData['likes'];
+    _mapType(postData['type']);
     /* To be added */
   }
 
+  void _mapType(String type) {
+    switch(type) {
+      case "single_photo_video":
+        this.type = PostType.single_photo_video;
+        break;
+      case "multiple_photo":
+        this.type = PostType.multiple_photo;
+        break;
+      case "pure_text":
+        this.type = PostType.pure_text;
+        break;
+      case "blog":
+        this.type = PostType.blog;
+        break;
+      case "event":
+        this.type = PostType.event;
+        break;
+      case "project":
+        this.type = PostType.project;
+        break;
+      default:
+        this.type = null;
+        break;
+    }
+  }
 }
 
 class PostFunction {

@@ -9,7 +9,7 @@ import 'package:freetitle/views/projects/projects_screen.dart';
 import 'package:freetitle/views/my_view/my_view.dart';
 import 'package:freetitle/views/my_view/team_management.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freetitle/model/authentication_bloc/bloc.dart';
+import 'package:freetitle/bloc/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login_screen.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/views/home/home_screen.dart';

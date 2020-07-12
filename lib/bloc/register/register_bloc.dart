@@ -5,7 +5,9 @@ import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/user_repository.dart';
 import 'package:freetitle/views/register/register.dart';
-import 'package:freetitle/model/validators.dart';
+import 'package:freetitle/model/util/validators.dart';
+import 'package:freetitle/bloc/register/register_event.dart';
+import 'package:freetitle/bloc/register/register_state.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;

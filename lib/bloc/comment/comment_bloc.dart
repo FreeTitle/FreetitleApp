@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/model/comment/comment_event.dart';
-import 'package:freetitle/model/comment/comment_state.dart';
+import 'package:freetitle/bloc/comment/comment_event.dart';
+import 'package:freetitle/bloc/comment/comment_state.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/comment_repository.dart';

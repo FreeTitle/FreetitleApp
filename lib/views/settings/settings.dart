@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/model/authentication_bloc/bloc.dart';
+import 'package:freetitle/bloc/authentication_bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/views/reset_email/reset_email.dart';
 import 'package:freetitle/views/reset_password/reset_password.dart';
