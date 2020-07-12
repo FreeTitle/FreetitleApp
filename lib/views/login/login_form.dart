@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/model/authentication_bloc/bloc.dart';
+import 'package:freetitle/bloc/authentication_bloc/bloc.dart';
 import 'package:freetitle/views/login/login.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
