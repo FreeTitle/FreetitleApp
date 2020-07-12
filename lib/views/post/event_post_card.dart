@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 
-class EventPost extends StatefulWidget {
-  EventPostState createState() => EventPostState();
+class EventPostCard extends StatefulWidget {
+  _EventPostCardState createState() => _EventPostCardState();
 }
 
-class EventPostState extends State<EventPost> {
+class _EventPostCardState extends State<EventPostCard> {
   var pressAttention = false;
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     return Container(
       width: 210,
       height: 250,
@@ -67,14 +65,18 @@ class EventPostState extends State<EventPost> {
                         Spacer(),
                         Icon(Icons.schedule, color: Colors.grey, size: 20),
                         Text("2 days left",
-                            style: GoogleFonts.galdeano(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .merge(TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    )))),
+                          style: GoogleFonts.galdeano(
+                            textStyle: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .merge(
+                              TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              )
+                            )
+                          )
+                        ),
                         SizedBox(width: 5,)
                       ],
                     ),
@@ -116,9 +118,10 @@ class EventPostState extends State<EventPost> {
         borderRadius: const BorderRadius.all(Radius.circular(16.0)),
         boxShadow: <BoxShadow>[
           BoxShadow(
-              color: AppTheme.grey.withOpacity(0.2),
-              offset: Offset(1.1, 1.1),
-              blurRadius: 10.0),
+            color: AppTheme.grey.withOpacity(0.2),
+            offset: Offset(1.1, 1.1),
+            blurRadius: 10.0
+          ),
         ],
       ),
     );

@@ -3,11 +3,11 @@ import 'package:freetitle/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 
-class ProjectPost extends StatefulWidget {
-  ProjectPostState createState() => ProjectPostState();
+class ProjectPostCard extends StatefulWidget {
+  _ProjectPostCardState createState() => _ProjectPostCardState();
 }
 
-class ProjectPostState extends State<ProjectPost> {
+class _ProjectPostCardState extends State<ProjectPostCard> {
   var pressAttention = false;
   List userName = [
     "AH",
