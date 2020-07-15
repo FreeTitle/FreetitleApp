@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:freetitle/views/index.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freetitle/model/authentication_bloc/bloc.dart';
+import 'package:freetitle/bloc/authentication_bloc/bloc.dart';
 
 class SplashScreenPage extends StatefulWidget {
 

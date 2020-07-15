@@ -3,11 +3,11 @@ import 'package:freetitle/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 
-class ProjectPost extends StatefulWidget {
-  ProjectPostState createState() => ProjectPostState();
+class ProjectPostCard extends StatefulWidget {
+  _ProjectPostCardState createState() => _ProjectPostCardState();
 }
 
-class ProjectPostState extends State<ProjectPost> {
+class _ProjectPostCardState extends State<ProjectPostCard> {
   var pressAttention = false;
   List userName = [
     "AH",
@@ -42,19 +42,19 @@ class ProjectPostState extends State<ProjectPost> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Container(
-      height: 430,
-      width: 1000,
+      height: 400,
+      width: screenSize.width,
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(12.0)),
         child: Stack(
           children: <Widget>[
             Container(
               alignment: Alignment.topCenter,
-              width: 1000,
-              height: 400,
+              width: screenSize.width,
+              height: 340,
               child: Image.asset(
-                'assets/event.png',
-                scale: 0.1,
+                'assets/placeholders/event.png',
+                scale: 1.0,
               ),
             ),
             Align(
@@ -62,7 +62,7 @@ class ProjectPostState extends State<ProjectPost> {
               child: Container(
                 padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                 height: 180,
-                width: 1000,
+                width: screenSize.width,
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColorDark,
                   borderRadius: const BorderRadius.all(Radius.circular(12.0)),

@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/model/modify_acount/modify_acount_event.dart';
-import 'package:freetitle/model/modify_acount/modify_acount_state.dart';
+import 'package:freetitle/bloc/modify_acount/modify_acount_event.dart';
+import 'package:freetitle/bloc/modify_acount/modify_acount_state.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/user_repository.dart';
-import 'package:freetitle/model/validators.dart';
+import 'package:freetitle/model/util/validators.dart';
 
 class ModifyAccountBloc extends Bloc<ModifyAccountEvent, ModifyAccountState> {
   UserRepository _userRepository;

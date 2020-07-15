@@ -3,8 +3,12 @@ import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freetitle/views/post_detail/blog_post_detail.dart';
-import 'package:freetitle/views/post/project_post.dart';
-import 'package:freetitle/views/post/event_post.dart';
+import 'package:freetitle/views/post/post_card.dart';
+import 'package:freetitle/views/post/project_post_card.dart';
+import 'package:freetitle/views/post/event_post_card.dart';
+import 'package:freetitle/views/post/blog/blog_post.dart';
+import 'package:freetitle/views/post/multiple/multiple_photo_post.dart';
+import 'package:freetitle/views/post/single/single_photo.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -41,77 +45,103 @@ class _Home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: AppBar(
-          centerTitle: true,
-          iconTheme: IconThemeData(color: Theme.of(context).accentColor),
-          title: InkWell(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              alignment: Alignment.center,
-              child: Text(
-                'FreeTitle',
-                style: TextStyle(color: Theme.of(context).accentColor),
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            centerTitle: true,
+            iconTheme: IconThemeData(color: Theme.of(context).accentColor),
+            title: InkWell(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                alignment: Alignment.center,
+                child: Text(
+                  'FreeTitle',
+                  style: TextStyle(color: Theme.of(context).accentColor),
+                ),
               ),
+              onTap: () {
+                _scrollController.jumpTo(0);
+              },
             ),
-            onTap: () {
-              _scrollController.jumpTo(0);
-            },
+            bottom: TabBar(
+              labelColor: AppTheme.primary,
+              unselectedLabelColor: Theme.of(context).accentColor,
+              indicatorColor: AppTheme.primary,
+              tabs: <Widget>[
+                Tab(child: Text('Opportunities')),
+                Tab(child: Text('Posts')),
+              ],
+            ),
           ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
+          body: TabBarView(
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                alignment: Alignment.centerLeft,
-                child: Image.asset(
-                  'assets/label_event.png',
-                  scale: 2,
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      alignment: Alignment.centerLeft,
+                      child: Image.asset(
+                        'assets/placeholders/label_event.png',
+                        scale: 2,
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Row(
+                        children: <Widget>[
+                          EventPostCard(),
+                          EventPostCard(),
+                          EventPostCard(),
+                          EventPostCard(),
+                          EventPostCard(),
+                        ],
+                      ),
+                      scrollDirection: Axis.horizontal,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      alignment: Alignment.centerLeft,
+                      child: Image.asset(
+                        'assets/placeholders/label_project.png',
+                        scale: 2,
+                      ),
+                    ),
+                    Column(
+                      children: <Widget>[
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                        ProjectPostCard(),
+                        FlatButton(
+                          child: Text('Navigate'),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) {
+                                return BlogPostDetail();
+                              }),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               SingleChildScrollView(
-                child: Row(
+                child: Column(
                   children: <Widget>[
-                    EventPost(),
-                    EventPost(),
-                    EventPost(),
-                    EventPost(),
-                    EventPost(),
+                    PostCard(type: 'single-photo'),
+                    PostCard(type: 'blog'),
+                    PostCard(type: 'multi-photo'),
                   ],
                 ),
-                scrollDirection: Axis.horizontal,
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                alignment: Alignment.centerLeft,
-                child: Image.asset(
-                  'assets/label_project.png',
-                  scale: 2,
-                ),
-              ),
-              Column(
-                children: <Widget>[
-                  ProjectPost(),
-                  ProjectPost(),
-                  ProjectPost(),
-                  ProjectPost(),
-                  ProjectPost(),
-                  FlatButton(
-                    child: Text('Navigate'),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) {
-                          return BlogPostDetail();
-                        }),
-                      );
-                    },
-                  ),
-                ],
-              ),
+              )
             ],
-          ),
-        ));
+          )),
+    );
   }
 }
