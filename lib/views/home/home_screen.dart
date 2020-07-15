@@ -117,16 +117,6 @@ class _Home extends State<Home> {
                         ProjectPostCard(),
                         ProjectPostCard(),
                         ProjectPostCard(),
-                        FlatButton(
-                          child: Text('Navigate'),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) {
-                                return BlogPostDetail();
-                              }),
-                            );
-                          },
-                        ),
                       ],
                     ),
                   ],
