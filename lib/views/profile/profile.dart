@@ -467,7 +467,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                       height: 30,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        color: AppTheme.primary,
+                        color: Theme.of(context).highlightColor,
                       ),
                       child: Center(
                         child: Icon(

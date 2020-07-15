@@ -65,7 +65,7 @@ class _UserCardState extends State<UserCard> {
                   height: 100,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    color: AppTheme.primary,
+                    color: Theme.of(context).highlightColor,
                   ),
                   child: Stack(
                     children: <Widget>[
@@ -135,7 +135,7 @@ class _UserCardState extends State<UserCard> {
                                     height: 48,
                                     width: 2,
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primary.withOpacity(0.5),
+                                      color: Theme.of(context).highlightColor.withOpacity(0.5),
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(4.0)),
                                     ),
@@ -351,13 +351,13 @@ class _UserCardState extends State<UserCard> {
                                 decoration: BoxDecoration(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
-                                    border: Border.all(color: AppTheme.primary)
-                                    // color: AppTheme.primary.withOpacity(0.2)
+                                    border: Border.all(color: Theme.of(context).highlightColor)
+                                    // color: Theme.of(context).highlightColor.withOpacity(0.2)
                                     ),
                                 child: Center(
                                     child: Text(userType,
                                         style: TextStyle(
-                                            color: AppTheme.primary))),
+                                            color: Theme.of(context).highlightColor))),
                               ),
                             )
                           ],
@@ -393,7 +393,7 @@ class _UserCardState extends State<UserCard> {
                               height: 4,
                               width: 70,
                               decoration: BoxDecoration(
-                                color: AppTheme.primary.withOpacity(0.2),
+                                color: Theme.of(context).highlightColor.withOpacity(0.2),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(4.0)),
                               ),
@@ -404,8 +404,8 @@ class _UserCardState extends State<UserCard> {
                                     height: 4,
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(colors: [
-                                        AppTheme.primary,
-                                        AppTheme.primary.withOpacity(0.1),
+                                        Theme.of(context).highlightColor,
+                                        Theme.of(context).highlightColor.withOpacity(0.1),
                                       ]),
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(4.0)),

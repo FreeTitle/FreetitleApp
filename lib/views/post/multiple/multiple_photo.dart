@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freetitle/app_theme.dart';
-import 'CTflow.dart';
+import 'CLflow.dart';
 
 class MultiplePhoto extends StatelessWidget {
   @override
