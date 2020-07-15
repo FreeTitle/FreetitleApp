@@ -84,9 +84,9 @@ class MyViewState extends State<MyView> {
                     ),
                   ],
                   bottom: TabBar(
-                    labelColor: AppTheme.primary,
+                    labelColor: Theme.of(context).highlightColor,
                     unselectedLabelColor: Theme.of(context).accentColor,
-                    indicatorColor: AppTheme.primary,
+                    indicatorColor: Theme.of(context).highlightColor,
                     tabs: myTabs,
                   ),
                 ),

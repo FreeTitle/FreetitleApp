@@ -6,7 +6,7 @@ import 'package:freetitle/views/post/post_card.dart';
 import 'package:freetitle/views/post/project_post_card.dart';
 import 'package:freetitle/views/post/event_post_card.dart';
 import 'package:freetitle/views/post/blog/blog_post.dart';
-import 'package:freetitle/views/post/multiple/multiple_photo_post.dart';
+import 'package:freetitle/views/post/multiple/multiple_photo.dart';
 import 'package:freetitle/views/post/single/single_photo.dart';
 
 class Home extends StatefulWidget {
@@ -65,10 +65,11 @@ class _Home extends State<Home> {
                 _scrollController.jumpTo(0);
               },
             ),
+            // TODO add FlexibleSpaceBar here for header
             bottom: TabBar(
-              labelColor: AppTheme.primary,
+              labelColor: Theme.of(context).highlightColor,
               unselectedLabelColor: Theme.of(context).accentColor,
-              indicatorColor: AppTheme.primary,
+              indicatorColor: Theme.of(context).highlightColor,
               tabs: <Widget>[
                 Tab(child: Text('Opportunities')),
                 Tab(child: Text('Posts')),

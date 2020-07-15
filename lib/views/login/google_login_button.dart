@@ -21,7 +21,7 @@ class GoogleLoginButton extends StatelessWidget {
         },
         label: Text('使用谷歌账号登录', style: TextStyle(color: Colors.white)),
 
-        color: AppTheme.primary,
+        color: Theme.of(context).highlightColor,
       ),
     );
   }
