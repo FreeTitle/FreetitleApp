@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freetitle/views/post_detail/blog_post_detail.dart';
 import 'package:freetitle/views/post/post_card.dart';
 import 'package:freetitle/views/post/project_post_card.dart';
 import 'package:freetitle/views/post/event_post_card.dart';
@@ -87,15 +88,18 @@ class _Home extends State<Home> {
                       child: Image.asset(
                         'assets/placeholders/label_event.png',
                         scale: 2,
-                      ),),
+                      ),
+                    ),
                     SingleChildScrollView(
-                      child: Row(children: <Widget>[
-                        EventPostCard(),
-                        EventPostCard(),
-                        EventPostCard(),
-                        EventPostCard(),
-                        EventPostCard(),
-                      ],),
+                      child: Row(
+                        children: <Widget>[
+                          EventPostCard(),
+                          EventPostCard(),
+                          EventPostCard(),
+                          EventPostCard(),
+                          EventPostCard(),
+                        ],
+                      ),
                       scrollDirection: Axis.horizontal,
                     ),
                     Container(
@@ -104,7 +108,8 @@ class _Home extends State<Home> {
                       child: Image.asset(
                         'assets/placeholders/label_project.png',
                         scale: 2,
-                      ),),
+                      ),
+                    ),
                     Column(
                       children: <Widget>[
                         ProjectPostCard(),
@@ -120,15 +125,14 @@ class _Home extends State<Home> {
               SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    PostCard(type:'single-photo'),
-                    PostCard(type:'blog'),
-                    PostCard(type:'multi-photo'),
+                    PostCard(type: 'single-photo'),
+                    PostCard(type: 'blog'),
+                    PostCard(type: 'multi-photo'),
                   ],
                 ),
               )
             ],
-          )
-      ),
+          )),
     );
   }
 }
