@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/views/post/comment/comment.dart';
 
 class BlogPostDetail extends StatefulWidget {
   BlogPostDetailState createState() => BlogPostDetailState();
@@ -355,7 +357,8 @@ class BlogPostDetailState extends State<BlogPostDetail> {
                       },
                       highlightColor: Colors.transparent,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         child: Row(
                           children: <Widget>[
                             Icon(pressAttention2 ? Icons.done : Icons.favorite,
@@ -390,102 +393,158 @@ class BlogPostDetailState extends State<BlogPostDetail> {
                     border: Border.all(color: Colors.blue[300], width: 1.5),
                   ),
                 ),
-                SizedBox(width: 180),
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 10),
-                      Icon(
-                        Icons.share,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      Text(
-                        '107',
-                        style: GoogleFonts.galdeano(
-                          textStyle:
-                              Theme.of(context).textTheme.bodyText1.merge(
-                                    TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                        ),
-                      ),
-                    ],
-                  ),
+                SizedBox(width: 170),
+                CommentButtonWidget(),
+              ],
+            ),
+          ),
+        ],
+        alignment: Alignment.bottomCenter,
+      ),
+    );
+  }
+}
+
+class CommentButtonWidget extends StatefulWidget {
+  CommentButtonWidgetState createState() => CommentButtonWidgetState();
+}
+
+class CommentButtonWidgetState extends State<CommentButtonWidget> {
+  Color iconColor = Colors.grey;
+  int liked = 322;
+  int one = 1;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Container(
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                Icon(
+                  Icons.share,
+                  color: Colors.grey,
+                  size: 20,
                 ),
-                SizedBox(width: 12),
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 10),
-                      Icon(
-                        Icons.comment,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      Text(
-                        '37',
-                        style: GoogleFonts.galdeano(
-                          textStyle:
-                              Theme.of(context).textTheme.bodyText1.merge(
-                                    TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 10),
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 1.5),
-                      Container(
-                        width: 36,
-                        height: 20,
-                        child: IconButton(
-                          icon: Icon(Icons.thumb_up),
-                          color: iconColor,
-                          iconSize: 20,
-                          onPressed: () {
-                            setState(() {
-                              if (iconColor == Colors.grey) {
-                                iconColor = Color(0xff8199E5);
-                                liked += one;
-                              } else {
-                                iconColor = Colors.grey;
-                                liked -= one;
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 8.5),
-                      Text(
-                          '$liked',
-                          style: GoogleFonts.galdeano(
-                            textStyle:
-                                Theme.of(context).textTheme.bodyText1.merge(
-                                      TextStyle(
-                                        fontSize: 12,
-                                        color: (iconColor == Colors.grey) ? Colors.grey : Color(0xff8199E5),
-                                      ),
-                                    ),
+                Text(
+                  '107',
+                  style: GoogleFonts.galdeano(
+                    textStyle: Theme.of(context).textTheme.bodyText1.merge(
+                          TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
                         ),
-                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 18),
+          Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(height: 1.5),
+                Container(
+                  height: 20,
+                  width: 20,
+                  child: InkWell(
+                    child: Icon(Icons.comment, color: Colors.grey, size: 20),
+                    onTap: () {
+                      showModalBottomSheet<void>(
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (BuildContext context) {
+                          return Container(
+                            height: 820,
+                            color: Colors.transparent,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(25),
+                                  topRight: Radius.circular(25)),
+                              child: Comment(),
+                            ),
+                            // child: Center(
+                            //   child: Column(
+                            //     mainAxisAlignment: MainAxisAlignment.center,
+                            //     mainAxisSize: MainAxisSize.min,
+                            //     children: <Widget>[
+                            //       const Text('BottomSheet'),
+                            //       RaisedButton(
+                            //         child: const Text('Close BottomSheet'),
+                            //         onPressed: () => Navigator.pop(context),
+                            //       )
+                            //     ],
+                            //   ),
+                            // ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+                Text(
+                  '37',
+                  style: GoogleFonts.galdeano(
+                    textStyle: Theme.of(context).textTheme.bodyText1.merge(
+                          TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 18),
+          Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(height: 1.5),
+                Container(
+                  width: 20,
+                  height: 20,
+                  child: InkWell(
+                    child: Icon(
+                      Icons.thumb_up,
+                      color: iconColor,
+                      size: 20,
+                    ),
+                    onTap: () {
+                      setState(() {
+                        if (iconColor == Colors.grey) {
+                          iconColor = Color(0xff8199E5);
+                          liked += one;
+                        } else {
+                          iconColor = Colors.grey;
+                          liked -= one;
+                        }
+                      });
+                    },
+                  ),
+                ),
+                Text(
+                  '$liked',
+                  style: GoogleFonts.galdeano(
+                    textStyle: Theme.of(context).textTheme.bodyText1.merge(
+                          TextStyle(
+                            fontSize: 12,
+                            color: (iconColor == Colors.grey)
+                                ? Colors.grey
+                                : Color(0xff8199E5),
+                          ),
+                        ),
                   ),
                 ),
               ],
             ),
           ),
         ],
-        alignment: Alignment.bottomCenter,
       ),
     );
   }
