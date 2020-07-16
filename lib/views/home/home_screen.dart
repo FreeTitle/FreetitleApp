@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freetitle/views/post_detail/blog_post_detail.dart';
+import 'package:freetitle/views/post_detail/multiple_photo_post_detail.dart';
 import 'package:freetitle/views/post/post_card.dart';
 import 'package:freetitle/views/post/project_post_card.dart';
 import 'package:freetitle/views/post/event_post_card.dart';
@@ -122,6 +123,16 @@ class _Home extends State<Home> {
                             Navigator.of(context).push(
                               MaterialPageRoute(builder: (context) {
                                 return BlogPostDetail();
+                              }),
+                            );
+                          },
+                        ),
+                        FlatButton(
+                          child: Text('Navigate2'),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) {
+                                return MultiplePhotoPostDetail();
                               }),
                             );
                           },
