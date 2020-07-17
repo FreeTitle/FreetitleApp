@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:freetitle/views/post/comment/comment_cell.dart';
 
 class Comment extends StatefulWidget {
   CommentState createState() => CommentState();
@@ -11,6 +12,7 @@ class CommentState extends State<Comment> {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
+    List<Widget> comments = [CommentCell(), CommentCell(), CommentCell()];
     return Container(
       color: Theme.of(context).primaryColor,
       child: Stack(
@@ -28,7 +30,7 @@ class CommentState extends State<Comment> {
                   width: 0.8,
                 ),
               ),
-              ),
+            ),
             child: Row(
               children: <Widget>[
                 Material(
@@ -58,6 +60,22 @@ class CommentState extends State<Comment> {
               ],
             ),
           ),
+          Column(
+            children: <Widget>[
+              SizedBox(height: 100,),
+              CommentCell(),
+            ],
+          )
+          // ListView.separated(
+          //     itemBuilder: (BuildContext context, int index) {
+          //       return (Container(
+          //         height: 80,
+          //         child: comments[index],
+          //       ));
+          //     },
+          //     separatorBuilder: (BuildContext context, int index) =>
+          //         const Divider(),
+          //     itemCount: 3)
         ],
       ),
     );
