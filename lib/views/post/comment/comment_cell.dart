@@ -15,16 +15,17 @@ class CommentCellState extends State<CommentCell> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Container(
-      color: Colors.yellow,
       width: screenSize.width,
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Flexible(
           flex: 1,
           child: Material(
             type: MaterialType.transparency,
             child: Container(
+              alignment: Alignment.topCenter,
               child: Container(
                 height: 40,
                 width: 40,
@@ -49,7 +50,7 @@ class CommentCellState extends State<CommentCell> {
           ),
           SizedBox(width: 13),
           Flexible(
-          flex: 5,
+          flex: 8,
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 2),
             child: Column(
@@ -99,7 +100,9 @@ class CommentCellState extends State<CommentCell> {
                 ),
                 SizedBox(height: 10,),
                 Container(
+                  alignment: Alignment.center,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
                         "5 mins ago",
@@ -173,9 +176,9 @@ class CommentCellState extends State<CommentCell> {
                           },
                         ),
                       ),
-                      // SizedBox(
-                      //   width: 20,
-                      // )
+                      SizedBox(
+                        width: 5,
+                      )
                     ],
                   ),
                 ),

@@ -12,18 +12,34 @@ class CommentState extends State<Comment> {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    List<Widget> comments = [CommentCell(), CommentCell(), CommentCell()];
+    List<Widget> comments = [SizedBox(height: 53), CommentCell(), CommentCell(), CommentCell()];
     return Container(
       color: Theme.of(context).primaryColor,
       child: Stack(
         alignment: Alignment.topCenter,
         children: <Widget>[
+          // Column(
+          //   children: <Widget>[
+          //     SizedBox(height: 100,),
+          //     CommentCell(),
+          //   ],
+          // )
+          ListView.separated(
+              itemBuilder: (BuildContext context, int index) {
+                return (Container(
+                  child: comments[index],
+                ));
+              },
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
+              itemCount: 4),
           Container(
             height: 60,
             width: screenSize.width,
             alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
             decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
               border: Border(
                 bottom: BorderSide(
                   color: Colors.grey,
@@ -60,22 +76,6 @@ class CommentState extends State<Comment> {
               ],
             ),
           ),
-          Column(
-            children: <Widget>[
-              SizedBox(height: 100,),
-              CommentCell(),
-            ],
-          )
-          // ListView.separated(
-          //     itemBuilder: (BuildContext context, int index) {
-          //       return (Container(
-          //         height: 80,
-          //         child: comments[index],
-          //       ));
-          //     },
-          //     separatorBuilder: (BuildContext context, int index) =>
-          //         const Divider(),
-          //     itemCount: 3)
         ],
       ),
     );
