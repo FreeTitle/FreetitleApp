@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/bloc/like/like_event.dart';
-import 'package:freetitle/bloc/like/like_state.dart';
+import 'package:freetitle/bloc/post/like/like_event.dart';
+import 'package:freetitle/bloc/post/like/like_state.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/post_repository.dart';
 
 class LikeBloc extends Bloc<LikeEvent, LikeState> {
 
-  PostFunction _postFunction;
+  PostRepository _postRepository;
   String _postID;
 
-  LikeBloc({@required PostFunction postFunction, @required String postID})
-    : assert(postFunction != null), assert(postID != null),
-        _postFunction = postFunction,
+  LikeBloc({@required PostRepository postRepository, @required String postID})
+    : assert(postRepository != null), assert(postID != null),
+        _postRepository = postRepository,
         _postID = postID;
 
   @override
@@ -52,7 +52,7 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
 
   Stream<LikeState> _mapPostLoadedToState() async* {
     try{
-      bool liked = await _postFunction.isPostLiked(_postID);
+      bool liked = await _postRepository.isPostLiked(_postID);
       if(liked){
         yield LikeState.liked();
       } else {
@@ -66,7 +66,7 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
   Stream<LikeState> _mapLikePressedToState() async* {
     try {
       yield LikeState.likeSubmitting();
-      var result = await _postFunction.likeButtonPressed();
+      var result = await _postRepository.likeButtonPressed();
       if(result){
         yield LikeState.liked();
       }
@@ -83,7 +83,7 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
   Stream<LikeState> _mapUnlikePressedToState() async* {
     try {
       yield LikeState.unlikeSubmitting();
-      var result = await _postFunction.likeButtonPressed();
+      var result = await _postRepository.likeButtonPressed();
       if(result) {
         yield LikeState.unliked();
       }

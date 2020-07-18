@@ -57,7 +57,7 @@ class CommentModel {
 
 }
 
-class CommentFunction{
+class CommentRepository{
 
   static Future<List<CommentModel>> get20Comments(postID) async {
     

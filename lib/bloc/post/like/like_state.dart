@@ -95,23 +95,23 @@ class LikeState {
 //    );
 //  }
 
-  LikeState copyWith({
-    bool isLike,
-    bool isUnlike,
-    bool isSubmitting,
-    bool isSuccess,
-    bool isLikeButtonEnabled,
-    Failure_LIKE_PRESSED: false
-  }) {
-    return LikeState(
-      isLike: isLike ?? this.isLike,
-      isUnlike: isUnlike ?? this.isUnlike,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      isSuccess: isSuccess ?? this.isSuccess,
-      isLikeButtonEnabled: isLikeButtonEnabled ?? this.isLikeButtonEnabled,
-      failure_LIKE_PRESSED: Failure_LIKE_PRESSED ?? this.failure_LIKE_PRESSED
-    );
-  }
+//  LikeState copyWith({
+//    bool isLike,
+//    bool isUnlike,
+//    bool isSubmitting,
+//    bool isSuccess,
+//    bool isLikeButtonEnabled,
+//    Failure_LIKE_PRESSED: false
+//  }) {
+//    return LikeState(
+//      isLike: isLike ?? this.isLike,
+//      isUnlike: isUnlike ?? this.isUnlike,
+//      isSubmitting: isSubmitting ?? this.isSubmitting,
+//      isSuccess: isSuccess ?? this.isSuccess,
+//      isLikeButtonEnabled: isLikeButtonEnabled ?? this.isLikeButtonEnabled,
+//      failure_LIKE_PRESSED: Failure_LIKE_PRESSED ?? this.failure_LIKE_PRESSED
+//    );
+//  }
 
   @override
   String toString() {

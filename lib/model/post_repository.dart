@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freetitle/bloc/authentication_bloc/authentication_bloc.dart';
 import 'package:freetitle/model/comment_repository.dart';
 import 'package:freetitle/model/user_repository.dart';
+import 'package:freetitle/model/util/cloud_function_invoker.dart';
 
 enum PostType {
   single_photo_video,
@@ -92,7 +95,9 @@ class PostModel {
   }
 }
 
-class PostFunction {
+class PostRepository {
+
+  /* Read Data */
 
   static Future<List<PostModel>> get20Posts() async {
     var ref = await Firestore.instance.collection('posts').limit(20).getDocuments();
@@ -132,18 +137,65 @@ class PostFunction {
     }
   }
 
+  /* Cloud function involved */
+
   Future<bool> likeButtonPressed() async  {
-    HttpsCallable likePressed = CloudFunctions.instance.getHttpsCallable(functionName: '<TBD>');
-    HttpsCallableResult resp = await likePressed.call(<String, dynamic>{
-      /* TBD */
-    });
+    HttpsCallableResult resp = await CloudFunctionInvoker.CloudFunction("", '<name>');
 
     /* TODO Needs to handle result */
     print(resp.data);
-    if(resp.data){
-      return true;
-    }else {
-      return false;
+    switch(resp.data){
+      case 1:
+        return true;
+      case -1:
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  Future<bool> createPost(Map<String, dynamic> data) async {
+    HttpsCallableResult resp = await CloudFunctionInvoker.CloudFunction(data, '<name>');
+
+    /* TODO Needs to handle result */
+    print(resp.data);
+    switch(resp.data){
+      case 1:
+        return true;
+      case -1:
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  Future<bool> modifyPost(Map<String, dynamic> data) async {
+    HttpsCallableResult resp = await CloudFunctionInvoker.CloudFunction(data, '<name>');
+
+    /* TODO Needs to handle result */
+    print(resp.data);
+    switch(resp.data){
+      case 1:
+        return true;
+      case -1:
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  Future<bool> deletePost(Map<String, dynamic> data) async {
+    HttpsCallableResult resp = await CloudFunctionInvoker.CloudFunction(data, '<name>');
+
+    /* TODO Needs to handle result */
+    print(resp.data);
+    switch (resp.data) {
+      case 1:
+        return true;
+      case -1:
+        return false;
+      default:
+        return false;
     }
   }
 

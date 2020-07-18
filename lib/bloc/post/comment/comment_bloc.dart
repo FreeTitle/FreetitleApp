@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/bloc/comment/comment_event.dart';
-import 'package:freetitle/bloc/comment/comment_state.dart';
+import 'package:freetitle/bloc/post/comment/comment_event.dart';
+import 'package:freetitle/bloc/post/comment/comment_state.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/comment_repository.dart';
 
 class CommentBloc extends Bloc<CommentEvent, CommentState> {
 
-  CommentFunction _commentFunction;
+  CommentRepository _commentRepository;
   String _postID;
   String _commentID;
 
-  CommentBloc({@required commentFunction, @required postID, @required commentID})
-    : assert(commentFunction != null), assert(postID != null), assert(commentID !=null),
-      _commentFunction = commentFunction,
+  CommentBloc({@required commentRepository, @required postID, @required commentID})
+    : assert(commentRepository != null), assert(postID != null), assert(commentID !=null),
+      _commentRepository = commentRepository,
       _postID = postID,
       _commentID = commentID;
 
@@ -47,7 +47,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     try{
       yield CommentState.submitting();
       /* TODO data needs to be changed */
-      var result = await _commentFunction.uploadCommentPressed(Map());
+      var result = await _commentRepository.uploadCommentPressed(Map());
       if(result) {
         yield CommentState.success();
       }
