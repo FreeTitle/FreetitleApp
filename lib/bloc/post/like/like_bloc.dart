@@ -51,6 +51,7 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
   }
 
   Stream<LikeState> _mapPostLoadedToState() async* {
+    print("_mapPostLoadedToState");
     try{
       bool liked = await _postRepository.isPostLiked(_postID);
       if(liked){
@@ -64,13 +65,15 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
   }
 
   Stream<LikeState> _mapLikePressedToState() async* {
+    print("_mapLikePressedToState");
     try {
       yield LikeState.likeSubmitting();
-      var result = await _postRepository.likeButtonPressed();
-      if(result){
+      var result = await _postRepository.likeButtonPressed(_postID);
+      if(result == 1){
         yield LikeState.liked();
       }
       else {
+        yield LikeState.Failure_LIKE_PRESSED();
         yield LikeState.unliked();
       }
     } catch(e) {
@@ -81,13 +84,15 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
   }
 
   Stream<LikeState> _mapUnlikePressedToState() async* {
+    print("_mapUnlikePressedToState");
     try {
       yield LikeState.unlikeSubmitting();
-      var result = await _postRepository.likeButtonPressed();
-      if(result) {
+      var result = await _postRepository.likeButtonPressed(_postID);
+      if(result == 1) {
         yield LikeState.unliked();
       }
       else {
+        yield LikeState.Failure_LIKE_PRESSED();
         yield LikeState.liked();
       }
     }
