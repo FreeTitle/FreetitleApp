@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:freetitle/app_theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freetitle/views/index.dart';
 import 'package:freetitle/views/post_detail/blog_post_detail.dart';
 import 'package:freetitle/views/post/post_card.dart';
 import 'package:freetitle/views/post/project_post_card.dart';
@@ -9,39 +10,38 @@ import 'package:freetitle/views/post/event_post_card.dart';
 import 'package:freetitle/views/post/blog/blog_post.dart';
 import 'package:freetitle/views/post/multiple/multiple_photo.dart';
 import 'package:freetitle/views/post/single/single_photo.dart';
+import 'package:freetitle/views/post_list/post_list.dart';
+import 'package:freetitle/model/post_repository.dart';
+import 'package:freetitle/views/metadata_provider.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _Home();
+    return _HomeScreenState();
   }
 }
 
-class _Home extends State<Home> {
-  List blogList;
-  List blogIDs;
-  List missionList;
-  List missionIDs;
-  ScrollController _scrollController;
+class _HomeScreenState extends State<HomeScreen> {
+
+
+//  List<PostModel> _posts;
+//  Future<List<PostModel>> _getPost;
 
   @override
   void initState() {
-    _scrollController = ScrollController(initialScrollOffset: 0.0);
+//    _posts = List();
+//    _getPost = PostRepository.get5DummyPosts();
     super.initState();
   }
 
-  Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 200));
-    return true;
-  }
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class _Home extends State<Home> {
                 ),
               ),
               onTap: () {
-                _scrollController.jumpTo(0);
+//                _scrollController.jumpTo(0);
               },
             ),
             // TODO add FlexibleSpaceBar here for header
@@ -122,17 +122,24 @@ class _Home extends State<Home> {
                   ],
                 ),
               ),
-              SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    PostCard(type: 'single-photo'),
-                    PostCard(type: 'blog'),
-                    PostCard(type: 'multi-photo'),
-                  ],
-                ),
-              )
+              PostList(),
+//              FutureBuilder<List<PostModel>>(
+//                key: PageStorageKey('Post'),
+//                future: _getPost,
+//                builder:(BuildContext context, AsyncSnapshot snapshot) {
+//                  if(snapshot.connectionState == ConnectionState.done){
+//                    if(MetaDataProvider.of(context).postCount == 5){
+//                      _posts = snapshot.data;
+//                    }
+//                    return
+//                  } else {
+//                    return Center(child: Text("Loading"),);
+//                  }
+//                },
+//              )
             ],
-          )),
+          )
+      ),
     );
   }
 }

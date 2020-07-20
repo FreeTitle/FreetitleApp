@@ -38,225 +38,14 @@ class _IndexPageState extends State<IndexPage> {
     });
   }
 
-  Map<String, int> unreadMessages;
-  StreamController<Map> streamController;
-
-  String getNumUnread() {
-    if(unreadMessages.values.length == 0){
-      return '0';
-    }
-    return unreadMessages.values.reduce((sum, element) => sum+element).toString();
-  }
-
-  FirebaseMessaging firebaseMessaging = FirebaseMessaging();
-
   @override
   void initState(){
-    unreadMessages = Map();
-    streamController = StreamController.broadcast();
-
     _children = [
-      Home(),
+      HomeScreen(),
       ProjectsScreen(),
       MessagesScreen(),
       MyView(),
     ];
-
-    final wx = registerWxApi(appId: 'wx3f39d58fd1321045', doOnIOS: true, doOnAndroid: true, universalLink: 'https://freetitle.us/');
-
-    if(Platform.isIOS) {
-      firebaseMessaging.requestNotificationPermissions(
-          const IosNotificationSettings(
-              sound: true, badge: true, alert: true, provisional: false
-          )
-      );
-    }
-
-//    firebaseMessaging.configure(
-//      onMessage: (Map<String, dynamic> incomeMessage) {
-//        print('onMessage called: $incomeMessage');
-//        var message;
-//        if(Platform.isAndroid){
-//          message = incomeMessage['data'];
-//        }
-//        else{
-//          message = incomeMessage;
-//        }
-//
-//        if(message['blog'] != null){
-//          try{
-//            showDialog(
-//              context: context,
-//              builder: (BuildContext context) {
-//                return AlertDialog(
-//                  title: Text(message['title']),
-//                  content: Text(message['body']),
-//                  actions: <Widget>[
-//                    FlatButton(
-//                      child: Text('好的'),
-//                      onPressed: () {
-//                        Navigator.of(context).pop();
-//                      },
-//                    ),
-//                    FlatButton(
-//                      child: Text('去看看'),
-//                      onPressed: () {
-//                        Navigator.push<dynamic>(
-//                            context,
-//                            MaterialPageRoute<dynamic>(
-//                                builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
-//                            )
-//                        );
-//                      },
-//                    ),
-//                  ],
-//                );
-//              }
-//            );
-//          } catch(e) {
-//            print('Error open blog from notification due to: $e');
-//          }
-//        }
-//        else if (message['mission'] != null){
-//          try{
-//            showDialog(
-//                context: context,
-//                builder: (BuildContext context) {
-//                  return AlertDialog(
-//                    title: Text(message['title']),
-//                    content: Text(message['body']),
-//                    actions: <Widget>[
-//                      FlatButton(
-//                        child: Text('好的'),
-//                        onPressed: () {
-//                          Navigator.of(context).pop();
-//                        },
-//                      ),
-//                      FlatButton(
-//                        child: Text('去看看'),
-//                        onPressed: () {
-//                          Navigator.push<dynamic>(
-//                              context,
-//                              MaterialPageRoute<dynamic>(
-//                                  builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
-//                              )
-//                          );
-//                        },
-//                      ),
-//                    ],
-//                  );
-//                }
-//            );
-//          } catch(e) {
-//            print('Error open mission from notification due to: $e');
-//          }
-//        }
-//        else if (message['chat'] != null) {
-//          print('recieve message id ${message['chat']}');
-//          if(unreadMessages.containsKey(message['chat'])){
-//            setState(() {
-//              unreadMessages[message['chat']] += 1;
-//            });
-//            streamController.add(unreadMessages);
-//          }
-//          else{
-//            setState(() {
-//              unreadMessages[message['chat']] = 1;
-//            });
-//            streamController.add(unreadMessages);
-//          }
-//
-//        }
-//        return;
-//      },
-//      onResume: (Map<String, dynamic> message) {
-//        print('onResume called: $message');
-//        if(message['blog'] != null){
-//          try{
-//            Navigator.push<dynamic>(
-//                context,
-//                MaterialPageRoute<dynamic>(
-//                    builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
-//                )
-//            );
-//          } catch(e) {
-//            print('Error open blog from notification due to: $e');
-//          }
-//        }
-//        else if (message['mission'] != null){
-//          try{
-//            Navigator.push<dynamic>(
-//                context,
-//                MaterialPageRoute<dynamic>(
-//                    builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
-//                )
-//            );
-//          } catch(e) {
-//            print('Error open mission from notification due to: $e');
-//          }
-//        }
-//        else if (message['chat'] != null) {
-//          if(unreadMessages.containsKey(message['chat'])){
-//            unreadMessages[message['chat']] += 1;
-//          }
-//          else{
-//            unreadMessages[message['chat']] = 1;
-//          }
-//          setState(() {
-//
-//          });
-//        }
-//        return;
-//      },
-//      onLaunch: (Map<String, dynamic> message) {
-//        print('onLaunch called: $message');
-//        if(message['blog'] != null){
-//          try{
-//            Navigator.push<dynamic>(
-//                context,
-//                MaterialPageRoute<dynamic>(
-//                    builder: (BuildContext context) => BlogDetail(blogID: message['blog'],)
-//                )
-//            );
-//          } catch(e) {
-//            print('Error open blog from notification due to: $e');
-//          }
-//        }
-//        else if (message['mission'] != null){
-//          try{
-//            Navigator.push<dynamic>(
-//                context,
-//                MaterialPageRoute<dynamic>(
-//                    builder: (BuildContext context) => MissionDetail(missionID: message['mission'],)
-//                )
-//            );
-//          } catch(e) {
-//            print('Error open mission from notification due to: $e');
-//          }
-//        }
-//        else if (message['chat'] != null) {
-//          if(unreadMessages.containsKey(message['chat'])){
-//            unreadMessages[message['chat']] += 1;
-//          }
-//          else{
-//            unreadMessages[message['chat']] = 1;
-//          }
-//          setState(() {
-//
-//          });
-//        }
-//        return;
-//      },
-//      onBackgroundMessage: Platform.isIOS ? null : myBackgroundMessageHandler,
-//    );
-//    firebaseMessaging.onIosSettingsRegistered
-//        .listen((IosNotificationSettings settings) {
-//      print("Settings registered: $settings");
-//    }).onError((err) {
-//      print('request error: $err');
-//    });
-
-//    saveCurrentUser();
 
     super.initState();
   }
@@ -271,7 +60,7 @@ class _IndexPageState extends State<IndexPage> {
                 print("Index Page: ${BlocProvider.of<AuthenticationBloc>(context).state}, Page_index: $_pageIndex");
                 if (state is Uninitialized || state is Unauthenticated) {
                   if (_pageIndex == 0) {
-                    return Home();
+                    return _children[_pageIndex];
                   } else {
                     return LoginScreen();
                   }
@@ -297,17 +86,9 @@ class _IndexPageState extends State<IndexPage> {
                     title: Text('Home', style: Theme.of(context).textTheme.bodyText1,),
                   ),
                   BottomNavigationBarItem(
-                      icon: getNumUnread() != '0' ? Badge(
-                        badgeContent: Text(getNumUnread(), style: TextStyle(color: Colors.white, fontSize: 12),),
-                        child: Icon(Icons.chat),
-                      ) :  Icon(Icons.work),
-                      title: Text('Projects', style: Theme.of(context).textTheme.bodyText1,),
+                    icon: Icon(Icons.work),
+                    title: Text('Projects', style: Theme.of(context).textTheme.bodyText1,),
                   ),
-//            BottomNavyBarItem(
-//              icon: Icon(Icons.business),
-//              title: Text('社区'),
-//              activeColor: Colors.blue,
-//            ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.chat),
                     title: Text('Messages', style: Theme.of(context).textTheme.bodyText1,),
