@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
 //            brightness: Brightness.light,
               primaryColor: AppTheme.nearlyWhite,
               accentColor: Colors.black,
-              highlightColor: Color(0xFF00BCD4),
+              highlightColor: Colors.blue[300],
               primaryColorLight: AppTheme.grey,
               primaryColorDark: AppTheme.white,
               appBarTheme: AppBarTheme(
@@ -100,7 +100,7 @@ class _MyAppState extends State<MyApp> {
             accentColor: Colors.white,
             primaryColorDark: Colors.black,
             primaryColorLight: AppTheme.dark_grey,
-            highlightColor: Color(0xFF00BCD4),
+            highlightColor: Colors.blue[300],
             appBarTheme: AppBarTheme(
               color: Colors.black,
             ),

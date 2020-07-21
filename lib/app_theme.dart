@@ -4,7 +4,7 @@ import 'package:freetitle/main.dart';
 class AppTheme {
   AppTheme._();
 
-  static const Color primary = Color(0xFF00BCD4);
+//  static const Color primary = Colors.blue[300];
   static const Color secondary = Color(0xFFFF8F00);
   static const Color notWhite = Color(0xFFEDF0F2);
   static const Color nearlyWhite = Color(0xFFF6F6F6);

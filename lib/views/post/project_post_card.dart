@@ -89,14 +89,17 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                                     )))),
                         SizedBox(width: 10),
                         Text("photography",
-                            style: GoogleFonts.galdeano(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .merge(TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.blue[700],
-                                    )))),
+                          style: GoogleFonts.galdeano(
+                            textStyle: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .merge(TextStyle(
+                                fontSize: 14,
+                                color: Colors.blue[700],
+                              )
+                            )
+                          )
+                        ),
                         SizedBox(
                           width: 10,
                         ),
@@ -158,7 +161,7 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                                 child: Row(
                                   children: <Widget>[
                                     Icon(pressAttention ? Icons.done : Icons.favorite,
-                                        color: pressAttention ? Colors.blue[300] : Colors.white, size: 15),
+                                        color: pressAttention ? Theme.of(context).highlightColor : Colors.white, size: 15),
                                     SizedBox(width: pressAttention ? 3 : 10),
                                     Text(
                                       pressAttention ? "SAVED" : "SAVE",
@@ -169,7 +172,7 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                                             .merge(
                                               TextStyle(
                                                 fontSize: 19,
-                                                color: pressAttention ? Colors.blue[300] : Colors.white,
+                                                color: pressAttention ? Theme.of(context).highlightColor : Colors.white,
                                                 fontWeight: FontWeight.normal,
                                               ),
                                             ),
@@ -181,9 +184,9 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                             ),
                           ),
                           decoration: BoxDecoration(
-                            color: pressAttention ? Colors.white : Colors.blue[300],
+                            color: pressAttention ? Theme.of(context).primaryColor : Theme.of(context).highlightColor,
                             borderRadius: BorderRadius.all(Radius.circular(30)),
-                            border: Border.all(color: Colors.blue[300], width: 1.5),
+                            border: Border.all(color: Theme.of(context).highlightColor, width: 1.5),
                           ),
                         ),
                         Spacer(),
