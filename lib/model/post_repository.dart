@@ -127,9 +127,9 @@ class PostRepository {
   /* Read Data */
   static DocumentSnapshot _lastDoc;
 
-  static Future<List<PostModel>> getPosts(count) async {
+  static Future<List<PostModel>> getPosts(count, refresh) async {
     QuerySnapshot ref;
-    if(_lastDoc != null){
+    if(_lastDoc != null && !refresh){
       ref = await Firestore.instance.collection('posts').orderBy("createTime").limit(count).startAfterDocument(_lastDoc).getDocuments();
     }
     else {

@@ -118,7 +118,7 @@ class _LikeButtonState extends State<LikeButton> {
           });
         }
         else if(state.failure_LIKE_PRESSED) {
-          Toast.show("Like failed", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+          Toast.show("Like failed", context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
         }
       },
       child: BlocBuilder(
@@ -132,7 +132,7 @@ class _LikeButtonState extends State<LikeButton> {
                   iconSize: 20,
                   icon: isLiked ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
                   onPressed: () {
-                    isLiked ? BlocProvider.of<LikeBloc>(context).dispatch(UnlikePressed(),) : BlocProvider.of<LikeBloc>(context).dispatch(LikePressed(),);
+                    isLiked ? _likeBloc.dispatch(UnlikePressed(),) : _likeBloc.dispatch(LikePressed(),);
 //                    setState(() {
 //
 //                    });

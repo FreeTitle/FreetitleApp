@@ -22,7 +22,7 @@ class _PostListState extends State<PostList> with AutomaticKeepAliveClientMixin 
   @override
   void initState() {
     _easyRefreshController = EasyRefreshController();
-    _getPost = PostRepository.getPosts(postCount);
+    _getPost = PostRepository.getPosts(postCount, true);
     super.initState();
   }
 
@@ -53,7 +53,7 @@ class _PostListState extends State<PostList> with AutomaticKeepAliveClientMixin 
             header: ClassicalHeader(),
             footer: ClassicalFooter(),
             onRefresh: () async {
-              List<PostModel> newerPost = await PostRepository.getPosts(postCount);
+              List<PostModel> newerPost = await PostRepository.getPosts(5, true);
               setState(() {
                 _posts += newerPost;
                 postCount = 5;
@@ -61,7 +61,7 @@ class _PostListState extends State<PostList> with AutomaticKeepAliveClientMixin 
               _easyRefreshController.resetRefreshState();
             },
             onLoad: () async {
-              List<PostModel> newerPost = await PostRepository.getPosts(postCount).timeout(Duration(milliseconds: 500), onTimeout: () {print("timeout"); });
+              List<PostModel> newerPost = await PostRepository.getPosts(postCount, false).timeout(Duration(milliseconds: 500), onTimeout: () {print("timeout"); });
               setState(() {
                 _posts += newerPost;
                 postCount += 5;

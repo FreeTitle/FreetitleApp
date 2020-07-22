@@ -69,7 +69,7 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
     try {
       yield LikeState.likeSubmitting();
       var result = await _postRepository.likeButtonPressed(_postID);
-      if(result == 1){
+      if(result){
         yield LikeState.liked();
       }
       else {
@@ -88,7 +88,7 @@ class LikeBloc extends Bloc<LikeEvent, LikeState> {
     try {
       yield LikeState.unlikeSubmitting();
       var result = await _postRepository.likeButtonPressed(_postID);
-      if(result == 1) {
+      if(result) {
         yield LikeState.unliked();
       }
       else {
