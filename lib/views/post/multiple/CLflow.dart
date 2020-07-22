@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CLFlow extends StatelessWidget {
   final List<Widget> children;
   final int count;
-  double gap;
+  final double gap;
 
   CLFlow({Key key, this.children, @required this.count, this.gap})
       : super(key: key);

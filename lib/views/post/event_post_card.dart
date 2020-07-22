@@ -53,7 +53,7 @@ class _EventPostCardState extends State<EventPostCard> {
                             height: 45,
                             child: IconButton(
                               iconSize: 28,
-                              color: Colors.teal[200],
+                              color: Theme.of(context).highlightColor,
                               icon: pressAttention ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
                               onPressed: () {
                                 setState(() => pressAttention = !pressAttention);
@@ -95,7 +95,7 @@ class _EventPostCardState extends State<EventPostCard> {
                   width: 36,
                   height: 36,
                   decoration: ShapeDecoration(
-                    color: Colors.teal[200],
+                    color: Theme.of(context).highlightColor,
                     shape: CircleBorder(),
                   ),
                   child: IconButton(
