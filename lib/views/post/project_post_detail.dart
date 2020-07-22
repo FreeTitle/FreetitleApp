@@ -247,9 +247,9 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                               control: new SwiperControl()),
                         ),
                         Container(
-                            padding: EdgeInsets.only(top: 40, right: 100),
+                            padding: EdgeInsets.only(top: 40, right: 200),
                             child: Text(
-                              'We Prefer:                        ',
+                              'We Prefer:',
                               style: GoogleFonts.galdeano(
                                 textStyle:
                                     Theme.of(context).textTheme.bodyText1.merge(
@@ -287,7 +287,63 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                                   ],
                                 );
                               }).toList(),
-                            ))
+                            )),
+                        Container(
+                            padding: EdgeInsets.only(
+                                top: 30, right: 200, bottom: 10),
+                            child: Text(
+                              'Members',
+                              style: GoogleFonts.galdeano(
+                                textStyle:
+                                    Theme.of(context).textTheme.bodyText1.merge(
+                                          TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                              ),
+                            )),
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Image.asset("assets/member_placeholder.png",
+                                    scale: 3),
+                                Image.asset("assets/member_placeholder.png",
+                                    scale: 3),
+                                Image.asset("assets/member_placeholder.png",
+                                    scale: 3),
+                                Image.asset("assets/member_placeholder.png",
+                                    scale: 3),
+                              ],
+                            )),
+                        // Container(
+                        //   padding: EdgeInsets.only(top: 60),
+                        //   width: 236,
+                        //   height: 40,
+                        //   child:
+                        InkWell(
+                          onTap: () {
+                            print('apply pressed');
+                          },
+                          child: Container(
+                              width: 136,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                  color: Colors.blue[300]),
+                              child: Center(
+                                  child: Text('APPLY NOW',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 17)))),
+                        ),
+                        // ),
+                        SizedBox(
+                          height: 80,
+                        )
                       ],
                     )),
               ),
