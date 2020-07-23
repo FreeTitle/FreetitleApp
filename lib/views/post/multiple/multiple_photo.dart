@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:freetitle/views/post_detail/multiple_photo_post_detail.dart';
 import 'CLflow.dart';
 
 class MultiplePhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => MultiplePhotoPostDetail()),
+        );
+      },
+      child: Column(
       children: <Widget>[
         Container(
           padding: EdgeInsets.only(top: 10),
@@ -21,6 +28,7 @@ class MultiplePhoto extends StatelessWidget {
           child: getFlowContainer(6)
         ),
       ],
+    ),
     );
   }
 

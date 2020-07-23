@@ -1,10 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class MultiplePhotoPostDetail extends StatefulWidget {
   MultiplePhotoPostDetailState createState() => MultiplePhotoPostDetailState();
 }
+
+final List<String> imgList = [
+  'assets/1.png',
+  'assets/2.png',
+  'assets/3.png',
+  'assets/4.png',
+  'assets/5.png'
+];
+
+final int totalImg = imgList.length;
+
+final List<Widget> imageSliders = imgList
+    .map((item) => Container(
+          child: Container(
+              child: Stack(
+            children: <Widget>[
+              Container(
+                child: Image.asset(item),
+              ),
+            ],
+          )),
+        ))
+    .toList();
 
 class MultiplePhotoPostDetailState extends State<MultiplePhotoPostDetail> {
   var pressAttention = false;
@@ -12,8 +36,9 @@ class MultiplePhotoPostDetailState extends State<MultiplePhotoPostDetail> {
   Color iconColor = Colors.grey;
   int liked = 322;
   int one = 1;
-  @override
+  int current = 0;
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0.0,
@@ -120,30 +145,48 @@ class MultiplePhotoPostDetailState extends State<MultiplePhotoPostDetail> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    width: 414,
-                    height: 269,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: <Widget>[
-                        Container(
-                          child: Image.asset('assets/1.png'),
-                        ),
-                        Container(
-                          child: Image.asset('assets/2.png'),
-                        ),
-                        Container(
-                          child: Image.asset('assets/3.png'),
-                        ),
-                        Container(
-                          child: Image.asset('assets/4.png'),
-                        ),
-                        Container(
-                          child: Image.asset('assets/5.png'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 20, height: 20),
+                      width: screenSize.width,
+                      height: screenSize.height / 3.3,
+                      child: Stack(
+                        children: <Widget>[
+                          CarouselSlider(
+                            options: CarouselOptions(
+                                enableInfiniteScroll: false,
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    current = index + 1;
+                                  });
+                                }),
+                            items: imageSliders,
+                          ),
+                          Positioned(
+                            bottom: 240.0,
+                            left: 370.0,
+                            right: 10.0,
+                            child: Container(
+                              child: Text(
+                                '$current/$totalImg',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.dosis(
+                                  textStyle: 
+                                        TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                      ),
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                                border:
+                                    Border.all(color: Color(0x2D2A2B), width: 1.5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )),
+                  SizedBox(width: 20, height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
