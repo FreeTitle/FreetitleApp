@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'project_post_detail.dart';
+import 'package:freetitle/views/post_detail/project_post_detail.dart';
 
 class ProjectPostCard extends StatefulWidget {
   _ProjectPostCardState createState() => _ProjectPostCardState();
