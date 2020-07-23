@@ -24,12 +24,17 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
       body: SingleChildScrollView(
         child: Stack(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: Image.asset('assets/project_placeholder1.png'),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              //padding: EdgeInsets.only(top: 10),
+              child: FittedBox(
+                  child: Image.asset(
+                'assets/project_placeholder1.png',
+                fit: BoxFit.fill,
+              )),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 260),
+              padding: EdgeInsets.only(top: 240),
               child: Container(
                   padding: EdgeInsets.only(left: 43, right: 43),
                   width: 410,
@@ -89,18 +94,22 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                       Container(
                         height: 218,
                         child: Swiper(
-                            itemBuilder: (BuildContext context, int index) {
-                              return Image.asset(
-                                "assets/project_placeholder3.png",
-                                fit: BoxFit.fill,
-                              );
-                            },
-                            itemCount: 3,
-                            pagination: new SwiperPagination(),
-                            control: new SwiperControl()),
+                          itemCount: 3,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Image.asset(
+                              "assets/project_placeholder3.png",
+                              fit: BoxFit.fill,
+                            );
+                          },
+                          control: SwiperControl(),
+                          pagination: SwiperPagination(
+                              builder: new DotSwiperPaginationBuilder(
+                                  color: Colors.grey,
+                                  activeColor: Colors.blue)),
+                        ),
                       ),
                       Container(
-                          padding: EdgeInsets.only(top: 40, right: 200),
+                          padding: EdgeInsets.only(top: 40, right: 240),
                           child: Text(
                             'We Prefer:',
                             style: GoogleFonts.galdeano(
@@ -114,11 +123,12 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                             ),
                           )),
                       ListTile(
+                          contentPadding: EdgeInsets.only(left: 2),
                           title: Text(''),
                           subtitle: Column(
                             children: LineSplitter.split(testData).map((o) {
                               return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                //crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text('• '),
                                   Expanded(
@@ -204,7 +214,7 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
         ),
       ),
       bottomNavigationBar: Container(
-          padding: EdgeInsets.only(left: 20, top: 10, bottom: 5, right: 20),
+          padding: EdgeInsets.only(left: 22, top: 5, bottom: 10, right: 20),
           height: 50,
           width: 400,
           child: Row(
