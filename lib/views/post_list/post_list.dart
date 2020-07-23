@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freetitle/model/post_repository.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:freetitle/views/metadata_provider.dart';
-import 'package:freetitle/views/post/post_card.dart';
+import 'package:freetitle/views/post_card/post_card.dart';
 
 class PostList extends StatefulWidget {
   PostList({
@@ -21,9 +21,9 @@ class _PostListState extends State<PostList> with AutomaticKeepAliveClientMixin 
 
   @override
   void initState() {
-    _easyRefreshController = EasyRefreshController();
-    _getPost = PostRepository.getPosts(postCount, true);
     super.initState();
+    _easyRefreshController = EasyRefreshController();
+//    _getPost = PostRepository.getPosts(postCount, true);
   }
 
   @override
@@ -38,50 +38,38 @@ class _PostListState extends State<PostList> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FutureBuilder<List<PostModel>>(
-      key: PageStorageKey('Post'),
-      future: _getPost,
-      builder:(BuildContext context, AsyncSnapshot snapshot) {
-        if(snapshot.connectionState == ConnectionState.done){
-          if(postCount == 5){
-            _posts = snapshot.data;
-          }
-          return EasyRefresh.custom(
-            enableControlFinishRefresh: false,
-            enableControlFinishLoad: true,
-            controller: _easyRefreshController,
-            header: ClassicalHeader(),
-            footer: ClassicalFooter(),
-            onRefresh: () async {
-              List<PostModel> newerPost = await PostRepository.getPosts(5, true);
-              setState(() {
-                _posts += newerPost;
-                postCount = 5;
-              });
-              _easyRefreshController.resetRefreshState();
-            },
-            onLoad: () async {
-              List<PostModel> newerPost = await PostRepository.getPosts(postCount, false).timeout(Duration(milliseconds: 500), onTimeout: () {print("timeout"); });
-              setState(() {
-                _posts += newerPost;
-                postCount += 5;
-              });
-              _easyRefreshController.finishLoad();
-            },
-            slivers: <Widget>[
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index){
-                  return PostCard(type: _posts[index].type);
-                },
-                  childCount: postCount > _posts.length ? _posts.length : postCount,
-                ),
-              ),
-            ],
-          );
-        } else {
-          return Center(child: Text("Loading"),);
-        }
+    return EasyRefresh.custom(
+      enableControlFinishRefresh: false,
+      enableControlFinishLoad: true,
+      controller: _easyRefreshController,
+      header: ClassicalHeader(),
+      footer: ClassicalFooter(),
+      firstRefresh: true,
+      onRefresh: () async {
+        List<PostModel> newerPost = await PostRepository.getPosts(5, true);
+        setState(() {
+          _posts += newerPost;
+          postCount = 5;
+        });
+        _easyRefreshController.resetRefreshState();
       },
+      onLoad: () async {
+        List<PostModel> newerPost = await PostRepository.getPosts(postCount, false).timeout(Duration(milliseconds: 500));
+        setState(() {
+          _posts += newerPost;
+          postCount += newerPost.length;
+        });
+        _easyRefreshController.finishLoad();
+      },
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index){
+            return PostCard(type: _posts[index].type, postData: _posts[index],);
+          },
+            childCount: postCount > _posts.length ? _posts.length : postCount,
+          ),
+        ),
+      ],
     );
   }
 }
