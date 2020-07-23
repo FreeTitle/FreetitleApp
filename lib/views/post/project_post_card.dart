@@ -80,38 +80,14 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                     ),
                     child: Column(
                       children: <Widget>[
-<<<<<<< HEAD
                         Text(
                           "Nocturnal Wonderland Photography of The Year Competition",
                           style: GoogleFonts.galdeano(
                               textStyle: TextStyle(fontSize: 18)),
-=======
-                        Text("We are looking for: ",
-                            style: GoogleFonts.galdeano(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .merge(TextStyle(
-                                      fontSize: 14,
-                                    )))),
-                        SizedBox(width: 10),
-                        Text("photography",
-                          style: GoogleFonts.galdeano(
-                            textStyle: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              .merge(TextStyle(
-                                fontSize: 14,
-                                color: Colors.blue[700],
-                              )
-                            )
-                          )
->>>>>>> 34de57ff50aec7bbf8ba39943aed150b689dae69
                         ),
                         SizedBox(
                           height: 8,
                         ),
-<<<<<<< HEAD
                         Row(
                           children: <Widget>[
                             Text("We are looking for: ",
@@ -223,82 +199,6 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                                           ),
                                         ),
                                       ],
-=======
-                        Text("graphic design",
-                            style: GoogleFonts.galdeano(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .merge(TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.blue[700],
-                                    )))),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Icon(Icons.place, color: Colors.grey, size: 20),
-                        Text("Apply Anywhere ",
-                            style: GoogleFonts.galdeano(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .merge(TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    )))),
-                        SizedBox(width: 80),
-                        Icon(Icons.schedule, color: Colors.grey, size: 20),
-                        Text("2 days left",
-                            style: GoogleFonts.galdeano(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .merge(TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    )))),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          height: 35,
-                          width: 92,
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              onTap: () {
-                                setState(() => pressAttention = !pressAttention);
-                                print("Project save pressed");
-                              },
-                              highlightColor: Colors.transparent,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                  children: <Widget>[
-                                    Icon(pressAttention ? Icons.done : Icons.favorite,
-                                        color: pressAttention ? Theme.of(context).highlightColor : Colors.white, size: 15),
-                                    SizedBox(width: pressAttention ? 3 : 10),
-                                    Text(
-                                      pressAttention ? "SAVED" : "SAVE",
-                                      style: GoogleFonts.galdeano(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1
-                                            .merge(
-                                              TextStyle(
-                                                fontSize: 19,
-                                                color: pressAttention ? Theme.of(context).highlightColor : Colors.white,
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
-                                      ),
->>>>>>> 34de57ff50aec7bbf8ba39943aed150b689dae69
                                     ),
                                   ),
                                 ),
@@ -313,7 +213,6 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                                     color: Colors.blue[300], width: 1.5),
                               ),
                             ),
-<<<<<<< HEAD
                             Spacer(),
                             Container(
                               height: 38,
@@ -325,24 +224,6 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                                       .textTheme
                                       .bodyText1
                                       .merge(
-=======
-                          ),
-                          decoration: BoxDecoration(
-                            color: pressAttention ? Theme.of(context).primaryColor : Theme.of(context).highlightColor,
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            border: Border.all(color: Theme.of(context).highlightColor, width: 1.5),
-                          ),
-                        ),
-                        Spacer(),
-                        Container(
-                          height: 38,
-                          alignment: Alignment.bottomRight,
-                          child: Text(
-                            "3 people have applied",
-                            style: GoogleFonts.galdeano(
-                              textStyle:
-                                  Theme.of(context).textTheme.bodyText1.merge(
->>>>>>> 34de57ff50aec7bbf8ba39943aed150b689dae69
                                         TextStyle(
                                           fontSize: 14,
                                         ),
