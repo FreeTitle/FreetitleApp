@@ -204,7 +204,7 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
         ),
       ),
       bottomNavigationBar: Container(
-          padding: EdgeInsets.only(left: 20),
+          padding: EdgeInsets.only(left: 20, top: 10, bottom: 5, right: 20),
           height: 50,
           width: 400,
           child: Row(
@@ -253,8 +253,8 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                       color: Theme.of(context).highlightColor, width: 1.5),
                 ),
               ),
+              Spacer(flex: 5),
               Container(
-                padding: EdgeInsets.only(left: 150, top: 12),
                 child: Column(
                   children: <Widget>[
                     Icon(
@@ -276,8 +276,8 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                   ],
                 ),
               ),
+              Spacer(),
               Container(
-                padding: EdgeInsets.only(left: 12, top: 12),
                 child: Column(
                   children: <Widget>[
                     Icon(
@@ -299,8 +299,9 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                   ],
                 ),
               ),
+              Spacer(),
               Container(
-                padding: EdgeInsets.only(left: 12, top: 10),
+                //padding: EdgeInsets.only(left: 12, top: 10),
                 child: Column(
                   children: <Widget>[
                     Icon(
