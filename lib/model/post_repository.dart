@@ -38,24 +38,24 @@ class PostModel {
   String ownerID;
   Timestamp createTime;
   PostType type;
-  List<String> labelIDs;
+  List labelIDs;
   String content;
   Map missionSpec;
   String forwardedPostID;
-  List<String> likes;
-  List<String> images;
+  List likes;
+  List images;
   /* To be added */
 
   PostModel({String ownerID,
     Timestamp createTime,
     PostType type,
-    List<String> labelIDs,
+    List labelIDs,
     String content,
     Map<String, String> missionSpec,
     String forwardedPostID,
-    List<String> images,
-    List<String> videos,
-    List<String> likes,
+    List images,
+    List videos,
+    List likes,
   })
   : ownerID = ownerID,
     createTime = createTime,
@@ -90,6 +90,13 @@ class PostModel {
 
     if(postData.containsKey('likes'))
       likes = postData['likes'];
+
+    if(postData.containsKey('content'))
+      content = postData['content'];
+
+    if(postData.containsKey('images'))
+      images = postData['images'];
+
 
     _mapType(postData['type']);
     /* To be added */
