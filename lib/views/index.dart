@@ -30,7 +30,6 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   int _pageIndex = 0;
-  List<Widget> _children;
 
   onTabTapped(int index) {
     setState(() {
@@ -40,13 +39,6 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   void initState(){
-    _children = [
-      HomeScreen(),
-      ProjectsScreen(),
-      MessagesScreen(),
-      MyView(),
-    ];
-
     super.initState();
   }
 
@@ -58,15 +50,15 @@ class _IndexPageState extends State<IndexPage> {
               bloc: BlocProvider.of<AuthenticationBloc>(context),
               builder: (BuildContext context, AuthenticationState state) {
                 print("Index Page: ${BlocProvider.of<AuthenticationBloc>(context).state}, Page_index: $_pageIndex");
-                if (state is Uninitialized || state is Unauthenticated) {
-                  if (_pageIndex == 0) {
-                    return _children[_pageIndex];
-                  } else {
-                    return LoginScreen();
-                  }
-                } else if (state is Authenticated) {
-                  return _children[_pageIndex];
-                }
+                return IndexedStack(
+                  children: <Widget>[
+                    HomeScreen(),
+                    state is Authenticated ? ProjectsScreen() : LoginScreen(),
+                    state is Authenticated ? MessagesScreen() : LoginScreen(),
+                    state is Authenticated ? MyView() : LoginScreen(),
+                  ],
+                  index: _pageIndex,
+                );
               }),
           bottomNavigationBar: new Theme(
             data: Theme.of(context).copyWith(
