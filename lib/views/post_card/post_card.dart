@@ -15,25 +15,26 @@ class PostCard extends StatefulWidget {
   PostCard({
     Key key,
     this.type,
+    this.postData
   }) : super(key: key);
 
   final PostType type;
+  final PostModel postData;
 
   _PostCardState createState() => _PostCardState();
 }
 
 class _PostCardState extends State<PostCard> {
 
-//  LikeBloc _likeBloc;
 
   Widget getContent() {
     switch(widget.type){
       case PostType.single_photo:
-        return SinglePhoto();
+        return SinglePhoto(postData: widget.postData,);
       case PostType.blog:
         return BlogPost();
       case PostType.multiple_photo:
-        return MultiplePhoto();
+        return MultiplePhoto(postData: widget.postData,);
       default:
         return null;
     }
@@ -41,16 +42,12 @@ class _PostCardState extends State<PostCard> {
 
   @override
   void dispose() {
-//    _likeBloc.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-//    setState(() {
-//      //TODO change this
-//      _likeBloc = LikeBloc(postRepository: Provider.of<PostRepository>(context), postID: "WEtwpUukkeSOYECPt8dG");
-//    });
+
     return Stack(
       children: <Widget>[
         Container(
