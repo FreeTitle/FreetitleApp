@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/bloc/post/like/bloc.dart';
 import 'package:freetitle/model/post_repository.dart';
-import 'package:freetitle/views/post/blog/blog_post.dart';
-import 'package:freetitle/views/post/common/post_title.dart';
-import 'package:freetitle/views/post/common/post_bottom.dart';
+import 'package:freetitle/views/post_card/blog/blog_post.dart';
+import 'package:freetitle/views/post_card/common/post_title.dart';
+import 'package:freetitle/views/post_card/common/post_bottom.dart';
 import 'package:freetitle/app_theme.dart';
-import 'package:freetitle/views/post/multiple/multiple_photo.dart';
-import 'package:freetitle/views/post/single/single_photo.dart';
+import 'package:freetitle/views/post_card/multiple/multiple_photo.dart';
+import 'package:freetitle/views/post_card/single/single_photo.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 

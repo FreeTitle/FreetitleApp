@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freetitle/app_theme.dart';
 import 'package:freetitle/model/post_repository.dart';
-import 'package:freetitle/views/post/common/post_bottom.dart';
-import 'package:freetitle/views/post/common/post_title.dart';
-import 'package:freetitle/views/post_detail/blog_post_detail.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 //class SinglePhotoPost extends StatefulWidget {
