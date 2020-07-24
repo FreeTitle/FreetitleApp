@@ -3,6 +3,7 @@ import 'package:splashscreen/splashscreen.dart';
 import 'package:freetitle/views/index.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/bloc/authentication_bloc/bloc.dart';
+import 'package:freetitle/views/metadata_provider.dart';
 
 class SplashScreenPage extends StatefulWidget {
 
@@ -18,7 +19,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     );
 
     print("Splash Page: ${BlocProvider.of<AuthenticationBloc>(context).state}");
-    return IndexPage();
+    return MetaDataProvider(child: IndexPage());
   }
 
   @override

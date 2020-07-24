@@ -85,15 +85,16 @@ class LikeState {
 //    );
 //  }
 //
-//  factory LikeState.Failure_LIKE_PRESSED() {
-//    return LikeState(
-//      isLike: false,
-//      isUnlike: false,
-//      isSubmitting: false,
-//      isSuccess: false,
-//      Failure_LIKE_PRESSED: true
-//    );
-//  }
+  factory LikeState.Failure_LIKE_PRESSED() {
+    return LikeState(
+      isLike: false,
+      isUnlike: false,
+      isSubmitting: false,
+      isSuccess: false,
+      isLikeButtonEnabled: false,
+      failure_LIKE_PRESSED: true
+    );
+  }
 
   LikeState copyWith({
     bool isLike,
@@ -121,6 +122,7 @@ class LikeState {
         isUnlike: $isUnlike,
         isSubmitting: $isSubmitting,
         isSuccess: $isSuccess,
+        isLikeButtonEnabled: $isLikeButtonEnabled,
         Failure_LIKE_PRESSED: $failure_LIKE_PRESSED
       }
     ''';

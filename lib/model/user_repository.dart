@@ -132,6 +132,11 @@ class UserRepository {
     return (await _firebaseAuth.currentUser());
   }
 
+  Future<String> getUserID() async {
+    var user = await getUser();
+    return user.uid;
+  }
+
   Widget getUserWidget(BuildContext context, String uid, Map userData,
       {color = AppTheme.nearlyWhite}) {
     String userName = userData['displayName'];
