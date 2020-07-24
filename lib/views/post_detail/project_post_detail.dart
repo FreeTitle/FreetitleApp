@@ -46,6 +46,7 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                       // Container(
                       //     padding: EdgeInsets.only(top: 30),
                       //     child: Markdown(data: _markDownData)),
+
                       Container(
                           padding: EdgeInsets.only(top: 61),
                           child: Text(
