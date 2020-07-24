@@ -13,12 +13,12 @@ class AuthenticationBloc
    * initialState
    *
    */
-  final UserRepository _userRepository;
+  final UserRepository userRepository;
 
   // named argument
   AuthenticationBloc({@required UserRepository userRepository})
       : assert(userRepository != null),
-        _userRepository = userRepository;
+        userRepository = userRepository;
 
   // 就是一个 string, 代表是不是 initialized
   @override
@@ -40,10 +40,10 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     try {
-      final isSignedIn = await _userRepository.isSignedIn();
+      final isSignedIn = await userRepository.isSignedIn();
       if (isSignedIn) {
         String name;
-        await _userRepository.getUser().then((user){
+        await userRepository.getUser().then((user){
           name = user.email;
         });
         // 返回 Authenticated object
@@ -59,7 +59,7 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapLoggedInToState() async* {
     String name;
-    await _userRepository.getUser().then((user){
+    await userRepository.getUser().then((user){
       name = user.email;
     });
     yield Authenticated(name);
@@ -67,6 +67,6 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapLoggedOutToState() async* {
     yield Unauthenticated();
-    _userRepository.signOut();
+    userRepository.signOut();
   }
 }
