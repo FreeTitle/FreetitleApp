@@ -31,9 +31,9 @@ dependencies:
   firebase_database: ^3.1.1
   firebase_dynamic_links: ^0.5.0
   cloud_firestore: 0.13.4+2
-  flushbar: '1.10.2'
+  flushbar: "1.10.2"
   google_sign_in: ^4.1.1
-  email_validator: '^1.0.0'
+  email_validator: "^1.0.0"
   flutter_signin_button: ^1.0.0
   meta: ^1.1.6
   equatable: ^0.2.0
@@ -77,6 +77,8 @@ dependencies:
   assorted_layout_widgets: ^1.1.1
   dotted_border: ^1.0.5
   google_fonts: ^1.1.0
+  flutter_swiper: ^1.1.6
+  flutter_markdown: ^0.4.2
   flutter_easyrefresh: ^2.1.1
   toast: ^0.1.5
 
@@ -99,7 +101,6 @@ flutter_icons:
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -113,13 +114,10 @@ flutter:
     - assets/icons/
     - assets/
     - assets/placeholders/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
