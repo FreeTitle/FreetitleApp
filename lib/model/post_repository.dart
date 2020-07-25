@@ -169,11 +169,27 @@ class PostRepository {
     var postData = await getPostData(postID);
     print("postData $postData");
     UserRepository _userRepository = UserRepository();
-    var user = await _userRepository.getUser();
-    if(user == null){
+    var uid = await _userRepository.getUserID();
+    if(uid == null || uid.isEmpty){
       return false;
     }
-    else if(postData.likes.contains(user.uid)){
+    else if(postData.likes.contains(uid)){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  Future<bool> isPostSaved(postID) async {
+    var postData = await getPostData(postID);
+    print("postData $postData");
+    UserRepository _userRepository = UserRepository();
+    var userData = await _userRepository.getUserData();
+    if(userData == null || userData.isEmpty){
+      return false;
+    }
+    else if(userData['saves'].contains(postID)){
       return true;
     }
     else{
@@ -186,11 +202,27 @@ class PostRepository {
   Future<bool> likeButtonPressed(postID) async  {
     print("Like Post Pressed");
     UserRepository userRepository = UserRepository();
-    var userID = userRepository.getUser();
+    var userID = userRepository.getUserID();
 //    HttpsCallableResult resp = await CloudFunctionInvoker.cloudFunction({"collection": "posts", "id": postID, "userID": userID}, 'toggleLike');
     var resp = -1;
     /* TODO Needs to handle result */
     print(resp);
+    switch(resp){
+      case 1:
+        return true;
+      case -1:
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  Future<bool> saveButtonPressed(postID) async {
+    UserRepository userRepository = UserRepository();
+    var usreID = userRepository.getUserID();
+    //    HttpsCallableResult resp = await CloudFunctionInvoker.cloudFunction({"collection": "posts", "id": postID, "userID": userID}, 'toggleSave');
+
+    var resp = 1;
     switch(resp){
       case 1:
         return true;

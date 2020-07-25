@@ -20,11 +20,12 @@ class _PostBottomState extends State<PostBottom> {
     _likeBloc.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     setState(() {
       //TODO change this
-      _likeBloc = LikeBloc(postRepository: PostRepository(), postID: "WEtwpUukkeSOYECPt8dG");
+      _likeBloc = LikeBloc(postRepository: PostRepository(), postID: "C9SuEe1ySPg5M1WjNDPz");
     });
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

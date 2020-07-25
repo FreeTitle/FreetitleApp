@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/bloc/post/save/bloc.dart';
+import 'package:freetitle/model/post_repository.dart';
+import 'package:freetitle/views/post_card/common/opportunity_save.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EventPostCard extends StatefulWidget {
@@ -7,9 +11,24 @@ class EventPostCard extends StatefulWidget {
 }
 
 class _EventPostCardState extends State<EventPostCard> {
-  var pressAttention = false;
+
+  SaveBloc _saveBloc;
+
+  @override
+  void dispose() {
+    _saveBloc.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    setState(() {
+      //TODO change this
+      _saveBloc = SaveBloc(postRepository: PostRepository(), postID: "C9SuEe1ySPg5M1WjNDPz");
+    });
+
     return Container(
       width: 210,
       height: 250,
@@ -46,21 +65,9 @@ class _EventPostCardState extends State<EventPostCard> {
                     SizedBox(height: 8),
                     Row(
                       children: <Widget>[
-                        new Material(
-                          type: MaterialType.transparency,
-                          child: Ink(
-                            width: 45,
-                            height: 45,
-                            child: IconButton(
-                              iconSize: 28,
-                              color: Theme.of(context).highlightColor,
-                              icon: pressAttention ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
-                              onPressed: () {
-                                setState(() => pressAttention = !pressAttention);
-                                print("Event like pressed");
-                              },
-                            ),
-                          ),
+                        BlocProvider<SaveBloc>(
+                          bloc: _saveBloc,
+                          child: SaveButton(type: PostType.event,),
                         ),
                         Spacer(),
                         Icon(Icons.schedule, color: Colors.grey, size: 20),

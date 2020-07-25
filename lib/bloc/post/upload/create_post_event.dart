@@ -2,11 +2,11 @@ import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
 @immutable
-abstract class CreatePostEvent extends Equatable {
-  CreatePostEvent([List props = const []]) : super(props);
+abstract class UploadPostEvent extends Equatable {
+  UploadPostEvent([List props = const []]) : super(props);
 }
 
-class TextChanged extends CreatePostEvent {
+class TextChanged extends UploadPostEvent {
   final String postText;
 
   TextChanged({@required this.postText}) : super([postText]);
@@ -15,7 +15,7 @@ class TextChanged extends CreatePostEvent {
   String toString() => 'Text changed { text :$postText }';
 }
 
-class Submitted extends CreatePostEvent {
+class Submitted extends UploadPostEvent {
   final String postText;
 
   Submitted({@required this.postText})
