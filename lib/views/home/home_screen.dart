@@ -10,7 +10,8 @@ import 'package:freetitle/views/post_card/event_post_card.dart';
 import 'package:freetitle/views/post_card/blog/blog_post.dart';
 import 'package:freetitle/views/post_card/multiple/multiple_photo.dart';
 import 'package:freetitle/views/post_card/single/single_photo.dart';
-import 'package:freetitle/views/post_list/post_list.dart';
+import 'package:freetitle/views/home/post_wall/opportunity_list.dart';
+import 'package:freetitle/views/home/post_wall/post_list.dart';
 import 'package:freetitle/model/post_repository.dart';
 import 'package:freetitle/views/metadata_provider.dart';
 
@@ -79,49 +80,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           body: TabBarView(
             controller: _tabController,
             children: <Widget>[
-              SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      alignment: Alignment.centerLeft,
-                      child: Image.asset(
-                        'assets/placeholders/label_event.png',
-                        scale: 2,
-                      ),
-                    ),
-                    SingleChildScrollView(
-                      child: Row(
-                        children: <Widget>[
-                          EventPostCard(),
-                          EventPostCard(),
-                          EventPostCard(),
-                          EventPostCard(),
-                          EventPostCard(),
-                        ],
-                      ),
-                      scrollDirection: Axis.horizontal,
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      alignment: Alignment.centerLeft,
-                      child: Image.asset(
-                        'assets/placeholders/label_project.png',
-                        scale: 2,
-                      ),
-                    ),
-                    Column(
-                      children: <Widget>[
-                        ProjectPostCard(),
-                        ProjectPostCard(),
-                        ProjectPostCard(),
-                        ProjectPostCard(),
-                        ProjectPostCard(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              OpportunityList(),
               PostList(),
             ],
           )

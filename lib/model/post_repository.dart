@@ -157,17 +157,6 @@ class PostRepository {
     return posts;
   }
 
-  static Future<List<PostModel>> get5DummyPosts() async {
-    await Future.delayed(Duration(milliseconds: 50));
-
-    List<PostModel> posts = List();
-    for(var i=0;i < 5;i++){
-      posts.add(DummyPostData(i % 6).postModel);
-    }
-
-    return posts;
-  }
-
   Future<PostModel> getPostData(postID) async {
     var ref = await Firestore.instance.collection('posts').document(postID).get();
 
@@ -255,6 +244,40 @@ class PostRepository {
       default:
         return false;
     }
+  }
+
+  /* Functions below are for testing usage only */
+  static Future<List<PostModel>> get5DummyPosts() async {
+    await Future.delayed(Duration(milliseconds: 50));
+
+    List<PostModel> posts = List();
+    for(var i=0;i < 5;i++){
+      posts.add(DummyPostData(i % 6).postModel);
+    }
+
+    return posts;
+  }
+
+  static Future<List<PostModel>> get5DummyEvents() async {
+    await Future.delayed(Duration(milliseconds: 50));
+
+    List<PostModel> posts = List();
+    for(var i=0;i < 5;i++) {
+      posts.add(PostModel(type: PostType.event));
+    }
+
+    return posts;
+  }
+
+  static Future<List<PostModel>> get5DummyProjects() async {
+    await Future.delayed(Duration(milliseconds: 50));
+
+    List<PostModel> posts = List();
+    for(var i=0;i < 5;i++) {
+      posts.add(PostModel(type: PostType.project));
+    }
+
+    return posts;
   }
 
 }
