@@ -17,16 +17,13 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // final _markDownData =
-    //     testData.map((x) => "- $x\n").reduce((x, y) => "$x$y");
     return Scaffold(
       appBar: AppBar(title: Text('Project detail')),
       body: SingleChildScrollView(
         child: Stack(
           children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              //padding: EdgeInsets.only(top: 10),
+            Padding(
+              padding: EdgeInsets.only(top: 0),
               child: FittedBox(
                   child: Image.asset(
                 'assets/project_placeholder1.png',
@@ -49,6 +46,7 @@ class _ProjectPostDetailState extends State<ProjectPostDetail> {
                       // Container(
                       //     padding: EdgeInsets.only(top: 30),
                       //     child: Markdown(data: _markDownData)),
+
                       Container(
                           padding: EdgeInsets.only(top: 61),
                           child: Text(
