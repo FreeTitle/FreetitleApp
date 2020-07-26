@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/bloc/post/save/bloc.dart';
+import 'package:freetitle/model/post_repository.dart';
+import 'package:freetitle/views/post_card/common/opportunity_save.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:freetitle/views/post_detail/project_post_detail.dart';
@@ -9,7 +13,15 @@ class ProjectPostCard extends StatefulWidget {
 }
 
 class _ProjectPostCardState extends State<ProjectPostCard> {
-  var pressAttention = false;
+
+  SaveBloc _saveBloc;
+
+  @override
+  void dispose() {
+    _saveBloc.dispose();
+    super.dispose();
+  }
+
   List userName = [
     "AH",
     "MC",
@@ -42,6 +54,12 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
+
+    setState(() {
+      //TODO change this
+      _saveBloc = SaveBloc(postRepository: PostRepository(), postID: "C9SuEe1ySPg5M1WjNDPz");
+    });
+
     return InkWell(
         onTap: () {
           Navigator.push<dynamic>(
@@ -153,65 +171,9 @@ class _ProjectPostCardState extends State<ProjectPostCard> {
                         SizedBox(height: 16),
                         Row(
                           children: <Widget>[
-                            Container(
-                              height: 35,
-                              width: 92,
-                              child: Material(
-                                type: MaterialType.transparency,
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(
-                                        () => pressAttention = !pressAttention);
-                                    print("Project save pressed");
-                                  },
-                                  highlightColor: Colors.transparent,
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Icon(
-                                            pressAttention
-                                                ? Icons.done
-                                                : Icons.favorite,
-                                            color: pressAttention
-                                                ? Colors.blue[300]
-                                                : Colors.white,
-                                            size: 15),
-                                        SizedBox(
-                                            width: pressAttention ? 3 : 10),
-                                        Text(
-                                          pressAttention ? "SAVED" : "SAVE",
-                                          style: GoogleFonts.galdeano(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1
-                                                .merge(
-                                                  TextStyle(
-                                                    fontSize: 19,
-                                                    color: pressAttention
-                                                        ? Colors.blue[300]
-                                                        : Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                color: pressAttention
-                                    ? Colors.white
-                                    : Colors.blue[300],
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30)),
-                                border: Border.all(
-                                    color: Colors.blue[300], width: 1.5),
-                              ),
+                            BlocProvider(
+                              bloc: _saveBloc,
+                              child: SaveButton(type: PostType.project,),
                             ),
                             Spacer(),
                             Container(

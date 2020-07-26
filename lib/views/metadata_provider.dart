@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:freetitle/model/post_repository.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 class MetaDataProvider extends InheritedWidget {
-  int tabIndex = 0;
+  final EasyRefreshController postListRefreshController;
+  final EasyRefreshController eventListRefreshController;
+  final EasyRefreshController projectListRefreshController;
 
   MetaDataProvider({
     Widget child,
+    this.postListRefreshController,
+    this.eventListRefreshController,
+    this.projectListRefreshController
   }) : super(child: child);
 
   @override

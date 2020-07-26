@@ -1,28 +1,28 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:freetitle/bloc/post/create/bloc.dart';
+import 'package:freetitle/bloc/post/upload/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:freetitle/model/post_repository.dart';
 import 'package:freetitle/model/util/validators.dart';
 
-class CreatePostBloc extends Bloc<CreatePostEvent, CreatePostState> {
+class UploadPostBloc extends Bloc<UploadPostEvent, UploadPostState> {
 
   PostRepository _postRepository;
 
-  CreatePostBloc({@required postRepository})
+  UploadPostBloc({@required postRepository})
       : assert(postRepository != null), _postRepository = postRepository;
 
   @override
-  CreatePostState get initialState => CreatePostState.empty();
+  UploadPostState get initialState => UploadPostState.empty();
 
   @override
-  Stream<CreatePostState> transform(
-      Stream<CreatePostEvent> events,
-      Stream<CreatePostState> Function(CreatePostEvent event) next
+  Stream<UploadPostState> transform(
+      Stream<UploadPostEvent> events,
+      Stream<UploadPostState> Function(UploadPostEvent event) next
   ) {
-    final observableStream = events as Observable<CreatePostEvent>;
+    final observableStream = events as Observable<UploadPostEvent>;
     final nonDebounceStream = observableStream.where((event) {
       return (event is! TextChanged && event is! Submitted);
     });
@@ -33,7 +33,7 @@ class CreatePostBloc extends Bloc<CreatePostEvent, CreatePostState> {
   }
 
   @override
-  Stream<CreatePostState> mapEventToState(CreatePostEvent event) async* {
+  Stream<UploadPostState> mapEventToState(UploadPostEvent event) async* {
     if(event is TextChanged){
       yield*_mapTextChangedToState(event.postText);
     }
@@ -41,17 +41,17 @@ class CreatePostBloc extends Bloc<CreatePostEvent, CreatePostState> {
     }
   }
 
-  Stream<CreatePostState> _mapTextChangedToState(postText) async* {
+  Stream<UploadPostState> _mapTextChangedToState(postText) async* {
     yield currentState.update(
       isTextValid: Validators.isValidPostText(postText)
     );
   }
 
-  Stream<CreatePostState> _mapSubmittedToState(postText)async* {
-    yield CreatePostState.loading();
+  Stream<UploadPostState> _mapSubmittedToState(postText)async* {
+    yield UploadPostState.loading();
     try {
       await _postRepository.createPost(Map());
-      yield CreatePostState.success();
+      yield UploadPostState.success();
     } catch (e) {
       /* TBD */
     }

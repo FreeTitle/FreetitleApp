@@ -63,7 +63,7 @@ class _PostCardState extends State<PostCard> {
               SizedBox(
                 height: 10,
               ),
-              PostBottom(),
+              PostBottom(postID: widget.postData.postID,),
             ],
           ),
           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),

@@ -88,8 +88,8 @@ class PostModel {
     if(postData.containsKey('forwardedPostID'))
       forwardedPostID = postData['forwardedPostID'];
 
-    if(postData.containsKey('likes'))
-      likes = postData['likes'];
+    if(postData.containsKey('likedBy'))
+      likes = postData['likedBy'];
 
     if(postData.containsKey('content'))
       content = postData['content'];
@@ -157,17 +157,6 @@ class PostRepository {
     return posts;
   }
 
-  static Future<List<PostModel>> get5DummyPosts() async {
-    await Future.delayed(Duration(milliseconds: 50));
-
-    List<PostModel> posts = List();
-    for(var i=0;i < 5;i++){
-      posts.add(DummyPostData(i % 6).postModel);
-    }
-
-    return posts;
-  }
-
   Future<PostModel> getPostData(postID) async {
     var ref = await Firestore.instance.collection('posts').document(postID).get();
 
@@ -180,11 +169,27 @@ class PostRepository {
     var postData = await getPostData(postID);
     print("postData $postData");
     UserRepository _userRepository = UserRepository();
-    var user = await _userRepository.getUser();
-    if(user == null){
+    var uid = await _userRepository.getUserID();
+    if(uid == null || uid.isEmpty){
       return false;
     }
-    else if(postData.likes.contains(user.uid)){
+    else if(postData.likes.contains(uid)){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  Future<bool> isPostSaved(postID) async {
+    var postData = await getPostData(postID);
+    print("postData $postData");
+    UserRepository _userRepository = UserRepository();
+    var userData = await _userRepository.getUserData();
+    if(userData == null || userData.isEmpty){
+      return false;
+    }
+    else if(userData['saves'].contains(postID)){
       return true;
     }
     else{
@@ -197,11 +202,34 @@ class PostRepository {
   Future<bool> likeButtonPressed(postID) async  {
     print("Like Post Pressed");
     UserRepository userRepository = UserRepository();
-    var userID = userRepository.getUser();
-//    HttpsCallableResult resp = await CloudFunctionInvoker.cloudFunction({"collection": "posts", "id": postID, "userID": userID}, 'toggleLike');
-    var resp = -1;
+    var userID = await userRepository.getUserID();
+    try{
+      HttpsCallableResult resp = await CloudFunctionInvoker.cloudFunction({"collection": "posts", "targetID": postID, "userID": userID}, 'dbPostsToggleLike');
+    } catch (e) {
+      var code = await e;
+      print("Something wrong $e");
+      return false;
+    }
+//    var resp = -1;
     /* TODO Needs to handle result */
-    print(resp);
+    return true;
+//    print(resp.data);
+//    switch(resp.data){
+//      case 1:
+//        return true;
+//      case -1:
+//        return false;
+//      default:
+//        return false;
+//    }
+  }
+
+  Future<bool> saveButtonPressed(postID) async {
+    UserRepository userRepository = UserRepository();
+    var usreID = userRepository.getUserID();
+    //    HttpsCallableResult resp = await CloudFunctionInvoker.cloudFunction({"collection": "posts", "id": postID, "userID": userID}, 'toggleSave');
+
+    var resp = 1;
     switch(resp){
       case 1:
         return true;
@@ -255,6 +283,40 @@ class PostRepository {
       default:
         return false;
     }
+  }
+
+  /* Functions below are for testing usage only */
+  static Future<List<PostModel>> get5DummyPosts() async {
+    await Future.delayed(Duration(milliseconds: 50));
+
+    List<PostModel> posts = List();
+    for(var i=0;i < 5;i++){
+      posts.add(DummyPostData(i % 6).postModel);
+    }
+
+    return posts;
+  }
+
+  static Future<List<PostModel>> get5DummyEvents() async {
+    await Future.delayed(Duration(milliseconds: 50));
+
+    List<PostModel> posts = List();
+    for(var i=0;i < 5;i++) {
+      posts.add(PostModel(type: PostType.event));
+    }
+
+    return posts;
+  }
+
+  static Future<List<PostModel>> get5DummyProjects() async {
+    await Future.delayed(Duration(milliseconds: 50));
+
+    List<PostModel> posts = List();
+    for(var i=0;i < 5;i++) {
+      posts.add(PostModel(type: PostType.project));
+    }
+
+    return posts;
   }
 
 }
