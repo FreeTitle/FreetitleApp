@@ -88,8 +88,8 @@ class PostModel {
     if(postData.containsKey('forwardedPostID'))
       forwardedPostID = postData['forwardedPostID'];
 
-    if(postData.containsKey('likes'))
-      likes = postData['likes'];
+    if(postData.containsKey('likedBy'))
+      likes = postData['likedBy'];
 
     if(postData.containsKey('content'))
       content = postData['content'];
@@ -202,19 +202,26 @@ class PostRepository {
   Future<bool> likeButtonPressed(postID) async  {
     print("Like Post Pressed");
     UserRepository userRepository = UserRepository();
-    var userID = userRepository.getUserID();
-//    HttpsCallableResult resp = await CloudFunctionInvoker.cloudFunction({"collection": "posts", "id": postID, "userID": userID}, 'toggleLike');
-    var resp = -1;
-    /* TODO Needs to handle result */
-    print(resp);
-    switch(resp){
-      case 1:
-        return true;
-      case -1:
-        return false;
-      default:
-        return false;
+    var userID = await userRepository.getUserID();
+    try{
+      HttpsCallableResult resp = await CloudFunctionInvoker.cloudFunction({"collection": "posts", "targetID": postID, "userID": userID}, 'dbPostsToggleLike');
+    } catch (e) {
+      var code = await e;
+      print("Something wrong $e");
+      return false;
     }
+//    var resp = -1;
+    /* TODO Needs to handle result */
+    return true;
+//    print(resp.data);
+//    switch(resp.data){
+//      case 1:
+//        return true;
+//      case -1:
+//        return false;
+//      default:
+//        return false;
+//    }
   }
 
   Future<bool> saveButtonPressed(postID) async {
