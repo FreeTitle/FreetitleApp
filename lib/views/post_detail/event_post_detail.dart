@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:freetitle/views/post/post_card.dart';
+import 'package:freetitle/model/post_repository.dart';
+import 'package:freetitle/views/post_card/post_card.dart';
 
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:freetitle/views/post/common/post_title.dart';
+import 'package:freetitle/views/post_card/common/post_title.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -43,26 +44,29 @@ class _EventPostDetailState extends State<EventPostDetail>
             SliverAppBar(
               pinned: true,
               floating: true,
+              automaticallyImplyLeading: false,
               //title: Text('Event detail'),
               expandedHeight: 400,
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.pin,
                 background: Container(
-                    //height: double.infinity,
-                    //color: Colors.transparent,
-                    child: Stack(
-                  children: <Widget>[_buildBanner()],
-                )),
+                  //height: double.infinity,
+                  //color: Colors.transparent,
+                  child: Stack(
+                    children: <Widget>[_buildBanner()],
+                  )
+                ),
               ),
               bottom: TabBar(
-                  controller: _tabController,
-                  labelColor: Theme.of(context).highlightColor,
-                  unselectedLabelColor: Theme.of(context).accentColor,
-                  indicatorColor: Theme.of(context).highlightColor,
-                  tabs: [
-                    Tab(text: "Detail"),
-                    Tab(text: "Post"),
-                  ]),
+                controller: _tabController,
+                labelColor: Theme.of(context).highlightColor,
+                unselectedLabelColor: Theme.of(context).accentColor,
+                indicatorColor: Theme.of(context).highlightColor,
+                tabs: [
+                  Tab(text: "Detail"),
+                  Tab(text: "Post"),
+                ],
+              ),
             )
           ];
         },
@@ -197,10 +201,10 @@ class _EventPostDetailState extends State<EventPostDetail>
             SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  PostCard(type: 'blog'),
-                  PostCard(type: 'blog'),
-                  PostCard(type: 'blog'),
-                  PostCard(type: 'blog'),
+                  PostCard(type: PostType.blog),
+                  PostCard(type: PostType.blog),
+                  PostCard(type: PostType.blog),
+                  PostCard(type: PostType.blog),
                 ],
               ),
             )
@@ -340,7 +344,7 @@ class _EventPostDetailState extends State<EventPostDetail>
       //padding: EdgeInsets.only(top: 10),
 
       child: Image.asset('assets/placeholders/event_placeholder1.png',
-          fit: BoxFit.fill),
+          fit: BoxFit.cover),
     );
   }
 
