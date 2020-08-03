@@ -42,32 +42,41 @@ class _EventPostDetailState extends State<EventPostDetail>
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              pinned: true,
-              floating: true,
-              automaticallyImplyLeading: false,
-              //title: Text('Event detail'),
-              expandedHeight: 400,
-              flexibleSpace: FlexibleSpaceBar(
-                collapseMode: CollapseMode.pin,
-                background: Container(
-                  //height: double.infinity,
-                  //color: Colors.transparent,
-                  child: Stack(
-                    children: <Widget>[_buildBanner()],
-                  )
+                pinned: true,
+                floating: true,
+                automaticallyImplyLeading: false,
+                //title: Text('Event detail'),
+                expandedHeight: 400,
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  background: Container(
+                      //height: double.infinity,
+                      //color: Colors.transparent,
+                      child: Column(
+                    children: <Widget>[
+                      _buildBanner(),
+                    ],
+                  )),
                 ),
-              ),
-              bottom: TabBar(
-                controller: _tabController,
-                labelColor: Theme.of(context).highlightColor,
-                unselectedLabelColor: Theme.of(context).accentColor,
-                indicatorColor: Theme.of(context).highlightColor,
-                tabs: [
-                  Tab(text: "Detail"),
-                  Tab(text: "Post"),
-                ],
-              ),
-            )
+                bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(48.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(40),
+                              topRight: Radius.circular(40))),
+                      child: TabBar(
+                        controller: _tabController,
+                        labelColor: Theme.of(context).highlightColor,
+                        unselectedLabelColor: Theme.of(context).accentColor,
+                        indicatorColor: Theme.of(context).highlightColor,
+                        tabs: [
+                          Tab(text: "Detail"),
+                          Tab(text: "Post"),
+                        ],
+                      ),
+                    )))
           ];
         },
         body: TabBarView(
@@ -339,7 +348,7 @@ class _EventPostDetailState extends State<EventPostDetail>
   Widget _buildBanner() {
     return Container(
       padding: EdgeInsets.only(top: 0),
-      height: 350,
+      height: 385,
       width: MediaQuery.of(context).size.width,
       //padding: EdgeInsets.only(top: 10),
 
