@@ -49,55 +49,49 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       initialIndex: 0,
       child: Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
-          body: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                SliverAppBar(
-//                  expandedHeight: 180,
-                  floating: false,
-                  pinned: true,
-                  centerTitle: true,
-                  backgroundColor: Theme.of(context).highlightColor,
-                  title: Text('FreeTitle'),
-                  flexibleSpace: FlexibleSpaceBar(
-//                    centerTitle: true,
-//                    title:
-                  ),
-                  actions: <Widget>[
-                    IconButton(
-                      onPressed: () {
-
-                      },
-                      icon: Icon(Icons.search),
-                    ),
-                    IconButton(
-                      onPressed: () {
-
-                      },
-                      icon: Icon(Icons.create),
-                    )
-                  ],
-                  bottom: TabBar(
-                    controller: _tabController,
-                    labelColor: Theme.of(context).accentColor,
-                    unselectedLabelColor: Theme.of(context).accentColor,
-                    indicatorColor: Theme.of(context).highlightColor,
-                    tabs: <Widget>[
-                      Tab(child: Text('Opportunities')),
-                      Tab(child: Text('Posts')),
-                    ],
-                  ),
-                )
-              ];
-            },
-            body: TabBarView(
+          appBar: AppBar(
+            centerTitle: true,
+            iconTheme: IconThemeData(color: Theme.of(context).accentColor),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.create),
+                onPressed: () {
+                  //TODO add create post here
+                },
+              )
+            ],
+            title: InkWell(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                alignment: Alignment.center,
+                child: Text(
+                  'FreeTitle',
+                  style: TextStyle(color: Theme.of(context).accentColor),
+                ),
+              ),
+              onTap: () {
+//                _scrollController.jumpTo(0);
+              },
+            ),
+            // TODO add FlexibleSpaceBar here for header
+            bottom: TabBar(
               controller: _tabController,
-              children: <Widget>[
-                OpportunityList(),
-                PostList(),
+              labelColor: Theme.of(context).highlightColor,
+              unselectedLabelColor: Theme.of(context).accentColor,
+              indicatorColor: Theme.of(context).highlightColor,
+              tabs: <Widget>[
+                Tab(child: Text('Opportunities')),
+                Tab(child: Text('Posts')),
               ],
             ),
-          )
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: <Widget>[
+              OpportunityList(),
+              PostList(),
+            ],
+          ),
       ),
     );
   }
