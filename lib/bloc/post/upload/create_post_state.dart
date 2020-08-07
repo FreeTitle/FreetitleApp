@@ -2,21 +2,21 @@ import 'package:meta/meta.dart';
 import 'package:provider/provider.dart';
 
 @immutable
-class CreatePostState {
+class UploadPostState {
   final bool isTextValid;
   final bool isSubmitting;
   final bool isSuccess;
   final bool failure_INVALID_NUMBER_OF_WORDS;
 
-  CreatePostState({
+  UploadPostState({
     @required this.isTextValid,
     @required this.isSubmitting,
     @required this.isSuccess,
     @required this.failure_INVALID_NUMBER_OF_WORDS
   });
 
-  factory CreatePostState.empty() {
-    return CreatePostState(
+  factory UploadPostState.empty() {
+    return UploadPostState(
       isTextValid: true,
       isSubmitting: false,
       isSuccess: false,
@@ -24,8 +24,8 @@ class CreatePostState {
     );
   }
 
-  factory CreatePostState.loading() {
-    return CreatePostState(
+  factory UploadPostState.loading() {
+    return UploadPostState(
       isTextValid: true,
       isSubmitting: true,
       isSuccess: true,
@@ -33,8 +33,8 @@ class CreatePostState {
     );
   }
 
-  factory CreatePostState.failure_INVALID_NUMBER_OF_WORDS() {
-    return CreatePostState(
+  factory UploadPostState.failure_INVALID_NUMBER_OF_WORDS() {
+    return UploadPostState(
       isTextValid: false,
       isSubmitting: false,
       isSuccess: false,
@@ -42,8 +42,8 @@ class CreatePostState {
     );
   }
 
-  factory CreatePostState.success() {
-    return CreatePostState(
+  factory UploadPostState.success() {
+    return UploadPostState(
       isTextValid: true,
       isSubmitting: false,
       isSuccess: true,
@@ -51,7 +51,7 @@ class CreatePostState {
     );
   }
 
-  CreatePostState update({
+  UploadPostState update({
     bool isTextValid
   }){
     return copyWith(
@@ -63,13 +63,13 @@ class CreatePostState {
   }
 
 
-  CreatePostState copyWith({
+  UploadPostState copyWith({
     bool isTextValid,
     bool isSubmitting,
     bool isSuccess,
     bool failure_INVALID_NUMBER_OF_WORDS
   }){
-    return CreatePostState(
+    return UploadPostState(
         isTextValid: isTextValid ?? this.isTextValid,
         isSubmitting: isSubmitting ?? this.isSubmitting,
         isSuccess: isSuccess ?? this.isSuccess,

@@ -137,6 +137,12 @@ class UserRepository {
     return user.uid;
   }
 
+  Future<Map> getUserData() async {
+    var uid = await getUserID();
+    var userRef = await Firestore.instance.collection('users').document(uid).get();
+    return userRef.data;
+  }
+
   Widget getUserWidget(BuildContext context, String uid, Map userData,
       {color = AppTheme.nearlyWhite}) {
     String userName = userData['displayName'];

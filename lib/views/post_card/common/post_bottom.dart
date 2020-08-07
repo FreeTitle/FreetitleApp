@@ -6,8 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:toast/toast.dart';
 
 class PostBottom extends StatefulWidget {
-//  PostBottom({Key key, this.likeBloc}) : super(key : key);
-//  final likeBloc;
+  PostBottom({Key key, this.postID}) : super(key : key);
+
+  final String postID;
+
   _PostBottomState createState() => _PostBottomState();
 }
 
@@ -20,11 +22,12 @@ class _PostBottomState extends State<PostBottom> {
     _likeBloc.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     setState(() {
       //TODO change this
-      _likeBloc = LikeBloc(postRepository: PostRepository(), postID: "WEtwpUukkeSOYECPt8dG");
+      _likeBloc = LikeBloc(postRepository: PostRepository(), postID: widget.postID);
     });
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

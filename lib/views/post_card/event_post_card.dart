@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freetitle/app_theme.dart';
+import 'package:freetitle/bloc/post/save/bloc.dart';
+import 'package:freetitle/model/post_repository.dart';
+import 'package:freetitle/views/post_card/common/opportunity_save.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:freetitle/views/post_detail/event_post_detail.dart';
 
@@ -8,15 +12,39 @@ class EventPostCard extends StatefulWidget {
 }
 
 class _EventPostCardState extends State<EventPostCard> {
-  var pressAttention = false;
+
+  SaveBloc _saveBloc;
+
+  @override
+  void dispose() {
+    _saveBloc.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () {
-          Navigator.push<dynamic>(
-            context,
-            MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => EventPostDetail(),
+
+    setState(() {
+      //TODO change this
+      _saveBloc = SaveBloc(postRepository: PostRepository(), postID: "C9SuEe1ySPg5M1WjNDPz");
+    });
+
+    return Container(
+      width: 210,
+      height: 250,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+        child: Stack(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.topCenter,
+              width: 210,
+              height: 250,
+              child: Image.asset(
+                'assets/placeholders/event.png',
+                scale: 0.1,
+              ),
             ),
           );
         },
@@ -49,8 +77,13 @@ class _EventPostCardState extends State<EventPostCard> {
                     ),
                     child: Column(
                       children: <Widget>[
-                        Text(
-                          "Nocturnal Wonderland Photography of The Year Competition",
+                        BlocProvider<SaveBloc>(
+                          bloc: _saveBloc,
+                          child: SaveButton(type: PostType.event,),
+                        ),
+                        Spacer(),
+                        Icon(Icons.schedule, color: Colors.grey, size: 20),
+                        Text("2 days left",
                           style: GoogleFonts.galdeano(
                               textStyle: TextStyle(fontSize: 18)),
                         ),
